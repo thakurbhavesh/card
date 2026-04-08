@@ -26,5 +26,4 @@ locale/**/*.mo
 *.swp
 .DS_Store
 
-# uv
-.python-version
+# uv (keep .python-version tracked so Render uses correct Python)
