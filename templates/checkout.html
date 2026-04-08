@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Checkout" %} — Pagecraft{% endblock %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto px-6 py-12">
+  <a href="{% url 'pricing' %}" class="text-indigo-600 text-sm font-semibold hover:underline">← {% trans "Back to Pricing" %}</a>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+    <!-- LEFT: Card form -->
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+      <div class="flex items-center gap-2 mb-6">
+        <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center text-white font-bold">💳</div>
+        <div>
+          <h1 class="text-2xl font-extrabold">{% trans "Payment Details" %}</h1>
+          <div class="text-xs text-slate-500">🔒 {% trans "Secure checkout" %}</div>
+        </div>
+      </div>
+
+      {% if error %}
+        <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-5 text-sm">⚠️ {{ error }}</div>
+      {% endif %}
+
+      <form method="post" id="payForm" class="space-y-5">
+        {% csrf_token %}
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-2">{% trans "Cardholder Name" %}</label>
+          <input type="text" name="name" required placeholder="JOHN DOE"
+                 class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none uppercase">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-2">{% trans "Card Number" %}</label>
+          <div class="relative">
+            <input type="text" name="card_number" id="cardNum" required maxlength="19" placeholder="4242 4242 4242 4242"
+                   class="w-full border border-slate-200 rounded-xl px-4 py-3 pl-12 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none font-mono tracking-wider">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl">💳</span>
+          </div>
+          <div class="flex gap-2 mt-2">
+            <span class="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded font-semibold">VISA</span>
+            <span class="text-xs px-2 py-1 bg-red-50 text-red-700 rounded font-semibold">MASTERCARD</span>
+            <span class="text-xs px-2 py-1 bg-amber-50 text-amber-700 rounded font-semibold">RUPAY</span>
+            <span class="text-xs px-2 py-1 bg-slate-50 text-slate-700 rounded font-semibold">AMEX</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-2">{% trans "Expiry" %}</label>
+            <input type="text" name="expiry" id="expInp" required maxlength="5" placeholder="MM/YY"
+                   class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none font-mono">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-2">{% trans "CVV" %}</label>
+            <input type="password" name="cvv" required maxlength="4" placeholder="•••"
+                   class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none font-mono">
+          </div>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-3 text-xs text-slate-600 flex items-center gap-2">
+          🔒 <span>{% trans "Your card details are encrypted and secure. We don't store your card." %}</span>
+        </div>
+        <button type="submit" id="payBtn" class="btn-primary w-full text-lg">
+          🔐 {% trans "Pay" %} ₹{{ plan.price }}
+        </button>
+      </form>
+    </div>
+
+    <!-- RIGHT: Order summary -->
+    <div>
+      <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl p-8 text-white shadow-2xl mb-6">
+        <div class="text-xs uppercase tracking-wider opacity-80">{% trans "Order Summary" %}</div>
+        <h2 class="text-3xl font-extrabold mt-2">Pagecraft {{ plan.name }}</h2>
+        <p class="opacity-90 text-sm mt-2">{{ plan.desc }}</p>
+        <div class="border-t border-white/20 my-6"></div>
+        <div class="flex justify-between text-sm mb-2"><span class="opacity-80">{{ plan.name }} Plan</span><span>₹{{ plan.price }}</span></div>
+        <div class="flex justify-between text-sm mb-2"><span class="opacity-80">GST (18%)</span><span>₹0</span></div>
+        <div class="flex justify-between text-sm mb-4"><span class="opacity-80">Discount</span><span>₹0</span></div>
+        <div class="border-t border-white/20 pt-4 flex justify-between items-baseline">
+          <span class="text-sm uppercase tracking-wider opacity-80">{% trans "Total" %}</span>
+          <span class="text-4xl font-extrabold">₹{{ plan.price }}</span>
+        </div>
+        <div class="text-xs opacity-75 mt-2 text-right">/ month · cancel anytime</div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 text-sm space-y-3">
+        <div class="flex items-start gap-2"><span class="text-green-500">✓</span><span>{% trans "Instant activation after payment" %}</span></div>
+        <div class="flex items-start gap-2"><span class="text-green-500">✓</span><span>{% trans "14-day money-back guarantee" %}</span></div>
+        <div class="flex items-start gap-2"><span class="text-green-500">✓</span><span>{% trans "Cancel anytime, no questions asked" %}</span></div>
+        <div class="flex items-start gap-2"><span class="text-green-500">✓</span><span>{% trans "All taxes included" %}</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Format card number: 1234 5678 9012 3456
+document.getElementById('cardNum').addEventListener('input', function(e) {
+  let v = e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '');
+  v = v.match(/.{1,4}/g)?.join(' ') || '';
+  e.target.value = v;
+});
+// Format expiry: MM/YY
+document.getElementById('expInp').addEventListener('input', function(e) {
+  let v = e.target.value.replace(/\D/g, '');
+  if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2,4);
+  e.target.value = v;
+});
+// Loader on submit
+document.getElementById('payForm').addEventListener('submit', function() {
+  PC.loader.show('Processing payment...', 'Please do not close this window', true);
+});
+</script>
+{% endblock %}

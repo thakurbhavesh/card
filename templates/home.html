@@ -1,0 +1,706 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+
+<!-- Distinctive fonts: Space Grotesk (display/headings) + Instrument Serif (italic accents) -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  /* ============== COLOR TOKENS (Canva-like blue theme) ============== */
+  :root{
+    --pc-blue:#0052FF;          /* primary royal blue */
+    --pc-blue-dark:#0040CC;
+    --pc-blue-deep:#001A66;
+    --pc-cyan:#00C4CC;          /* Canva teal accent */
+    --pc-cyan-light:#7DF9FF;
+    --pc-ink:#0A0E27;           /* near-black for text */
+    --pc-ink-soft:#1E293B;
+    --pc-line:#E5E9F2;          /* subtle borders */
+    --pc-line-soft:#F1F5F9;
+    --pc-bg:#FAFBFF;            /* very light blue-tinted bg */
+    --pc-blueprint:#E0EBFF;
+  }
+
+  /* ============== TYPOGRAPHY ============== */
+  .h-display{font-family:'Space Grotesk',Inter,sans-serif;letter-spacing:-0.035em;font-weight:700;line-height:.95;color:var(--pc-ink)}
+  .h-italic{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-0.01em}
+  .h-mono{font-family:'JetBrains Mono','Space Grotesk',monospace;font-feature-settings:'tnum'}
+  .text-eyebrow{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--pc-blue)}
+  .text-eyebrow .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--pc-cyan);margin-right:8px;vertical-align:middle}
+  .body-lg{font-size:18px;line-height:1.6;color:#475569}
+
+  /* ============== BG PATTERNS (SVG-inline so no extra requests) ============== */
+  .bg-dots{background-image:radial-gradient(circle,#cbd5e1 1px,transparent 1px);background-size:22px 22px}
+  .bg-dots-blue{background-image:radial-gradient(circle,rgba(0,82,255,.13) 1.4px,transparent 1.4px);background-size:24px 24px}
+  .bg-grid{background-image:linear-gradient(rgba(0,82,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.06) 1px,transparent 1px);background-size:42px 42px}
+  .bg-blueprint{background-color:#F0F5FF;background-image:linear-gradient(rgba(0,82,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.08) 1px,transparent 1px),linear-gradient(rgba(0,82,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.04) 1px,transparent 1px);background-size:80px 80px,80px 80px,16px 16px,16px 16px}
+  .bg-diag{background-image:repeating-linear-gradient(135deg,rgba(0,82,255,.04) 0 1px,transparent 1px 14px)}
+  .bg-noise{position:relative}
+  .bg-noise::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");opacity:.04;pointer-events:none;mix-blend-mode:overlay}
+
+  /* ============== HERO ============== */
+  .hero{position:relative;overflow:hidden;background:var(--pc-bg)}
+  .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,82,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.05) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,#000 30%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 70%)}
+  .hero-glow{position:absolute;width:780px;height:780px;border-radius:50%;background:radial-gradient(circle,rgba(0,82,255,.18),rgba(0,196,204,.10) 40%,transparent 70%);filter:blur(40px);top:-260px;left:50%;transform:translateX(-50%);pointer-events:none}
+  .hero-symbol{position:absolute;color:rgba(0,82,255,.06);pointer-events:none;font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;line-height:1;user-select:none}
+
+  /* Pill badge */
+  .pill-blue{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--pc-line);padding:6px 14px 6px 6px;border-radius:999px;font-size:13px;color:var(--pc-ink-soft);box-shadow:0 1px 3px rgba(15,23,42,.04);transition:all .2s}
+  .pill-blue:hover{border-color:var(--pc-blue);transform:translateY(-1px)}
+  .pill-blue .pill-tag{background:var(--pc-blue);color:#fff;font-weight:700;font-size:10px;padding:3px 9px;border-radius:999px;letter-spacing:.04em;text-transform:uppercase}
+
+  /* Buttons */
+  .btn-bl{display:inline-flex;align-items:center;gap:8px;background:var(--pc-blue);color:#fff;font-weight:600;padding:14px 24px;border-radius:10px;font-size:15px;transition:all .2s;border:1px solid var(--pc-blue);box-shadow:0 2px 0 var(--pc-blue-dark),0 8px 20px rgba(0,82,255,.25);font-family:'Space Grotesk',sans-serif}
+  .btn-bl:hover{transform:translateY(-1px);box-shadow:0 3px 0 var(--pc-blue-dark),0 12px 28px rgba(0,82,255,.35);background:var(--pc-blue-dark)}
+  .btn-bl:active{transform:translateY(1px);box-shadow:0 1px 0 var(--pc-blue-dark),0 4px 12px rgba(0,82,255,.2)}
+  .btn-out{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--pc-ink);font-weight:600;padding:14px 24px;border-radius:10px;font-size:15px;transition:all .2s;border:1px solid var(--pc-line);font-family:'Space Grotesk',sans-serif}
+  .btn-out:hover{border-color:var(--pc-blue);color:var(--pc-blue);transform:translateY(-1px)}
+
+  /* Hero floating mockup canvas */
+  .mock-stage{position:relative;width:100%;height:520px}
+  .mock{position:absolute;background:#fff;border:1px solid var(--pc-line);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(15,23,42,.04),0 24px 50px -12px rgba(0,82,255,.18);transition:transform .35s cubic-bezier(.2,.8,.2,1);will-change:transform;animation:hover 7s ease-in-out infinite}
+  .mock:hover{transform:translateY(-4px) rotate(0)!important;box-shadow:0 1px 3px rgba(15,23,42,.04),0 30px 60px -12px rgba(0,82,255,.28)}
+  @keyframes hover{0%,100%{translate:0 0}50%{translate:0 -10px}}
+  .mock .pic{height:80px;border-radius:8px;margin-bottom:12px;position:relative;overflow:hidden}
+  .mock .ln{height:6px;background:#E5E9F2;border-radius:3px;margin:5px 0}
+  .mock .ln.b{background:linear-gradient(90deg,var(--pc-blue),var(--pc-cyan));height:8px}
+  .mock-tag{display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:3px 8px;border-radius:4px;background:#F0F5FF;color:var(--pc-blue);margin-top:8px}
+
+  /* Floating sparkle SVG */
+  .float-spark{position:absolute;color:var(--pc-cyan);animation:spin 12s linear infinite;pointer-events:none}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+  /* ============== STATS ============== */
+  .stats-strip{background:var(--pc-ink);color:#fff;border-radius:0;padding:32px 0;position:relative;overflow:hidden}
+  .stats-strip::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,196,204,.1) 1.5px,transparent 1.5px);background-size:30px 30px;opacity:.5}
+  .stat-item{position:relative;text-align:center}
+  .stat-num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:48px;letter-spacing:-0.04em;background:linear-gradient(180deg,#fff,#7DF9FF);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+  .stat-lbl{font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#94a3b8;margin-top:8px;font-weight:500}
+
+  /* ============== CATEGORIES ============== */
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:var(--pc-line);border:1px solid var(--pc-line);border-radius:14px;overflow:hidden}
+  .cat-tile{position:relative;background:#fff;padding:28px 26px;display:block;transition:all .25s;overflow:hidden;min-height:200px}
+  .cat-tile::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c1),var(--c2));opacity:0;transition:opacity .35s}
+  .cat-tile::after{content:attr(data-symbol);position:absolute;font-family:'Instrument Serif',serif;font-style:italic;font-size:140px;line-height:.7;right:-20px;bottom:-30px;color:rgba(0,82,255,.04);pointer-events:none;transition:all .35s}
+  .cat-tile:hover::before{opacity:1}
+  .cat-tile:hover::after{color:rgba(255,255,255,.4);font-size:160px}
+  .cat-tile:hover .cat-i,.cat-tile:hover .cat-l,.cat-tile:hover .cat-d,.cat-tile:hover .cat-c{color:#fff!important}
+  .cat-tile:hover .cat-c{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3)}
+  .cat-tile>*{position:relative;z-index:1}
+  .cat-i{font-size:36px;line-height:1;margin-bottom:18px;display:inline-block;transition:transform .35s,color .35s}
+  .cat-tile:hover .cat-i{transform:scale(1.1) rotate(-6deg)}
+  .cat-l{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;color:var(--pc-ink);margin-bottom:6px;letter-spacing:-0.01em;transition:color .35s}
+  .cat-d{font-size:13px;color:#64748b;line-height:1.5;margin-bottom:14px;transition:color .35s}
+  .cat-c{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:#F0F5FF;border:1px solid var(--pc-line);font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;color:var(--pc-blue);transition:all .35s}
+
+  /* category color tints */
+  .ct-resume      {--c1:#0052FF;--c2:#00C4CC}
+  .ct-cover_letter{--c1:#1E40AF;--c2:#3B82F6}
+  .ct-invoice     {--c1:#0052FF;--c2:#1E40AF}
+  .ct-voucher     {--c1:#0080FF;--c2:#00C4CC}
+  .ct-card        {--c1:#3B82F6;--c2:#0052FF}
+  .ct-certificate {--c1:#1E40AF;--c2:#0052FF}
+  .ct-social      {--c1:#0066FF;--c2:#7DF9FF}
+  .ct-flyer       {--c1:#0052FF;--c2:#06B6D4}
+  .ct-wedding     {--c1:#1E40AF;--c2:#0EA5E9}
+  .ct-birthday    {--c1:#0052FF;--c2:#7DF9FF}
+  .ct-festival    {--c1:#0066FF;--c2:#00C4CC}
+  .ct-menu        {--c1:#1E3A8A;--c2:#3B82F6}
+  .ct-ticket      {--c1:#0EA5E9;--c2:#06B6D4}
+
+  /* ============== STEP CARDS ============== */
+  .step-line{position:absolute;top:50px;left:0;right:0;height:2px;background:repeating-linear-gradient(90deg,var(--pc-blue) 0 6px,transparent 6px 12px);z-index:0}
+  .step-box{position:relative;background:#fff;border:1px solid var(--pc-line);border-radius:14px;padding:36px 28px 28px;text-align:center;transition:all .25s;z-index:1}
+  .step-box:hover{border-color:var(--pc-blue);transform:translateY(-4px);box-shadow:0 18px 40px -16px rgba(0,82,255,.25)}
+  .step-num{position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:42px;height:42px;background:var(--pc-blue);color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;border:4px solid var(--pc-bg);box-shadow:0 6px 16px rgba(0,82,255,.3)}
+
+  /* ============== COMPARISON TABLE ============== */
+  .vs-table{background:#fff;border:1px solid var(--pc-line);border-radius:14px;overflow:hidden}
+  .vs-row{display:grid;grid-template-columns:1.6fr 1fr 1fr;border-top:1px solid var(--pc-line-soft);align-items:center}
+  .vs-row.head{border-top:none;background:var(--pc-ink);color:#fff}
+  .vs-row.head .vs-cell{padding:18px 22px;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+  .vs-row.head .vs-cell:nth-child(2){color:var(--pc-cyan-light)}
+  .vs-cell{padding:18px 22px;font-size:14px;color:var(--pc-ink);text-align:center}
+  .vs-cell.feat{text-align:left;font-weight:600;font-family:'Space Grotesk',sans-serif}
+  .vs-cell.us{color:var(--pc-blue);font-weight:600}
+  .vs-cell.them{color:#94a3b8}
+  .vs-row:not(.head):hover{background:#FAFBFF}
+
+  /* ============== BENTO ============== */
+  .bento-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(160px,auto);gap:1px;background:var(--pc-line);border:1px solid var(--pc-line);border-radius:14px;overflow:hidden}
+  .bento-cell{background:#fff;padding:30px 28px;transition:all .25s;position:relative;overflow:hidden}
+  .bento-cell:hover{background:#FAFBFF}
+  .bento-cell.big{grid-column:span 2;grid-row:span 2;background:linear-gradient(135deg,var(--pc-blue) 0%,var(--pc-blue-dark) 60%,var(--pc-blue-deep) 100%);color:#fff;padding:48px 44px}
+  .bento-cell.big::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.07) 1.5px,transparent 1.5px);background-size:32px 32px;pointer-events:none}
+  .bento-cell.big::after{content:'✦';position:absolute;font-family:'Instrument Serif',serif;font-style:italic;font-size:340px;line-height:.7;right:-50px;bottom:-100px;color:rgba(255,255,255,.05);pointer-events:none}
+  .bento-cell.big > *{position:relative}
+  .bento-cell.cyan{background:var(--pc-cyan);color:var(--pc-ink-soft)}
+  .bento-icon{font-size:32px;margin-bottom:14px;display:inline-block}
+  .bento-h{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;margin-bottom:6px;letter-spacing:-0.01em}
+  .bento-p{font-size:14px;color:#64748b;line-height:1.5}
+  .bento-cell.big .bento-p,.bento-cell.cyan .bento-p{color:rgba(255,255,255,.85)}
+  .bento-cell.cyan .bento-p{color:rgba(15,23,42,.7)}
+
+  /* ============== POPULAR ============== */
+  .pop-card{background:#fff;border:1px solid var(--pc-line);border-radius:12px;overflow:hidden;display:block;transition:all .25s;position:relative}
+  .pop-card:hover{border-color:var(--pc-blue);transform:translateY(-3px);box-shadow:0 16px 36px -16px rgba(0,82,255,.25)}
+  .pop-rank{position:absolute;top:10px;right:10px;z-index:5;background:#fff;color:var(--pc-blue);border:1px solid var(--pc-line);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:10px;padding:4px 10px;border-radius:6px;letter-spacing:.05em}
+  .pop-info{padding:14px}
+  .pop-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:var(--pc-ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pop-cat{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;font-weight:500}
+
+  /* ============== TESTIMONIALS ============== */
+  .quote-card{background:#fff;border:1px solid var(--pc-line);border-radius:14px;padding:32px 28px;position:relative;transition:all .25s;overflow:hidden}
+  .quote-card::before{content:'"';position:absolute;font-family:'Instrument Serif',serif;font-size:160px;color:var(--pc-blueprint);top:-30px;right:10px;line-height:1;pointer-events:none}
+  .quote-card:hover{border-color:var(--pc-blue);transform:translateY(-3px)}
+  .quote-card > *{position:relative}
+  .quote-stars{color:var(--pc-blue);font-size:14px;letter-spacing:2px;margin-bottom:14px}
+  .quote-text{font-family:'Space Grotesk',sans-serif;font-size:17px;color:var(--pc-ink-soft);line-height:1.5;margin-bottom:22px;font-weight:500}
+  .quote-author{display:flex;align-items:center;gap:12px}
+  .quote-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--pc-blue),var(--pc-cyan));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px}
+  .quote-name{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;color:var(--pc-ink)}
+  .quote-meta{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em}
+
+  /* ============== FINAL CTA ============== */
+  .cta-final{background:var(--pc-ink);color:#fff;border-radius:18px;padding:80px 40px;position:relative;overflow:hidden;text-align:center}
+  .cta-final::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,82,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.18) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%)}
+  .cta-final::after{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(0,82,255,.4),transparent 60%);top:-200px;left:50%;transform:translateX(-50%);filter:blur(60px);pointer-events:none}
+  .cta-final > *{position:relative}
+  .cta-symbol{position:absolute;font-family:'Instrument Serif',serif;font-style:italic;color:rgba(0,196,204,.08);pointer-events:none;line-height:1}
+
+  /* ============== MARQUEE ============== */
+  .marquee{overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+  .marquee-track{display:flex;gap:60px;animation:marq 35s linear infinite;width:max-content;align-items:center}
+  @keyframes marq{0%{translate:0 0}100%{translate:-50% 0}}
+  .marquee-item{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:#94a3b8;display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .marquee-item .dot{width:5px;height:5px;border-radius:50%;background:var(--pc-blue);opacity:.4}
+
+  /* underline doodle */
+  .doodle-line{display:inline-block;position:relative}
+  .doodle-line::after{content:'';position:absolute;left:-2px;right:-2px;bottom:-6px;height:14px;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 14' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 8 Q 50 2 100 7 T 198 5' stroke='%2300C4CC' stroke-width='3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") no-repeat center/100% 100%}
+
+  @media (max-width:768px){
+    .mock-stage{display:none}
+    .bento-cell.big{grid-column:span 3}
+    .vs-row{grid-template-columns:1.4fr 1fr 1fr}
+  }
+</style>
+
+<!-- ============== HERO ============== -->
+<section class="hero pt-20 pb-32">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-symbol" style="top:8%;left:6%;font-size:180px">✦</div>
+  <div class="hero-symbol" style="top:60%;right:4%;font-size:240px">✶</div>
+  <div class="hero-symbol" style="bottom:6%;left:10%;font-size:160px">✺</div>
+
+  <!-- floating sparkles -->
+  <svg class="float-spark" style="top:18%;left:18%;width:24px;height:24px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l1.5 9.5L23 12l-9.5 2.5L12 24l-1.5-9.5L1 12l9.5-2.5z"/></svg>
+  <svg class="float-spark" style="top:70%;right:14%;width:18px;height:18px;animation-delay:-3s" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l1.5 9.5L23 12l-9.5 2.5L12 24l-1.5-9.5L1 12l9.5-2.5z"/></svg>
+
+  <div class="max-w-7xl mx-auto px-6 relative">
+    <div class="grid lg:grid-cols-[1.1fr_1fr] gap-16 items-center">
+      <!-- LEFT -->
+      <div>
+        <a href="{% url 'ai_template' %}" class="pill-blue">
+          <span class="pill-tag">New</span>
+          <span>{% trans "AI generates templates with Gemini" %}</span>
+          <span style="color:var(--pc-blue)">→</span>
+        </a>
+        <h1 class="h-display mt-8" style="font-size:clamp(46px,7vw,84px)">
+          {% trans "Design like a" %}<br>
+          <span class="h-italic doodle-line" style="color:var(--pc-blue);font-size:1.05em">{% trans "professional" %}</span><br>
+          {% trans "in minutes." %}
+        </h1>
+        <p class="body-lg mt-6 max-w-xl">
+          {% trans "Pagecraft turns plain text into beautiful resumes, invoices, wedding invites, social posts and more — powered by AI, exported to PDF in seconds." %}
+        </p>
+        <div class="flex flex-wrap gap-3 mt-10">
+          <a href="#categories" class="btn-bl">{% trans "Start Creating Free" %} <span>→</span></a>
+          <a href="{% url 'ai_template' %}" class="btn-out"><span style="color:var(--pc-cyan)">✦</span> {% trans "Try AI Generator" %}</a>
+        </div>
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mt-10 text-sm" style="color:#64748b">
+          <div class="flex items-center gap-2"><span style="color:var(--pc-blue);letter-spacing:1px">★★★★★</span> <strong style="color:var(--pc-ink);font-family:'Space Grotesk'">4.9</strong></div>
+          <div class="h-mono" style="color:#94a3b8">2,000+ {% trans "users" %}</div>
+          <div class="h-mono" style="color:#94a3b8">·</div>
+          <div>✓ {% trans "No credit card" %}</div>
+          <div class="h-mono" style="color:#94a3b8">·</div>
+          <div>✓ {% trans "10 languages" %}</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: floating mockup canvas -->
+      <div class="mock-stage">
+        <!-- Resume mockup -->
+        <div class="mock" style="width:235px;left:18px;top:30px;transform:rotate(-5deg);animation-delay:0s">
+          <div class="pic" style="background:linear-gradient(135deg,var(--pc-blue),var(--pc-blue-deep))">
+            <div style="position:absolute;top:10px;left:12px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.4)"></div>
+            <div style="position:absolute;top:14px;left:54px;width:90px;height:6px;background:rgba(255,255,255,.4);border-radius:3px"></div>
+            <div style="position:absolute;top:26px;left:54px;width:60px;height:4px;background:rgba(255,255,255,.3);border-radius:2px"></div>
+          </div>
+          <div class="ln b" style="width:75%"></div>
+          <div class="ln" style="width:90%"></div>
+          <div class="ln" style="width:60%"></div>
+          <div class="ln" style="width:80%"></div>
+          <div class="mock-tag">📄 Resume</div>
+        </div>
+
+        <!-- Invoice mockup -->
+        <div class="mock" style="width:225px;right:0;top:0;transform:rotate(4deg);animation-delay:-2s">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--pc-line)">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:13px;color:var(--pc-ink)">INVOICE</div>
+            <div class="h-mono" style="font-size:10px;color:#94a3b8">#001</div>
+          </div>
+          <div class="ln" style="width:70%"></div>
+          <div class="ln" style="width:90%"></div>
+          <div class="ln" style="width:60%"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px dashed var(--pc-line)">
+            <div class="h-mono" style="font-size:10px;color:#64748b">TOTAL</div>
+            <div style="font-family:'Space Grotesk';font-weight:700;color:var(--pc-blue);font-size:14px">₹68,000</div>
+          </div>
+          <div class="mock-tag">🧾 Invoice</div>
+        </div>
+
+        <!-- Wedding mockup -->
+        <div class="mock" style="width:200px;left:60px;bottom:50px;transform:rotate(-3deg);animation-delay:-4s">
+          <div class="pic" style="background:linear-gradient(135deg,var(--pc-cyan),var(--pc-blue));text-align:center;padding-top:18px">
+            <div style="font-family:'Instrument Serif',serif;font-style:italic;color:#fff;font-size:22px;line-height:1">A & R</div>
+            <div style="font-family:'Space Grotesk';font-size:8px;color:rgba(255,255,255,.9);letter-spacing:2px;margin-top:6px">14·02·26</div>
+          </div>
+          <div class="ln" style="width:85%;margin:0 auto"></div>
+          <div class="ln" style="width:70%;margin:5px auto"></div>
+          <div class="mock-tag">💍 Wedding</div>
+        </div>
+
+        <!-- Social mockup -->
+        <div class="mock" style="width:175px;right:30px;bottom:20px;transform:rotate(6deg);animation-delay:-3s">
+          <div class="pic" style="background:linear-gradient(135deg,#0066FF,#00C4CC);height:130px;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:22px;letter-spacing:-1px;text-align:center;line-height:1">SUMMER<br>SALE</div>
+            <div class="h-mono" style="font-size:9px;margin-top:6px;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:30px">50% OFF</div>
+          </div>
+          <div class="mock-tag">📱 Social</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if festival %}
+<!-- ============== DATE-AWARE FESTIVAL BANNER ============== -->
+<section class="max-w-7xl mx-auto px-6 -mt-12 mb-4 relative z-10">
+  <div class="rounded-2xl border overflow-hidden relative" style="border-color:var(--pc-line);background:linear-gradient(135deg,{{ festival.color }},#0a0e27)">
+    <div class="absolute inset-0 opacity-30" style="background-image:radial-gradient(circle,rgba(255,255,255,.15) 1.5px,transparent 1.5px);background-size:24px 24px"></div>
+    <div class="absolute font-italic" style="font-family:'Instrument Serif',serif;font-style:italic;font-size:240px;line-height:.7;right:-30px;bottom:-80px;color:rgba(255,255,255,.07);pointer-events:none">{{ festival.icon }}</div>
+    <div class="relative grid md:grid-cols-[1.2fr_1fr] gap-6 p-8 md:p-10 items-center">
+      <div class="text-white">
+        <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md text-white border border-white/20 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+          {% if festival.active %}🔴 LIVE NOW{% else %}⏰ {{ festival.days_until }} {% trans "days to go" %}{% endif %}
+        </div>
+        <h2 class="h-display" style="font-size:clamp(28px,4vw,46px);color:#fff;line-height:1.05">
+          <span style="font-size:1.4em">{{ festival.icon }}</span> {{ festival.name }}
+        </h2>
+        <p class="mt-3 text-base" style="color:rgba(255,255,255,.85);max-width:440px">
+          {% if festival.active %}{% trans "Send greetings to your loved ones today. Pick a template and share in 1 minute." %}{% else %}{% trans "Get ready early. Browse our hand-picked templates for the occasion." %}{% endif %}
+        </p>
+        <a href="#festival-section" class="inline-flex items-center gap-2 mt-6 bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold text-sm" style="font-family:'Space Grotesk',sans-serif">
+          {% trans "Browse Templates" %} →
+        </a>
+      </div>
+      {% if festival_templates %}
+      <div class="grid grid-cols-3 gap-2">
+        {% for it in festival_templates|slice:":3" %}
+        <a href="{% url 'editor' it.tpl.id %}" class="block bg-white rounded-lg overflow-hidden border border-white/30 hover:scale-105 transition" style="aspect-ratio:3/4">
+          <iframe srcdoc="{{ it.preview_html|escape }}" scrolling="no" style="width:100%;height:100%;border:0;pointer-events:none"></iframe>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ============== STATS STRIP (dark) ============== -->
+<section class="stats-strip">
+  <div class="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 relative">
+    <div class="stat-item"><div class="stat-num counter" data-target="{{ total_templates }}" data-suffix="+">0</div><div class="stat-lbl">{% trans "Templates" %}</div></div>
+    <div class="stat-item"><div class="stat-num counter" data-target="{{ categories|length }}">0</div><div class="stat-lbl">{% trans "Categories" %}</div></div>
+    <div class="stat-item"><div class="stat-num counter" data-target="2000" data-suffix="+">0</div><div class="stat-lbl">{% trans "Happy Users" %}</div></div>
+    <div class="stat-item"><div class="stat-num">∞</div><div class="stat-lbl">{% trans "AI Generations" %}</div></div>
+  </div>
+</section>
+
+<!-- ============== LOGO MARQUEE ============== -->
+<section class="bg-white py-12 border-b" style="border-color:var(--pc-line)">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center text-eyebrow mb-6"><span class="dot"></span>{% trans "Trusted by creators worldwide" %}</div>
+    <div class="marquee">
+      <div class="marquee-track">
+        <div class="marquee-item">⚡ FastTrack</div><div class="marquee-item dot"></div>
+        <div class="marquee-item">🎨 Pixelcraft</div><div class="marquee-item dot"></div>
+        <div class="marquee-item">🚀 Launchpad</div><div class="marquee-item dot"></div>
+        <div class="marquee-item">💎 Diamond Co.</div><div class="marquee-item dot"></div>
+        <div class="marquee-item">🌟 Stellar</div><div class="marquee-item dot"></div>
+        <div class="marquee-item">🪐 OrbitLabs</div><div class="marquee-item dot"></div>
+        <div class="marquee-item">🔮 NovaCraft</div><div class="marquee-item dot"></div>
+        <div class="marquee-item">⚡ FastTrack</div><div class="marquee-item dot"></div>
+        <div class="marquee-item">🎨 Pixelcraft</div><div class="marquee-item dot"></div>
+        <div class="marquee-item">🚀 Launchpad</div><div class="marquee-item dot"></div>
+        <div class="marquee-item">💎 Diamond Co.</div><div class="marquee-item dot"></div>
+        <div class="marquee-item">🌟 Stellar</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== RECENTLY VIEWED ============== -->
+<section id="recentSection" class="max-w-7xl mx-auto px-6 mt-10 hidden">
+  <div class="bg-white border rounded-xl p-6" style="border-color:var(--pc-line)">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="h-display text-lg flex items-center gap-2">⏰ {% trans "Recently Viewed" %}</h3>
+      <button type="button" onclick="clearRecent()" class="text-xs text-slate-500 hover:text-red-600">{% trans "Clear" %}</button>
+    </div>
+    <div id="recentList" class="flex gap-3 overflow-x-auto pb-2"></div>
+  </div>
+</section>
+
+<!-- ============== CATEGORIES ============== -->
+<section id="categories" class="max-w-7xl mx-auto px-6 py-28 relative">
+  <div class="text-center mb-16">
+    <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Categories" %}</div>
+    <h2 class="h-display" style="font-size:clamp(40px,5.5vw,68px)">
+      {% trans "What will you" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "create" %}</span> {% trans "today?" %}
+    </h2>
+    <p class="body-lg mt-4 max-w-xl mx-auto">{% trans "Pick a category and start with a beautiful, ready-made template. All free." %}</p>
+  </div>
+  <div class="cat-grid">
+    {% for c in categories %}
+    <a href="{% url 'category' c.key %}" class="cat-tile ct-{{ c.key }}" data-symbol="{{ c.icon }}">
+      <div class="cat-i">{{ c.icon }}</div>
+      <div class="cat-l">{{ c.label }}</div>
+      <div class="cat-d">{{ c.desc }}</div>
+      <div class="cat-c">{{ c.count }} {% trans "templates" %} →</div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ============== POPULAR TEMPLATES ============== -->
+{% if popular_items %}
+<section class="py-28 relative" style="background:var(--pc-bg)">
+  <div class="absolute inset-0 bg-dots-blue" style="opacity:.6"></div>
+  <div class="max-w-7xl mx-auto px-6 relative">
+    <div class="text-center mb-14">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Trending" %}</div>
+      <h2 class="h-display" style="font-size:clamp(40px,5.5vw,64px)">
+        {% trans "Most" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "loved" %}</span> {% trans "templates" %}
+      </h2>
+      <p class="body-lg mt-4 max-w-xl mx-auto">{% trans "Hand-picked favorites used by thousands of creators." %}</p>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+      {% for it in popular_items %}
+      <a href="{% url 'editor' it.tpl.id %}" class="pop-card">
+        <div class="pop-rank">#{{ forloop.counter }}</div>
+        {% with tpl=it.tpl %}{% include 'partials/_tpl_badges.html' %}{% endwith %}
+        <div class="preview-frame relative {% if it.tpl.category == 'certificate' or it.tpl.category == 'ticket' %}landscape{% elif it.tpl.category == 'card' or it.tpl.category == 'social' or it.tpl.category == 'wedding' or it.tpl.category == 'birthday' or it.tpl.category == 'festival' or it.tpl.category == 'voucher' %}center{% endif %}" style="height:200px">
+          <div class="skeleton-shimmer absolute inset-0"></div>
+          <iframe data-srcdoc="{{ it.preview_html|escape }}" scrolling="no" class="lazy-iframe opacity-0 transition-opacity duration-300"></iframe>
+        </div>
+        <div class="pop-info">
+          <div class="pop-title">{{ it.tpl.title }}</div>
+          <div class="pop-cat">{{ it.tpl.get_category_display }}</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-12">
+      <a href="{% url 'all_templates' %}" class="btn-out">{% trans "Explore All" %} {{ total_templates }}+ {% trans "Templates" %} →</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ============== HOW IT WORKS ============== -->
+<section class="bg-blueprint py-28 relative">
+  <div class="max-w-6xl mx-auto px-6 relative">
+    <div class="text-center mb-20">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "How It Works" %}</div>
+      <h2 class="h-display" style="font-size:clamp(40px,5.5vw,64px)">
+        {% trans "From idea to PDF in" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "3 steps" %}</span>
+      </h2>
+      <p class="body-lg mt-4">{% trans "No design skills, no learning curve, no friction." %}</p>
+    </div>
+    <div class="relative">
+      <div class="step-line hidden md:block"></div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+        <div class="step-box">
+          <div class="step-num">1</div>
+          <div style="font-size:42px;margin:14px 0">🎨</div>
+          <h3 class="h-display text-xl mb-2">{% trans "Pick a Template" %}</h3>
+          <p class="text-sm" style="color:#64748b">{% trans "Browse" %} {{ total_templates }}+ {% trans "professional templates across" %} {{ categories|length }} {% trans "categories." %}</p>
+        </div>
+        <div class="step-box">
+          <div class="step-num">2</div>
+          <div style="font-size:42px;margin:14px 0">✨</div>
+          <h3 class="h-display text-xl mb-2">{% trans "Fill & Enhance" %}</h3>
+          <p class="text-sm" style="color:#64748b">{% trans "Type your details — let AI improve text, translate, and generate images instantly." %}</p>
+        </div>
+        <div class="step-box">
+          <div class="step-num">3</div>
+          <div style="font-size:42px;margin:14px 0">📥</div>
+          <h3 class="h-display text-xl mb-2">{% trans "Download Anywhere" %}</h3>
+          <p class="text-sm" style="color:#64748b">{% trans "Export as PDF, PNG, JPG or GIF. Share via public link. Done." %}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== WHY PAGECRAFT ============== -->
+<section class="max-w-5xl mx-auto px-6 py-28">
+  <div class="text-center mb-14">
+    <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Why Pagecraft" %}</div>
+    <h2 class="h-display" style="font-size:clamp(40px,5.5vw,64px)">
+      {% trans "Built" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "different" %}</span>
+    </h2>
+    <p class="body-lg mt-4">{% trans "Compare us with the alternatives. We're not even close." %}</p>
+  </div>
+  <div class="vs-table">
+    <div class="vs-row head">
+      <div class="vs-cell feat">{% trans "Feature" %}</div>
+      <div class="vs-cell">⚡ Pagecraft</div>
+      <div class="vs-cell">{% trans "Others" %}</div>
+    </div>
+    <div class="vs-row"><div class="vs-cell feat">{% trans "AI text enhancement" %}</div><div class="vs-cell us">✓ {% trans "Free" %}</div><div class="vs-cell them">{% trans "Paid only" %}</div></div>
+    <div class="vs-row"><div class="vs-cell feat">{% trans "10-language translation" %}</div><div class="vs-cell us">✓ {% trans "Built-in" %}</div><div class="vs-cell them">—</div></div>
+    <div class="vs-row"><div class="vs-cell feat">{% trans "Export to GIF (animated)" %}</div><div class="vs-cell us">✓ 1-click</div><div class="vs-cell them">—</div></div>
+    <div class="vs-row"><div class="vs-cell feat">{% trans "AI image generation (Nano Banana)" %}</div><div class="vs-cell us">✓ {% trans "Inline" %}</div><div class="vs-cell them">{% trans "Pro plan" %}</div></div>
+    <div class="vs-row"><div class="vs-cell feat">{% trans "Start without signup" %}</div><div class="vs-cell us">✓ {% trans "Yes" %}</div><div class="vs-cell them">{% trans "Login required" %}</div></div>
+    <div class="vs-row"><div class="vs-cell feat">{% trans "Indian regional templates" %}</div><div class="vs-cell us">✓ 70+</div><div class="vs-cell them">{% trans "Limited" %}</div></div>
+    <div class="vs-row"><div class="vs-cell feat">{% trans "Free forever plan" %}</div><div class="vs-cell us">✓ {% trans "Yes" %}</div><div class="vs-cell them">{% trans "Trial only" %}</div></div>
+  </div>
+</section>
+
+<!-- ============== BENTO FEATURES ============== -->
+<section class="max-w-7xl mx-auto px-6 py-28">
+  <div class="text-center mb-14">
+    <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Everything you need" %}</div>
+    <h2 class="h-display" style="font-size:clamp(40px,5.5vw,64px)">
+      {% trans "Power-packed" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "features" %}</span>
+    </h2>
+  </div>
+  <div class="bento-grid">
+    <div class="bento-cell big">
+      <div class="bento-icon" style="font-size:42px">🤖</div>
+      <h3 class="h-display" style="font-size:36px;margin-bottom:14px">{% trans "AI Template" %} <span class="h-italic" style="color:var(--pc-cyan-light)">{% trans "Generator" %}</span></h3>
+      <p style="font-size:17px;color:rgba(255,255,255,.85);margin-bottom:24px;max-width:420px;line-height:1.5">{% trans "Describe your dream template in plain English. Gemini designs it in 20 seconds. Save it. Use it. Done." %}</p>
+      <a href="{% url 'ai_template' %}" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--pc-blue);padding:12px 22px;border-radius:10px;font-family:'Space Grotesk';font-weight:600;font-size:14px">{% trans "Try AI Generator" %} →</a>
+      <div class="grid grid-cols-2 gap-2 mt-8 max-w-sm">
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:14px;backdrop-filter:blur(8px)">
+          <div class="h-display" style="font-size:28px;color:var(--pc-cyan-light)">~20s</div>
+          <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-top:4px">{% trans "Avg generation" %}</div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:14px;backdrop-filter:blur(8px)">
+          <div class="h-display" style="font-size:28px;color:var(--pc-cyan-light)">5+</div>
+          <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-top:4px">{% trans "AI models" %}</div>
+        </div>
+      </div>
+    </div>
+    <div class="bento-cell"><div class="bento-icon">⚡</div><div class="bento-h">{% trans "Lightning Fast" %}</div><p class="bento-p">{% trans "Lazy-load, cache, gzip — sub-second page loads." %}</p></div>
+    <div class="bento-cell"><div class="bento-icon">🌐</div><div class="bento-h">{% trans "10 Languages" %}</div><p class="bento-p">{% trans "Translate any text with built-in AI translation." %}</p></div>
+    <div class="bento-cell"><div class="bento-icon">💾</div><div class="bento-h">{% trans "Auto-Save" %}</div><p class="bento-p">{% trans "Every keystroke saved. Never lose your work." %}</p></div>
+    <div class="bento-cell cyan"><div class="bento-icon">🍌</div><div class="bento-h">{% trans "Nano Banana" %}</div><p class="bento-p">{% trans "AI image generation built right into your editor." %}</p></div>
+  </div>
+</section>
+
+<!-- ============== AI BEFORE/AFTER ============== -->
+<section class="max-w-6xl mx-auto px-6 py-24">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+    <div>
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "AI Magic" %}</div>
+      <h2 class="h-display" style="font-size:clamp(36px,5vw,56px)">
+        {% trans "Let AI" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "write it" %}</span> {% trans "for you" %}
+      </h2>
+      <p class="body-lg mt-6 mb-8">{% trans "Stuck on what to write? Pagecraft's AI improves your summaries, generates resume bullets, and auto-fills text fields with one click." %}</p>
+      <ul class="space-y-3 mb-8">
+        <li class="flex items-start gap-3"><span style="color:var(--pc-blue);font-weight:700">✓</span><span style="color:var(--pc-ink-soft)">{% trans "Improve resume content with action verbs" %}</span></li>
+        <li class="flex items-start gap-3"><span style="color:var(--pc-blue);font-weight:700">✓</span><span style="color:var(--pc-ink-soft)">{% trans "Generate professional summaries" %}</span></li>
+        <li class="flex items-start gap-3"><span style="color:var(--pc-blue);font-weight:700">✓</span><span style="color:var(--pc-ink-soft)">{% trans "Auto-fill any text field instantly" %}</span></li>
+        <li class="flex items-start gap-3"><span style="color:var(--pc-blue);font-weight:700">✓</span><span style="color:var(--pc-ink-soft)">{% trans "Works in English, Hindi & 8 more languages" %}</span></li>
+      </ul>
+      <a href="{% url 'features' %}" class="btn-bl">{% trans "Explore All Features" %} →</a>
+    </div>
+    <div style="background:var(--pc-blueprint);border:1px solid var(--pc-line);border-radius:14px;padding:36px;position:relative;overflow:hidden">
+      <div class="bg-grid absolute inset-0 opacity-50"></div>
+      <div style="position:absolute;font-family:'Instrument Serif',serif;font-style:italic;font-size:200px;color:rgba(0,82,255,.04);right:-30px;bottom:-80px;line-height:1;pointer-events:none">AI</div>
+      <div style="background:#fff;border:1px solid var(--pc-line);border-radius:12px;padding:24px;position:relative;box-shadow:0 14px 30px -16px rgba(0,82,255,.18)">
+        <div class="text-eyebrow mb-2" style="color:#94a3b8;font-size:10px">{% trans "Before" %}</div>
+        <p style="color:#64748b;font-size:14px;margin-bottom:14px;font-style:italic">"i did seo and made website faster"</p>
+        <div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--pc-blue),var(--pc-cyan));color:#fff;font-family:'Space Grotesk';font-weight:600;font-size:11px;padding:7px 14px;border-radius:8px">✦ {% trans "AI Enhance" %}</div>
+        <div style="border-top:1px dashed var(--pc-line);margin:18px 0"></div>
+        <div class="text-eyebrow mb-2" style="font-size:10px">{% trans "After" %}</div>
+        <p style="color:var(--pc-ink-soft);font-size:14px;line-height:1.6;font-family:'Space Grotesk';font-weight:500">"Spearheaded SEO strategy that increased organic traffic by <strong style="color:var(--pc-blue)">240%</strong> and reduced page load time by <strong style="color:var(--pc-blue)">55%</strong>, driving record engagement metrics."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TESTIMONIALS ============== -->
+<section class="py-28" style="background:var(--pc-bg);border-top:1px solid var(--pc-line);border-bottom:1px solid var(--pc-line)">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Testimonials" %}</div>
+      <h2 class="h-display" style="font-size:clamp(40px,5.5vw,64px)">
+        {% trans "Loved by" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "thousands" %}</span>
+      </h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="quote-card">
+        <div class="quote-stars">★★★★★</div>
+        <p class="quote-text">"{% trans "I made my entire wedding invitation card in 5 minutes. The Royal Indian template is gorgeous!" %}"</p>
+        <div class="quote-author"><div class="quote-avatar">P</div><div><div class="quote-name">Priya K.</div><div class="quote-meta">Mumbai · Bride</div></div></div>
+      </div>
+      <div class="quote-card">
+        <div class="quote-stars">★★★★★</div>
+        <p class="quote-text">"{% trans "The AI resume enhancer landed me 3 interviews in a week. Worth every second I didn't spend on Canva." %}"</p>
+        <div class="quote-author"><div class="quote-avatar">A</div><div><div class="quote-name">Aarav S.</div><div class="quote-meta">Bangalore · Engineer</div></div></div>
+      </div>
+      <div class="quote-card">
+        <div class="quote-stars">★★★★★</div>
+        <p class="quote-text">"{% trans "As a freelancer I send 20+ invoices a month. Pagecraft is now my go-to. Clean, fast, professional." %}"</p>
+        <div class="quote-author"><div class="quote-avatar">R</div><div><div class="quote-name">Rohan M.</div><div class="quote-meta">Pune · Freelancer</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FINAL CTA ============== -->
+<section class="max-w-6xl mx-auto px-6 py-24">
+  <div class="cta-final">
+    <div class="cta-symbol" style="top:30px;left:40px;font-size:120px">✦</div>
+    <div class="cta-symbol" style="bottom:30px;right:40px;font-size:140px">✶</div>
+    <div class="cta-symbol" style="top:50%;left:8%;font-size:80px">✺</div>
+    <div class="cta-symbol" style="top:30%;right:10%;font-size:90px">✦</div>
+
+    <div class="pill-blue" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff">
+      <span class="pill-tag" style="background:var(--pc-cyan);color:var(--pc-ink)">⚡ Free</span>
+      <span>{% trans "Free forever plan" %}</span>
+    </div>
+    <h2 class="h-display mt-8" style="font-size:clamp(46px,7vw,84px);color:#fff">
+      {% trans "Ready to create" %}<br>
+      <span class="h-italic" style="color:var(--pc-cyan-light)">{% trans "something beautiful?" %}</span>
+    </h2>
+    <p class="body-lg mt-6 max-w-xl mx-auto" style="color:#cbd5e1">{% trans "Join 2,000+ creators making documents that look like they cost a fortune." %}</p>
+    <div class="flex flex-wrap gap-3 justify-center mt-10">
+      <a href="#categories" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--pc-blue);padding:16px 32px;border-radius:10px;font-family:'Space Grotesk';font-weight:700;font-size:16px;box-shadow:0 12px 30px -8px rgba(0,196,204,.4)">{% trans "Start Free" %} →</a>
+      <a href="{% url 'pricing' %}" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);padding:16px 32px;border-radius:10px;font-family:'Space Grotesk';font-weight:600;font-size:16px;backdrop-filter:blur(8px)">{% trans "See Pricing" %}</a>
+    </div>
+    <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-10 text-sm" style="color:#94a3b8">
+      <div>✓ {% trans "No credit card" %}</div>
+      <div class="h-mono" style="color:#475569">·</div>
+      <div>✓ {% trans "Cancel anytime" %}</div>
+      <div class="h-mono" style="color:#475569">·</div>
+      <div>✓ {% trans "Instant access" %}</div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Recently viewed
+(async function loadRecent() {
+  try {
+    const recent = JSON.parse(localStorage.getItem('pc_recent') || '[]');
+    if (!recent.length) return;
+    const results = await Promise.all(recent.slice(0, 6).map(id =>
+      fetch('/api/templates/' + id + '/').then(x => x.ok ? x.json() : null).catch(() => null)
+    ));
+    const items = results.filter(Boolean);
+    if (!items.length) return;
+    const list = document.getElementById('recentList');
+    list.innerHTML = items.map(t => `
+      <a href="/editor/${t.id}/" class="shrink-0 w-44 group">
+        <div class="bg-slate-50 border rounded-xl p-3 hover:border-blue-400 transition" style="border-color:#E5E9F2">
+          <div class="text-xs font-semibold mb-1" style="color:#0052FF;font-family:'Space Grotesk'">${t.category}</div>
+          <div class="font-semibold text-sm truncate" style="font-family:'Space Grotesk'">${t.title}</div>
+          <div class="text-xs text-slate-500 truncate mt-1">${(t.description || '').slice(0,40)}</div>
+        </div>
+      </a>
+    `).join('');
+    document.getElementById('recentSection').classList.remove('hidden');
+  } catch (e) { console.error(e); }
+})();
+function clearRecent() {
+  localStorage.removeItem('pc_recent');
+  document.getElementById('recentSection').classList.add('hidden');
+}
+
+// Lazy iframes
+(function() {
+  const iframes = document.querySelectorAll('iframe.lazy-iframe');
+  if (!iframes.length) return;
+  if (!('IntersectionObserver' in window)) {
+    iframes.forEach(f => { f.srcdoc = f.dataset.srcdoc; f.classList.remove('opacity-0'); });
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const f = entry.target;
+        f.srcdoc = f.dataset.srcdoc;
+        f.addEventListener('load', () => {
+          f.classList.remove('opacity-0');
+          f.parentElement.querySelector('.skeleton-shimmer')?.remove();
+        }, {once: true});
+        setTimeout(() => {
+          f.classList.remove('opacity-0');
+          f.parentElement.querySelector('.skeleton-shimmer')?.remove();
+        }, 1500);
+        io.unobserve(f);
+      }
+    });
+  }, {rootMargin: '200px'});
+  iframes.forEach(f => io.observe(f));
+})();
+
+// Counters
+(function() {
+  const counters = document.querySelectorAll('.counter');
+  if (!counters.length) return;
+  const animate = (el) => {
+    const target = parseInt(el.dataset.target) || 0;
+    const suffix = el.dataset.suffix || '';
+    const duration = 1500;
+    const start = performance.now();
+    const tick = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(target * eased).toLocaleString() + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        animate(e.target);
+        io.unobserve(e.target);
+      }
+    });
+  });
+  counters.forEach(c => io.observe(c));
+})();
+
+// Onboarding
+(function onboarding() {
+  if (localStorage.getItem('pc_seen_welcome')) return;
+  setTimeout(() => {
+    PC.toast('👋 Welcome to Pagecraft! Press ? in any editor to see shortcuts.', 'success');
+    localStorage.setItem('pc_seen_welcome', '1');
+  }, 1500);
+})();
+</script>
+{% endblock %}

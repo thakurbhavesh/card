@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "FAQ" %} — Pagecraft{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-6 py-20">
+  <div class="text-center mb-12">
+    <div class="inline-block text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-3">{% trans "FAQ" %}</div>
+    <h1 class="text-5xl font-extrabold mb-4">{% trans "Frequently Asked" %}</h1>
+    <p class="text-xl text-slate-600">{% trans "Quick answers to common questions" %}</p>
+  </div>
+
+  <div class="space-y-4">
+    {% for q, a in faqs %}
+    <details class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 group">
+      <summary class="flex items-center justify-between font-bold text-lg">
+        <span>{{ q }}</span>
+        <span class="text-2xl text-indigo-500 group-open:rotate-45 transition-transform">+</span>
+      </summary>
+      <p class="mt-4 text-slate-600 leading-relaxed">{{ a }}</p>
+    </details>
+    {% endfor %}
+  </div>
+
+  <div class="mt-16 text-center bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-10 text-white">
+    <h2 class="text-2xl font-bold mb-3">{% trans "Still have questions?" %}</h2>
+    <p class="opacity-90 mb-5">{% trans "We're here to help." %}</p>
+    <a href="{% url 'contact' %}" class="inline-block bg-white text-indigo-600 px-8 py-3 rounded-xl font-bold hover:scale-105 transition">{% trans "Contact Us" %}</a>
+  </div>
+</section>
+{% endblock %}

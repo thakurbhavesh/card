@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}✅ Payment Success — Pagecraft{% endblock %}
+
+{% block content %}
+<section class="max-w-2xl mx-auto px-6 py-20 text-center">
+  <div class="bg-white rounded-3xl p-12 shadow-2xl border border-slate-100">
+    <div class="w-24 h-24 mx-auto bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-5xl mb-6 shadow-2xl" style="animation:pc-pop .6s cubic-bezier(.34,1.56,.64,1)">✓</div>
+    <h1 class="text-4xl font-extrabold mb-3">{% trans "Payment Successful!" %}</h1>
+    <p class="text-slate-600 text-lg mb-8">{% trans "Your" %} <strong>Pagecraft {{ plan.name }}</strong> {% trans "subscription is now active." %} 🎉</p>
+
+    <div class="bg-slate-50 rounded-2xl p-6 text-left mb-8 border border-slate-100">
+      <div class="grid grid-cols-2 gap-y-3 text-sm">
+        <div class="text-slate-500">{% trans "Invoice ID" %}</div>
+        <div class="font-mono font-bold text-right">{{ invoice_id }}</div>
+        <div class="text-slate-500">{% trans "Plan" %}</div>
+        <div class="font-bold text-right">{{ plan.name }}</div>
+        <div class="text-slate-500">{% trans "Amount Paid" %}</div>
+        <div class="font-bold text-right text-green-600">₹{{ plan.price }}</div>
+        <div class="text-slate-500">{% trans "Payment Method" %}</div>
+        <div class="text-right">💳 •••• {{ card_last4 }}</div>
+        <div class="text-slate-500">{% trans "Status" %}</div>
+        <div class="text-right"><span class="bg-green-100 text-green-700 px-2 py-1 rounded font-semibold text-xs">PAID</span></div>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-3 justify-center">
+      <a href="{% url 'home' %}#categories" class="btn-primary">🚀 {% trans "Start Creating" %}</a>
+      <a href="{% url 'documents' %}" class="btn-secondary">📁 {% trans "My Documents" %}</a>
+    </div>
+
+    <p class="text-xs text-slate-400 mt-8">{% trans "A receipt has been sent to your email. Need help?" %} <a href="{% url 'contact' %}" class="text-indigo-600">{% trans "Contact us" %}</a></p>
+  </div>
+</section>
+
+<script>
+// Confetti celebration on payment success!
+window.addEventListener('load', () => {
+  setTimeout(() => PC.confetti(120), 200);
+  PC.toast('Welcome to Pagecraft Pro! 🎉', 'success');
+});
+</script>
+{% endblock %}

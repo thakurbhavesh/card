@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}Create your free account — Pagecraft{% endblock %}
+{% block description %}Join 2,000+ creators using Pagecraft. 496+ free templates, AI-powered, no credit card needed.{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --pc-blue:#0052FF;--pc-blue-dark:#0040CC;--pc-blue-deep:#001A66;
+    --pc-cyan:#00C4CC;--pc-cyan-light:#7DF9FF;
+    --pc-ink:#0A0E27;--pc-ink-soft:#1E293B;
+    --pc-line:#E5E9F2;--pc-line-soft:#F1F5F9;
+    --pc-bg:#FAFBFF;
+  }
+  .h-display{font-family:'Space Grotesk',Inter,sans-serif;letter-spacing:-0.035em;font-weight:700;line-height:.95;color:var(--pc-ink)}
+  .h-italic{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400}
+  .signup-wrap{display:grid;grid-template-columns:1.05fr 1.4fr;min-height:calc(100vh - 80px);background:var(--pc-bg)}
+  .signup-left{background:linear-gradient(160deg,var(--pc-blue) 0%,var(--pc-blue-dark) 50%,var(--pc-blue-deep) 100%);color:#fff;padding:60px 50px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+  .signup-left::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.07) 1.5px,transparent 1.5px);background-size:30px 30px;pointer-events:none}
+  .signup-left::after{content:'✦';position:absolute;font-family:'Instrument Serif',serif;font-style:italic;font-size:480px;line-height:.7;right:-100px;bottom:-180px;color:rgba(255,255,255,.05);pointer-events:none}
+  .signup-left > *{position:relative;z-index:1}
+  .signup-right{padding:50px 60px;display:flex;flex-direction:column;justify-content:center;background:#fff}
+
+  .fld{margin-bottom:14px}
+  .fld label{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-bottom:6px}
+  .fld input[type=text],.fld input[type=email],.fld input[type=tel],.fld input[type=password],.fld select{width:100%;padding:12px 14px;border:1px solid var(--pc-line);border-radius:10px;font-size:14px;font-family:Inter,sans-serif;background:#fff;color:var(--pc-ink);transition:all .2s;box-sizing:border-box}
+  .fld input:focus,.fld select:focus{outline:none;border-color:var(--pc-blue);box-shadow:0 0 0 3px rgba(0,82,255,.12)}
+  .fld input::placeholder{color:#cbd5e1}
+  .fld .errors{color:#dc2626;font-size:12px;margin-top:5px;font-family:'Space Grotesk',sans-serif}
+  .fld .help{color:#94a3b8;font-size:11px;margin-top:5px}
+  .fld-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .fld .req::after{content:' *';color:#dc2626}
+
+  .check-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:13px;color:#475569;line-height:1.5}
+  .check-row input{margin-top:2px;width:16px;height:16px;accent-color:var(--pc-blue);flex-shrink:0}
+  .check-row a{color:var(--pc-blue);font-weight:600;text-decoration:none}
+  .check-row a:hover{text-decoration:underline}
+
+  .btn-bl{display:inline-flex;justify-content:center;align-items:center;gap:8px;width:100%;background:var(--pc-blue);color:#fff;font-weight:700;padding:15px;border-radius:10px;font-size:15px;border:1px solid var(--pc-blue);box-shadow:0 2px 0 var(--pc-blue-dark),0 8px 20px rgba(0,82,255,.25);font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:all .2s}
+  .btn-bl:hover{transform:translateY(-1px);background:var(--pc-blue-dark)}
+
+  .form-section{border-top:1px dashed var(--pc-line);padding-top:18px;margin-top:18px}
+  .form-section .stitle{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--pc-blue);margin-bottom:14px}
+
+  .perk{display:flex;align-items:flex-start;gap:14px;margin:18px 0}
+  .perk .ic{width:44px;height:44px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;backdrop-filter:blur(8px)}
+  .perk h4{margin:0;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:#fff}
+  .perk p{margin:2px 0 0;font-size:13px;color:rgba(255,255,255,.75);line-height:1.45}
+
+  /* Password strength meter */
+  .pw-meter{height:4px;background:#e5e9f2;border-radius:3px;overflow:hidden;margin-top:6px}
+  .pw-meter-bar{height:100%;width:0;transition:width .3s,background .3s;background:#e5e9f2}
+  .pw-hint{font-size:11px;color:#94a3b8;margin-top:5px;font-family:'Space Grotesk',sans-serif}
+
+  @media (max-width:1024px){
+    .signup-wrap{grid-template-columns:1fr}
+    .signup-left{display:none}
+    .signup-right{padding:40px 24px}
+  }
+</style>
+
+<div class="signup-wrap">
+  <!-- LEFT: Marketing panel -->
+  <div class="signup-left">
+    <div style="font-family:'Instrument Serif',serif;font-style:italic;font-size:36px;font-weight:700;margin-bottom:30px">✦ Pagecraft</div>
+    <h1 class="h-display" style="font-size:46px;color:#fff">
+      {% trans "Join" %} <span class="h-italic" style="color:var(--pc-cyan-light)">2,000+ creators</span><br>
+      {% trans "designing in minutes" %}
+    </h1>
+    <p style="font-size:16px;color:rgba(255,255,255,.85);line-height:1.6;margin-top:18px;max-width:400px">
+      {% trans "Free forever. No credit card. Start creating beautiful documents in 30 seconds." %}
+    </p>
+
+    <div style="margin-top:40px">
+      <div class="perk">
+        <div class="ic">📚</div>
+        <div><h4>{% trans "496+ premium templates" %}</h4><p>{% trans "All 13 categories. Hand-crafted. Indian wedding & festival included." %}</p></div>
+      </div>
+      <div class="perk">
+        <div class="ic">🤖</div>
+        <div><h4>{% trans "AI superpowers" %}</h4><p>{% trans "Text enhance, image gen, surprise me, translation — all built in." %}</p></div>
+      </div>
+      <div class="perk">
+        <div class="ic">📥</div>
+        <div><h4>{% trans "PDF · PNG · JPG · GIF" %}</h4><p>{% trans "Export to anything. Share via WhatsApp. Print-ready." %}</p></div>
+      </div>
+      <div class="perk">
+        <div class="ic">🌐</div>
+        <div><h4>{% trans "10 languages" %}</h4><p>{% trans "Auto-translate any field with one click. Hindi UI auto-suggested." %}</p></div>
+      </div>
+    </div>
+
+    <div style="margin-top:40px;padding-top:24px;border-top:1px solid rgba(255,255,255,.15);font-size:13px;color:rgba(255,255,255,.7);font-family:'Space Grotesk',sans-serif">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="color:var(--pc-cyan-light);letter-spacing:2px">★★★★★</span> <strong style="color:#fff">4.9</strong> · 2,000+ reviews</div>
+      <div>"{% trans "Made my entire wedding card in 5 minutes. Gorgeous!" %}" — Priya K., Mumbai</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Form -->
+  <div class="signup-right">
+    <div style="max-width:540px;width:100%;margin:0 auto">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--pc-blue);margin-bottom:8px">
+        <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--pc-cyan);margin-right:8px;vertical-align:middle"></span>{% trans "Sign Up" %}
+      </div>
+      <h2 class="h-display" style="font-size:38px;margin-bottom:6px">{% trans "Create your" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "free account" %}</span></h2>
+      <p style="color:#64748b;font-size:14px;margin-bottom:24px">{% trans "Already have one?" %} <a href="{% url 'login' %}" style="color:var(--pc-blue);font-weight:600;text-decoration:none">{% trans "Sign in" %} →</a></p>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px 14px;border-radius:10px;font-size:13px;margin-bottom:14px;font-family:'Space Grotesk',sans-serif">
+          {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <!-- Identity -->
+        <div class="fld-row">
+          <div class="fld">
+            <label class="req">{% trans "Full name" %}</label>
+            {{ form.full_name }}
+            {% if form.full_name.errors %}<div class="errors">{{ form.full_name.errors|first }}</div>{% endif %}
+          </div>
+          <div class="fld">
+            <label class="req">{% trans "Username" %}</label>
+            {{ form.username }}
+            {% if form.username.errors %}<div class="errors">{{ form.username.errors|first }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="fld">
+          <label class="req">{% trans "Email address" %}</label>
+          {{ form.email }}
+          {% if form.email.errors %}<div class="errors">{{ form.email.errors|first }}</div>{% endif %}
+        </div>
+
+        <div class="fld-row">
+          <div class="fld">
+            <label class="req">{% trans "Password" %}</label>
+            {{ form.password1 }}
+            <div class="pw-meter"><div class="pw-meter-bar" id="pwBar"></div></div>
+            <div class="pw-hint" id="pwHint">{% trans "Use 8+ characters with letters, numbers and symbols" %}</div>
+            {% if form.password1.errors %}<div class="errors">{{ form.password1.errors|first }}</div>{% endif %}
+          </div>
+          <div class="fld">
+            <label class="req">{% trans "Confirm password" %}</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}<div class="errors">{{ form.password2.errors|first }}</div>{% endif %}
+          </div>
+        </div>
+
+        <!-- Profile details -->
+        <div class="form-section">
+          <div class="stitle">{% trans "Tell us a bit about yourself (optional)" %}</div>
+
+          <div class="fld-row">
+            <div class="fld">
+              <label>{% trans "Phone number" %}</label>
+              {{ form.phone }}
+            </div>
+            <div class="fld">
+              <label>{% trans "City" %}</label>
+              {{ form.city }}
+            </div>
+          </div>
+
+          <div class="fld-row">
+            <div class="fld">
+              <label>{% trans "Country" %}</label>
+              {{ form.country }}
+            </div>
+            <div class="fld">
+              <label>{% trans "Profession" %}</label>
+              {{ form.profession }}
+            </div>
+          </div>
+
+          <div class="fld">
+            <label>{{ form.use_case.label }}</label>
+            {{ form.use_case }}
+          </div>
+
+          <div class="fld">
+            <label>{{ form.referral_source.label }}</label>
+            {{ form.referral_source }}
+          </div>
+        </div>
+
+        <!-- Consent -->
+        <div class="form-section">
+          <label class="check-row">
+            {{ form.newsletter_opt_in }}
+            <span>{{ form.newsletter_opt_in.label }} <span style="color:#94a3b8">— {% trans "weekly tips, new templates, no spam" %}</span></span>
+          </label>
+          <label class="check-row">
+            {{ form.marketing_opt_in }}
+            <span>{{ form.marketing_opt_in.label }}</span>
+          </label>
+          <label class="check-row" style="margin-top:6px">
+            {{ form.terms_accept }}
+            <span>{% trans "I agree to the" %} <a href="#">{% trans "Terms" %}</a> {% trans "and" %} <a href="#">{% trans "Privacy Policy" %}</a></span>
+          </label>
+          {% if form.terms_accept.errors %}<div class="errors">{{ form.terms_accept.errors|first }}</div>{% endif %}
+        </div>
+
+        <button type="submit" class="btn-bl" style="margin-top:20px">
+          {% trans "Create free account" %} →
+        </button>
+
+        <div style="text-align:center;margin-top:14px;font-size:12px;color:#94a3b8;font-family:'Space Grotesk',sans-serif">
+          ✓ {% trans "No credit card" %} &nbsp;·&nbsp; ✓ {% trans "Free forever" %} &nbsp;·&nbsp; ✓ {% trans "Cancel anytime" %}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+// Password strength meter
+(function() {
+  const pw = document.querySelector('input[name=password1]');
+  if (!pw) return;
+  const bar = document.getElementById('pwBar');
+  const hint = document.getElementById('pwHint');
+  const colors = ['#ef4444', '#f59e0b', '#eab308', '#10b981', '#0052FF'];
+  const labels = ['Very weak', 'Weak', 'Fair', 'Good', 'Strong'];
+  pw.addEventListener('input', () => {
+    const v = pw.value;
+    let score = 0;
+    if (v.length >= 8) score++;
+    if (/[A-Z]/.test(v) && /[a-z]/.test(v)) score++;
+    if (/\d/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+    if (v.length >= 12) score++;
+    score = Math.min(score, 5);
+    bar.style.width = (score * 20) + '%';
+    bar.style.background = colors[Math.max(0, score - 1)] || '#e5e9f2';
+    hint.textContent = v ? labels[score - 1] || 'Very weak' : 'Use 8+ characters with letters, numbers and symbols';
+  });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,1162 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" id="htmlRoot">
+<head>
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#6366f1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>{% block title %}Pagecraft — AI-Powered Document Generator | 496+ Free Templates{% endblock %}</title>
+<meta name="description" content="{% block description %}Create stunning resumes, invoices, business cards, social posts and wedding invitations in minutes — powered by AI. 496+ premium templates, free forever.{% endblock %}">
+<meta name="keywords" content="{% block keywords %}resume builder, invoice generator, wedding invitation, AI templates, business card maker, free templates, indian wedding card, diwali greeting, festival card, Pagecraft{% endblock %}">
+<meta name="author" content="Pagecraft">
+<link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri|cut:'?' }}{% endblock %}">
+<!-- Open Graph -->
+<meta property="og:type" content="{% block og_type %}website{% endblock %}">
+<meta property="og:title" content="{% block og_title %}Pagecraft — AI Document Generator{% endblock %}">
+<meta property="og:description" content="{% block og_description %}Create stunning resumes, invoices, wedding cards & more in minutes. 496+ free premium templates with AI.{% endblock %}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:site_name" content="Pagecraft">
+<meta property="og:image" content="{% block og_image %}https://via.placeholder.com/1200x630/0052ff/ffffff?text=Pagecraft{% endblock %}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="{{ LANGUAGE_CODE|default:'en' }}_US">
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{% block twitter_title %}Pagecraft — AI Document Generator{% endblock %}">
+<meta name="twitter:description" content="{% block twitter_description %}496+ premium templates. AI-powered. Free forever.{% endblock %}">
+<meta name="twitter:image" content="{% block twitter_image %}https://via.placeholder.com/1200x630/0052ff/ffffff?text=Pagecraft{% endblock %}">
+{% block extra_head %}{% endblock %}
+{% block schema_jsonld %}{% endblock %}
+<!-- Performance hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://cdn.tailwindcss.com">
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  html{scroll-behavior:smooth}
+  :root{--bg:#fafafa;--bg-card:#fff;--text:#0f172a;--text-soft:#64748b;--border:#e2e8f0;--bg-soft:#f1f5f9}
+  html.dark{--bg:#0f172a;--bg-card:#1e293b;--text:#f1f5f9;--text-soft:#94a3b8;--border:#334155;--bg-soft:#1e293b}
+  html.dark body{background:var(--bg)!important;color:var(--text)!important}
+  html.dark .bg-white{background:var(--bg-card)!important}
+  html.dark .text-slate-700,html.dark .text-slate-800,html.dark .text-slate-900{color:var(--text)!important}
+  html.dark .text-slate-500,html.dark .text-slate-600,html.dark .text-slate-400{color:var(--text-soft)!important}
+  html.dark .border-slate-100,html.dark .border-slate-200{border-color:var(--border)!important}
+  html.dark .bg-slate-50,html.dark .bg-slate-100{background:var(--bg-soft)!important}
+  html.dark .glass{background:rgba(15,23,42,.7)!important}
+  html.dark nav{border-color:var(--border)!important}
+  body{font-family:'Inter',-apple-system,sans-serif;background:#fafafa;color:#0f172a;transition:background .3s,color .3s}
+  .gradient-text{background:linear-gradient(135deg,#6366f1 0%,#a855f7 50%,#ec4899 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .gradient-bg{background:linear-gradient(135deg,#6366f1 0%,#a855f7 50%,#ec4899 100%)}
+  .glass{background:rgba(255,255,255,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+  .card-hover{transition:all .3s cubic-bezier(.4,0,.2,1)}
+  .card-hover:hover{transform:translateY(-8px);box-shadow:0 30px 60px -15px rgba(99,102,241,.25)}
+  .ai-btn{background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(245,87,108,.3)}
+  .ai-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(245,87,108,.4)}
+  .ai-btn:disabled{opacity:.6;cursor:wait}
+  /* Template badges (reusable across cards) */
+  .tpl-badges{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:4px;z-index:6;pointer-events:none}
+  .tpl-badges .tb{font-family:'Space Grotesk','Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:4px;color:#fff;line-height:1;display:inline-flex;align-items:center;gap:3px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+  .tb-new{background:#10b981}
+  .tb-hot{background:#ef4444}
+  .tb-trending{background:#f59e0b}
+  .tb-premium{background:linear-gradient(135deg,#f59e0b,#dc2626);color:#fff}
+  .tb-animated{background:#8b5cf6}
+  .tb-indian{background:#ea580c}
+  .tb-free{background:#0052FF}
+  .tb-pick{background:#0a0a0a;color:#fbbf24}
+  .btn-primary{background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;padding:12px 28px;border-radius:12px;font-weight:600;display:inline-block;transition:all .25s;box-shadow:0 10px 30px -10px rgba(99,102,241,.5)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 15px 40px -10px rgba(99,102,241,.6)}
+  .btn-secondary{background:#fff;color:#6366f1;padding:12px 28px;border-radius:12px;font-weight:600;display:inline-block;border:2px solid #e0e7ff;transition:all .25s}
+  .btn-secondary:hover{border-color:#6366f1;background:#f5f3ff}
+  /* preview thumbnail */
+  .preview-frame{width:100%;height:240px;overflow:hidden;background:#f8fafc;position:relative;border-radius:16px 16px 0 0}
+  .preview-frame iframe{width:840px;height:680px;border:none;transform:scale(0.34);transform-origin:top left;position:absolute;top:0;left:0;pointer-events:none;background:#fff}
+  .preview-frame.center iframe{left:50%;margin-left:-143px}
+  /* Landscape categories (certificate, ticket) — wider iframe, smaller scale, centered */
+  .preview-frame.landscape iframe{width:1100px;height:780px;transform:scale(0.26);left:50%;margin-left:-143px}
+
+  /* Skeleton shimmer for lazy-loading previews */
+  .skeleton-shimmer{background:linear-gradient(90deg,#f1f5f9 0%,#e2e8f0 50%,#f1f5f9 100%);background-size:200% 100%;animation:pc-shimmer 1.4s ease-in-out infinite;z-index:1}
+  @keyframes pc-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  html.dark .skeleton-shimmer{background:linear-gradient(90deg,#1e293b 0%,#334155 50%,#1e293b 100%);background-size:200% 100%}
+  /* nav */
+  .nav-link{color:#64748b;font-weight:500;font-size:14px;transition:color .2s;position:relative;line-height:1}
+  @media(min-width:1280px){.nav-link{font-size:15px}}
+  .nav-link:hover{color:#6366f1}
+  .nav-link.active{color:#6366f1}
+  .nav-link.active::after{content:'';position:absolute;bottom:-22px;left:0;right:0;height:3px;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:3px}
+  details>summary{list-style:none;cursor:pointer}
+  details>summary::-webkit-details-marker{display:none}
+  .float-anim{animation:float 6s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+  /* ========== PAGECRAFT GLOBAL LOADER ========== */
+  .pc-loader-overlay{
+    position:fixed;inset:0;background:rgba(15,23,42,.55);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    display:none;align-items:center;justify-content:center;z-index:99999;
+    animation:pc-fade .25s ease}
+  .pc-loader-overlay.show{display:flex}
+  @keyframes pc-fade{from{opacity:0}to{opacity:1}}
+  .pc-loader-card{
+    background:#fff;padding:36px 44px;border-radius:24px;
+    box-shadow:0 40px 100px rgba(0,0,0,.4);text-align:center;
+    min-width:300px;max-width:90vw;
+    animation:pc-pop .35s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes pc-pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+  .pc-spinner-wrap{position:relative;width:80px;height:80px;margin:0 auto 18px}
+  .pc-spinner-ring{
+    position:absolute;inset:0;border-radius:50%;
+    border:4px solid transparent;
+    border-top-color:#6366f1;border-right-color:#a855f7;
+    animation:pc-spin 1.2s cubic-bezier(.5,.15,.5,.85) infinite}
+  .pc-spinner-ring:nth-child(2){
+    inset:8px;border-top-color:#ec4899;border-right-color:#f97316;
+    animation-direction:reverse;animation-duration:1.6s}
+  .pc-spinner-ring:nth-child(3){
+    inset:18px;border-top-color:#fbbf24;border-right-color:#10b981;
+    animation-duration:.9s}
+  .pc-spinner-core{
+    position:absolute;inset:28px;border-radius:50%;
+    background:linear-gradient(135deg,#6366f1,#a855f7,#ec4899);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:18px;font-weight:bold;
+    animation:pc-pulse 1.5s ease-in-out infinite}
+  @keyframes pc-spin{to{transform:rotate(360deg)}}
+  @keyframes pc-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+  .pc-loader-text{font-weight:700;font-size:16px;color:#0f172a;margin-bottom:4px}
+  .pc-loader-sub{font-size:12px;color:#64748b;min-height:16px}
+  .pc-loader-progress{
+    width:100%;height:3px;background:#e5e7eb;border-radius:2px;
+    overflow:hidden;margin-top:14px;display:none}
+  .pc-loader-progress.show{display:block}
+  .pc-loader-progress-bar{
+    height:100%;width:30%;
+    background:linear-gradient(90deg,#6366f1,#a855f7,#ec4899);
+    border-radius:2px;animation:pc-progress 1.4s ease-in-out infinite}
+  @keyframes pc-progress{0%{transform:translateX(-100%);width:30%}50%{width:60%}100%{transform:translateX(400%);width:30%}}
+
+  /* Inline button spinner */
+  .pc-btn-spinner{
+    display:inline-block;width:14px;height:14px;border:2px solid currentColor;
+    border-right-color:transparent;border-radius:50%;
+    animation:pc-spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+
+  /* Toast notification */
+  .pc-toast{
+    position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(120%);
+    background:#0f172a;color:#fff;padding:14px 24px;border-radius:14px;
+    box-shadow:0 20px 60px rgba(0,0,0,.4);z-index:99998;
+    font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);max-width:90vw}
+  .pc-toast.show{transform:translateX(-50%) translateY(0)}
+  .pc-toast.success{background:linear-gradient(135deg,#10b981,#059669)}
+  .pc-toast.error{background:linear-gradient(135deg,#ef4444,#dc2626)}
+  .pc-toast.warning{background:linear-gradient(135deg,#f59e0b,#d97706)}
+
+  /* Top loading progress bar */
+  .pc-progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#6366f1,#a855f7,#ec4899);width:0%;z-index:99999;transition:width .3s ease,opacity .3s ease;box-shadow:0 0 10px rgba(168,85,247,.6)}
+  .pc-progress-bar.done{width:100%;opacity:0}
+
+  /* Tooltips — only show on direct hover with delay */
+  [data-tip]{position:relative}
+  [data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:5px 9px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;pointer-events:none;z-index:9999;animation:tipIn .2s ease .4s both;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+  [data-tip]:hover::before{content:'';position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#0f172a;pointer-events:none;z-index:9999;animation:tipIn .2s ease .4s both}
+  @keyframes tipIn{from{opacity:0;transform:translateX(-50%) translateY(4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+  /* Disable tooltips on touch/mobile to avoid sticky tooltips */
+  @media (hover:none){[data-tip]:hover::after,[data-tip]:hover::before{display:none}}
+
+  /* Confetti */
+  .pc-confetti{position:fixed;width:10px;height:10px;pointer-events:none;z-index:99999;animation:confettiFall 3s ease-out forwards}
+  @keyframes confettiFall{0%{transform:translateY(-20vh) rotate(0)}100%{transform:translateY(120vh) rotate(720deg);opacity:0}}
+
+  /* Better dark mode coverage */
+  html.dark .gradient-text{filter:brightness(1.2)}
+  html.dark .preview-frame{background:#1e293b}
+  html.dark .pc-loader-card{background:#1e293b;color:#f1f5f9}
+  html.dark .pc-loader-text{color:#f1f5f9}
+  html.dark input,html.dark textarea,html.dark select{background:#1e293b!important;color:#f1f5f9!important;border-color:#334155!important}
+  html.dark .btn-secondary{background:#1e293b;color:#a5b4fc;border-color:#334155}
+  html.dark code{background:#1e293b!important;color:#a5b4fc!important}
+  html.dark .ai-btn{box-shadow:0 4px 12px rgba(245,87,108,.5)}
+  html.dark footer{background:#020617!important}
+
+  /* Mobile sticky action bar */
+  .pc-mobile-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:10px 14px;display:none;gap:8px;z-index:50;box-shadow:0 -10px 30px rgba(0,0,0,.08)}
+  html.dark .pc-mobile-bar{background:#0f172a;border-color:#334155}
+  @media(max-width:1023px){.pc-mobile-bar.show{display:flex}.has-mobile-bar{padding-bottom:80px}}
+  .pc-mobile-bar button,.pc-mobile-bar a{flex:1;padding:10px;border-radius:10px;font-size:12px;font-weight:700;text-align:center;background:#f1f5f9;color:#0f172a;border:none;cursor:pointer}
+  .pc-mobile-bar .primary{background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff}
+
+  /* Smooth focus rings for accessibility */
+  *:focus-visible{outline:2px solid #6366f1;outline-offset:2px;border-radius:4px}
+
+  /* ========== PRINT STYLES ========== */
+  @media print {
+    nav, footer, .pc-mobile-bar, .pc-progress-bar, .pc-toast, #pcLoader,
+    #cookieBanner, #installPrompt, #cmdK, .help-bubble, #backToTop,
+    .pc-loader-overlay, [data-tip]::after, [data-tip]::before,
+    .lg\\:col-span-1, form, button, .skeleton-shimmer, .preview-frame,
+    #toolPanel, #shareModal, #imgModal, #kbModal {
+      display: none !important;
+    }
+    body { background: #fff !important; color: #000 !important; padding: 0 !important; margin: 0 !important; }
+    main, section { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+    #preview { transform: none !important; filter: none !important; }
+    #previewWrap, #previewCard { background: #fff !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+    .gradient-text { color: #000 !important; -webkit-text-fill-color: #000 !important; }
+    a { color: #000 !important; text-decoration: none !important; }
+    @page { margin: 1cm; }
+  }
+
+  /* Animated mesh gradient background */
+  .mesh-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1}
+  .mesh-bg::before,.mesh-bg::after{content:'';position:absolute;width:600px;height:600px;border-radius:50%;filter:blur(80px);opacity:.4;animation:meshFloat 15s ease-in-out infinite}
+  .mesh-bg::before{background:radial-gradient(#a78bfa,#c084fc);top:-200px;left:-100px}
+  .mesh-bg::after{background:radial-gradient(#f0abfc,#fb7185);bottom:-200px;right:-100px;animation-delay:-7s}
+  @keyframes meshFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(50px,-30px) scale(1.05)}66%{transform:translate(-30px,40px) scale(.95)}}
+
+  /* Grid pattern background */
+  .grid-bg{background-image:linear-gradient(rgba(99,102,241,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.07) 1px,transparent 1px);background-size:40px 40px}
+  html.dark .grid-bg{background-image:linear-gradient(rgba(165,180,252,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(165,180,252,.05) 1px,transparent 1px)}
+
+  /* Bento card */
+  .bento{background:#fff;border:1px solid #e2e8f0;border-radius:24px;padding:28px;transition:all .3s;position:relative;overflow:hidden}
+  .bento:hover{border-color:#a5b4fc;box-shadow:0 30px 60px -15px rgba(99,102,241,.2);transform:translateY(-4px)}
+  html.dark .bento{background:#1e293b;border-color:#334155}
+  html.dark .bento:hover{border-color:#6366f1}
+
+  /* Achievement badge */
+  .pc-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;box-shadow:0 4px 12px rgba(251,191,36,.4)}
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+<!-- ========== NAVBAR ========== -->
+<nav class="glass sticky top-0 z-50 border-b border-slate-200/60">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3 lg:gap-4 flex-nowrap">
+    <!-- Logo -->
+    <a href="{% url 'home' %}" class="flex items-center gap-2 text-xl sm:text-2xl font-extrabold gradient-text shrink-0 whitespace-nowrap">
+      <span class="text-2xl sm:text-3xl float-anim inline-block">✦</span> Pagecraft
+    </a>
+
+    <!-- Desktop nav links (lg+) -->
+    <div class="hidden lg:flex items-center gap-4 xl:gap-5 ml-4 shrink-0">
+      <a href="{% url 'home' %}" class="nav-link whitespace-nowrap {% if request.resolver_match.url_name == 'home' %}active{% endif %}">{% trans "Home" %}</a>
+      <div class="relative" onmouseenter="document.getElementById('megaMenu').classList.remove('hidden')" onmouseleave="document.getElementById('megaMenu').classList.add('hidden')">
+        <a href="{% url 'all_templates' %}" class="nav-link whitespace-nowrap flex items-center gap-1 {% if request.resolver_match.url_name == 'all_templates' or request.resolver_match.url_name == 'category' %}active{% endif %}">{% trans "Templates" %} <span class="text-xs">▾</span></a>
+        <div id="megaMenu" class="hidden absolute left-1/2 top-full mt-2 -translate-x-1/2 w-[640px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 z-50">
+          <div class="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-3">{% trans "Browse by category" %}</div>
+          <div class="grid grid-cols-3 gap-2">
+            <a href="{% url 'category' 'resume' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">📄</span><div><div class="font-bold text-sm">Resumes</div><div class="text-[10px] text-slate-500">CV templates</div></div></a>
+            <a href="{% url 'category' 'cover_letter' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">✉️</span><div><div class="font-bold text-sm">Cover Letters</div><div class="text-[10px] text-slate-500">Job apps</div></div></a>
+            <a href="{% url 'category' 'invoice' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">🧾</span><div><div class="font-bold text-sm">Invoices</div><div class="text-[10px] text-slate-500">Bill clients</div></div></a>
+            <a href="{% url 'category' 'card' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">💳</span><div><div class="font-bold text-sm">Visiting Cards</div><div class="text-[10px] text-slate-500">Business cards</div></div></a>
+            <a href="{% url 'category' 'wedding' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">💍</span><div><div class="font-bold text-sm">Wedding</div><div class="text-[10px] text-slate-500">43 invites</div></div></a>
+            <a href="{% url 'category' 'birthday' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">🎂</span><div><div class="font-bold text-sm">Birthday</div><div class="text-[10px] text-slate-500">Party invites</div></div></a>
+            <a href="{% url 'category' 'festival' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">🪔</span><div><div class="font-bold text-sm">Festival Cards</div><div class="text-[10px] text-slate-500">Diwali, Holi+</div></div></a>
+            <a href="{% url 'category' 'certificate' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">🏆</span><div><div class="font-bold text-sm">Certificates</div><div class="text-[10px] text-slate-500">Awards</div></div></a>
+            <a href="{% url 'category' 'social' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">📱</span><div><div class="font-bold text-sm">Social Posts</div><div class="text-[10px] text-slate-500">Instagram</div></div></a>
+            <a href="{% url 'category' 'flyer' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">📋</span><div><div class="font-bold text-sm">Flyers</div><div class="text-[10px] text-slate-500">Posters</div></div></a>
+            <a href="{% url 'category' 'menu' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">🍽</span><div><div class="font-bold text-sm">Menu Cards</div><div class="text-[10px] text-slate-500">Restaurants</div></div></a>
+            <a href="{% url 'category' 'ticket' %}" class="flex items-center gap-2 p-3 rounded-xl hover:bg-indigo-50 transition"><span class="text-2xl">🎫</span><div><div class="font-bold text-sm">Tickets</div><div class="text-[10px] text-slate-500">Events</div></div></a>
+          </div>
+          <div class="border-t border-slate-100 mt-4 pt-3 flex items-center justify-between">
+            <a href="{% url 'all_templates' %}" class="text-indigo-600 font-bold text-sm hover:underline">{% trans "View all 496+ templates" %} →</a>
+          </div>
+        </div>
+      </div>
+      <a href="{% url 'features' %}" class="nav-link whitespace-nowrap hidden xl:inline {% if request.resolver_match.url_name == 'features' %}active{% endif %}">{% trans "Features" %}</a>
+      <a href="{% url 'pricing' %}" class="nav-link whitespace-nowrap {% if request.resolver_match.url_name == 'pricing' %}active{% endif %}">{% trans "Pricing" %}</a>
+      <a href="{% url 'compare' %}" class="nav-link whitespace-nowrap hidden xl:inline {% if request.resolver_match.url_name == 'compare' %}active{% endif %}">{% trans "Compare" %}</a>
+    </div>
+
+    <!-- Spacer -->
+    <div class="flex-1 min-w-0"></div>
+
+    <!-- Command palette trigger (replaces search box) -->
+    <button type="button" onclick="openCmdK()" data-tip="Search (Ctrl+K)" class="hidden md:flex items-center gap-2 px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 hover:bg-white hover:border-indigo-400 transition shrink-0 w-36 lg:w-48 xl:w-56">
+      <span class="text-slate-400">🔍</span>
+      <span class="text-slate-400 flex-1 text-left">Search...</span>
+      <kbd class="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-mono text-slate-500 hidden lg:inline">Ctrl K</kbd>
+    </button>
+
+    {% if user.is_authenticated %}
+    <!-- Logged-in only quick icons -->
+    <a href="{% url 'documents' %}" data-tip="My Documents" class="hidden md:flex items-center justify-center w-9 h-9 rounded-xl text-base text-slate-600 hover:bg-slate-100 transition shrink-0">📁</a>
+    <a href="{% url 'analytics' %}" data-tip="Analytics" class="hidden md:flex items-center justify-center w-9 h-9 rounded-xl text-base text-slate-600 hover:bg-slate-100 transition shrink-0">📊</a>
+    {% endif %}
+
+    <!-- Dark mode toggle (always available, smaller) -->
+    <button type="button" onclick="toggleDarkMode()" data-tip="Toggle theme" class="hidden md:flex items-center justify-center w-9 h-9 rounded-xl text-base text-slate-600 hover:bg-slate-100 transition shrink-0">
+      <span id="darkIcon">🌙</span>
+    </button>
+
+    <!-- Language switcher (compact) -->
+    <form action="{% url 'set_language' %}" method="post" class="hidden md:inline shrink-0">
+      {% csrf_token %}
+      <input name="next" type="hidden" value="{{ request.path }}">
+      <select name="language" onchange="this.form.submit()" data-tip="Language" class="h-9 text-xs font-bold border border-slate-200 rounded-xl px-2 bg-white cursor-pointer hover:border-indigo-300 transition appearance-none">
+        <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>🇬🇧 EN</option>
+        <option value="hi" {% if LANGUAGE_CODE == 'hi' %}selected{% endif %}>🇮🇳 HI</option>
+        <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>🇪🇸 ES</option>
+        <option value="fr" {% if LANGUAGE_CODE == 'fr' %}selected{% endif %}>🇫🇷 FR</option>
+        <option value="de" {% if LANGUAGE_CODE == 'de' %}selected{% endif %}>🇩🇪 DE</option>
+        <option value="zh" {% if LANGUAGE_CODE == 'zh' %}selected{% endif %}>🇨🇳 ZH</option>
+        <option value="ar" {% if LANGUAGE_CODE == 'ar' %}selected{% endif %}>🇸🇦 AR</option>
+        <option value="ru" {% if LANGUAGE_CODE == 'ru' %}selected{% endif %}>🇷🇺 RU</option>
+        <option value="pt" {% if LANGUAGE_CODE == 'pt' %}selected{% endif %}>🇵🇹 PT</option>
+        <option value="ja" {% if LANGUAGE_CODE == 'ja' %}selected{% endif %}>🇯🇵 JA</option>
+      </select>
+    </form>
+
+    <!-- Visual divider before auth area -->
+    <div class="hidden md:block w-px h-6 bg-slate-200 mx-1 shrink-0"></div>
+
+    {% if user.is_authenticated %}
+    <!-- User dropdown menu -->
+    <div class="hidden xl:block relative shrink-0" id="userMenuWrap">
+      <button type="button" onclick="toggleUserMenu(event)" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition">
+        <div class="w-7 h-7 rounded-full gradient-bg text-white text-xs flex items-center justify-center font-bold">{{ user.username|first|upper }}</div>
+        <span class="text-sm font-semibold">{{ user.username }}</span>
+        <span class="text-xs">▾</span>
+      </button>
+      <div id="userMenu" class="absolute right-0 top-full mt-2 w-60 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 hidden z-50">
+        <div class="px-4 py-3 border-b border-slate-100">
+          <div class="font-bold text-sm">{{ user.username }}</div>
+          <div class="text-xs text-slate-500 truncate">{{ user.email|default:"No email set" }}</div>
+        </div>
+        <a href="{% url 'profile' %}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 text-sm font-semibold">⚙ Profile Settings</a>
+        <a href="{% url 'brand_kit' %}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 text-sm font-semibold">🎨 Brand Kit</a>
+        <a href="{% url 'documents' %}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 text-sm font-semibold">📁 My Documents</a>
+        <a href="{% url 'analytics' %}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 text-sm font-semibold">📊 Analytics</a>
+        <a href="{% url 'bulk_export' %}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 text-sm font-semibold">📦 Bulk Export</a>
+        <a href="{% url 'pricing' %}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 text-sm font-semibold">💎 Upgrade Plan</a>
+        <div class="border-t border-slate-100 mt-1"></div>
+        <a href="{% url 'logout' %}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 text-sm font-semibold text-red-600">↪ Sign Out</a>
+      </div>
+    </div>
+    <script>
+      function toggleUserMenu(e) {
+        e.stopPropagation();
+        document.getElementById('userMenu').classList.toggle('hidden');
+      }
+      document.addEventListener('click', e => {
+        const wrap = document.getElementById('userMenuWrap');
+        if (wrap && !wrap.contains(e.target)) document.getElementById('userMenu').classList.add('hidden');
+      });
+    </script>
+    {% else %}
+    <a href="{% url 'login' %}" class="hidden md:inline-flex items-center px-3 lg:px-4 py-2 rounded-xl text-slate-700 font-semibold text-sm hover:bg-slate-100 whitespace-nowrap shrink-0 transition">{% trans "Login" %}</a>
+    <a href="{% url 'signup' %}" class="hidden md:inline-flex items-center px-3 lg:px-4 py-2 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white font-semibold text-sm shadow-md hover:shadow-lg whitespace-nowrap shrink-0 transition">
+      {% trans "Sign Up" %}
+    </a>
+    {% endif %}
+
+    <!-- Mobile hamburger -->
+    <button type="button" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 shrink-0">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="lg:hidden hidden bg-white border-t border-slate-200">
+    <div class="px-6 py-4 space-y-2">
+      <a href="{% url 'home' %}" class="block py-2 font-semibold text-slate-700 hover:text-indigo-600">{% trans "Home" %}</a>
+      <a href="{% url 'all_templates' %}" class="block py-2 font-semibold text-slate-700 hover:text-indigo-600">{% trans "Templates" %}</a>
+      <a href="{% url 'features' %}" class="block py-2 font-semibold text-slate-700 hover:text-indigo-600">{% trans "Features" %}</a>
+      <a href="{% url 'pricing' %}" class="block py-2 font-semibold text-slate-700 hover:text-indigo-600">{% trans "Pricing" %}</a>
+      <a href="{% url 'compare' %}" class="block py-2 font-semibold text-slate-700 hover:text-indigo-600">{% trans "Compare" %}</a>
+      <a href="{% url 'documents' %}" class="block py-2 font-semibold text-slate-700 hover:text-indigo-600">📁 {% trans "My Documents" %}</a>
+      <a href="{% url 'ai_template' %}" class="block py-2 font-semibold text-slate-700 hover:text-indigo-600">🤖 {% trans "AI Generate" %}</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'documents' %}" class="block py-2 font-semibold text-slate-700 hover:text-indigo-600">📁 {% trans "My Documents" %}</a>
+        <a href="{% url 'brand_kit' %}" class="block py-2 font-semibold text-slate-700 hover:text-indigo-600">🎨 {% trans "Brand Kit" %}</a>
+        <a href="{% url 'analytics' %}" class="block py-2 font-semibold text-slate-700 hover:text-indigo-600">📊 {% trans "Analytics" %}</a>
+        <a href="{% url 'profile' %}" class="block py-2 font-semibold text-slate-700 hover:text-indigo-600">⚙ {% trans "Profile Settings" %}</a>
+        <div class="py-2 text-sm text-slate-500">{% trans "Signed in as" %} <strong>{{ user.username }}</strong></div>
+        <a href="{% url 'logout' %}" class="block py-2 font-semibold text-red-600">↪ {% trans "Sign Out" %}</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="block py-2 font-semibold text-slate-700">{% trans "Login" %}</a>
+        <a href="{% url 'signup' %}" class="btn-primary text-sm inline-block mt-3">{% trans "Sign Up" %}</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+<script>
+// Dark mode init
+(function(){
+  try{
+    if(localStorage.getItem('pcDark')==='1') document.documentElement.classList.add('dark');
+  }catch(e){}
+})();
+function toggleDarkMode(){
+  const html=document.documentElement;
+  html.classList.toggle('dark');
+  const isDark=html.classList.contains('dark');
+  document.getElementById('darkIcon').textContent=isDark?'☀':'🌙';
+  try{localStorage.setItem('pcDark',isDark?'1':'0')}catch(e){}
+}
+// Set icon on load
+document.addEventListener('DOMContentLoaded',()=>{
+  const ic=document.getElementById('darkIcon');
+  if(ic && document.documentElement.classList.contains('dark')) ic.textContent='☀';
+});
+</script>
+
+<main class="flex-1">{% block content %}{% endblock %}</main>
+
+<!-- ========== FOOTER ========== -->
+<footer class="pc-footer">
+  <style>
+    .pc-footer{position:relative;background:#0A0E27;color:#94a3b8;margin-top:80px;overflow:hidden;font-family:Inter,sans-serif}
+    .pc-footer::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,82,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.08) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at top,#000 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at top,#000 20%,transparent 70%);pointer-events:none}
+    .pc-footer::after{content:'✦';position:absolute;font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-size:480px;line-height:.7;right:-100px;bottom:-180px;color:rgba(0,196,204,.04);pointer-events:none}
+
+    /* Newsletter strip */
+    .ft-news{position:relative;background:linear-gradient(135deg,#0052FF 0%,#001A66 100%);padding:60px 20px;text-align:center;color:#fff;border-bottom:1px solid rgba(255,255,255,.06);overflow:hidden}
+    .ft-news::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.08) 1.5px,transparent 1.5px);background-size:24px 24px;pointer-events:none}
+    .ft-news::after{content:'✶';position:absolute;font-family:'Instrument Serif',serif;font-style:italic;font-size:320px;line-height:.7;left:-60px;top:-100px;color:rgba(255,255,255,.05);pointer-events:none}
+    .ft-news .inner{position:relative;max-width:560px;margin:0 auto}
+    .ft-news .pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(8px);padding:6px 14px;border-radius:999px;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px}
+    .ft-news h2{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-0.025em;font-size:38px;line-height:1.05;margin:0 0 10px;color:#fff}
+    .ft-news h2 .it{font-family:'Instrument Serif',Georgia,serif;font-style:italic;color:#7DF9FF}
+    .ft-news p{font-size:15px;color:rgba(255,255,255,.85);margin:0 0 24px}
+    .ft-news form{display:flex;gap:8px;max-width:440px;margin:0 auto;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:6px;backdrop-filter:blur(12px)}
+    .ft-news input[type=email]{flex:1;background:transparent;border:0;color:#fff;font-size:14px;padding:11px 14px;outline:none;font-family:Inter,sans-serif}
+    .ft-news input[type=email]::placeholder{color:rgba(255,255,255,.6)}
+    .ft-news button{background:#fff;color:#0052FF;border:0;padding:11px 22px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
+    .ft-news button:hover{background:#7DF9FF}
+    .ft-news .micro{font-size:11px;color:rgba(255,255,255,.55);margin-top:14px;font-family:'Space Grotesk',sans-serif;letter-spacing:.05em}
+
+    /* Main columns */
+    .ft-main{position:relative;max-width:1240px;margin:0 auto;padding:60px 24px 24px}
+    .ft-grid{display:grid;grid-template-columns:1.6fr repeat(4,1fr);gap:50px;margin-bottom:50px}
+    .ft-brand h3{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-size:32px;font-weight:700;color:#fff;margin:0 0 12px;letter-spacing:-0.5px}
+    .ft-brand p{font-size:13px;line-height:1.6;color:#94a3b8;max-width:340px;margin:0 0 22px}
+    .ft-brand .stats{display:flex;gap:18px;margin-bottom:22px}
+    .ft-brand .stats .stat{font-family:'Space Grotesk',sans-serif}
+    .ft-brand .stats .num{font-size:22px;font-weight:700;color:#7DF9FF;letter-spacing:-0.02em;line-height:1}
+    .ft-brand .stats .lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin-top:3px}
+
+    .ft-social{display:flex;gap:8px}
+    .ft-social a{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:#94a3b8;transition:all .2s;text-decoration:none;font-size:15px}
+    .ft-social a:hover{background:#0052FF;border-color:#0052FF;color:#fff;transform:translateY(-2px)}
+
+    .ft-col h4{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:#fff;margin:0 0 16px}
+    .ft-col ul{list-style:none;padding:0;margin:0}
+    .ft-col li{margin-bottom:9px}
+    .ft-col a{color:#94a3b8;font-size:13.5px;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+    .ft-col a:hover{color:#7DF9FF;transform:translateX(2px)}
+    .ft-col .ribbon{display:inline-block;font-size:9px;font-weight:700;background:#0052FF;color:#fff;padding:2px 6px;border-radius:4px;margin-left:6px;letter-spacing:.05em;font-family:'Space Grotesk',sans-serif}
+    .ft-col .ribbon.cyan{background:#00C4CC;color:#0a0e27}
+    .ft-col .ribbon.gold{background:#fbbf24;color:#0a0e27}
+
+    /* Trust strip — payment + apps + lang */
+    .ft-trust{position:relative;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);padding:22px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;font-family:'Space Grotesk',sans-serif;max-width:1240px;margin:0 auto}
+    .ft-trust .item{display:flex;align-items:center;gap:10px;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.1em}
+    .ft-trust .pay{display:flex;gap:6px;align-items:center}
+    .ft-trust .pay .badge{padding:5px 9px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;font-size:10px;font-weight:600;color:#cbd5e1;letter-spacing:.05em}
+    .ft-trust .lang-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:999px;font-size:11px;color:#cbd5e1;text-decoration:none;font-weight:600}
+
+    /* Bottom bar */
+    .ft-bottom{position:relative;max-width:1240px;margin:0 auto;padding:22px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px}
+    .ft-bottom .copy{font-size:12px;color:#64748b;font-family:'Space Grotesk',sans-serif;letter-spacing:.02em}
+    .ft-bottom .copy strong{color:#cbd5e1;font-weight:600}
+    .ft-bottom .legal{display:flex;flex-wrap:wrap;gap:18px;font-size:12px;font-family:'Space Grotesk',sans-serif}
+    .ft-bottom .legal a{color:#64748b;text-decoration:none;transition:color .2s}
+    .ft-bottom .legal a:hover{color:#7DF9FF}
+    .ft-bottom .made{display:flex;align-items:center;gap:6px;font-size:11px;color:#64748b;font-family:'Space Grotesk',sans-serif}
+    .ft-bottom .made .flag{font-size:14px}
+
+    .ft-status{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#64748b;font-family:'Space Grotesk',sans-serif}
+    .ft-status .dot{width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 0 0 rgba(16,185,129,.6);animation:pulse-dot 2s infinite}
+    @keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}50%{box-shadow:0 0 0 6px rgba(16,185,129,0)}}
+
+    @media (max-width:1024px){
+      .ft-grid{grid-template-columns:1fr 1fr;gap:36px}
+      .ft-brand{grid-column:span 2}
+    }
+    @media (max-width:640px){
+      .ft-grid{grid-template-columns:1fr}
+      .ft-brand{grid-column:span 1}
+      .ft-news h2{font-size:28px}
+      .ft-bottom{flex-direction:column;text-align:center}
+      .ft-trust{justify-content:center;text-align:center}
+    }
+  </style>
+
+  <!-- Newsletter strip -->
+  <div class="ft-news">
+    <div class="inner">
+      <div class="pill">📬 {% trans "Newsletter" %}</div>
+      <h2>{% trans "Get new templates" %} <span class="it">{% trans "first" %}</span></h2>
+      <p>{% trans "Weekly tips, fresh templates and AI updates. No spam — ever." %}</p>
+      <form onsubmit="event.preventDefault();PC.toast('Thanks! Check your inbox.','success');this.reset()">
+        <input type="email" required placeholder="you@example.com">
+        <button type="submit">{% trans "Subscribe" %}</button>
+      </form>
+      <div class="micro">✓ {% trans "Free forever" %} &nbsp;·&nbsp; ✓ {% trans "Unsubscribe anytime" %} &nbsp;·&nbsp; ✓ {% trans "No spam" %}</div>
+    </div>
+  </div>
+
+  <!-- Main footer columns -->
+  <div class="ft-main">
+    <div class="ft-grid">
+      <!-- Brand -->
+      <div class="ft-brand">
+        <h3>✦ Pagecraft</h3>
+        <p>{% trans "AI-powered document generator. Create resumes, invoices, wedding invites, social posts and more — in minutes, free forever." %}</p>
+        <div class="stats">
+          <div class="stat"><div class="num">496+</div><div class="lbl">{% trans "Templates" %}</div></div>
+          <div class="stat"><div class="num">13</div><div class="lbl">{% trans "Categories" %}</div></div>
+          <div class="stat"><div class="num">10</div><div class="lbl">{% trans "Languages" %}</div></div>
+        </div>
+        <div class="ft-social">
+          <a href="#" aria-label="Twitter">𝕏</a>
+          <a href="#" aria-label="LinkedIn">in</a>
+          <a href="#" aria-label="Instagram">📷</a>
+          <a href="#" aria-label="Facebook">f</a>
+          <a href="#" aria-label="YouTube">▶</a>
+          <a href="https://github.com" aria-label="GitHub">⌨</a>
+        </div>
+      </div>
+
+      <!-- Product -->
+      <div class="ft-col">
+        <h4>{% trans "Product" %}</h4>
+        <ul>
+          <li><a href="{% url 'home' %}#categories">{% trans "All Templates" %}</a></li>
+          <li><a href="{% url 'features' %}">{% trans "Features" %}</a></li>
+          <li><a href="{% url 'pricing' %}">{% trans "Pricing" %}</a></li>
+          <li><a href="{% url 'compare' %}">{% trans "vs Canva" %}</a></li>
+          <li><a href="{% url 'ai_template' %}">{% trans "AI Generator" %}<span class="ribbon cyan">AI</span></a></li>
+          <li><a href="{% url 'brand_kit' %}">{% trans "Brand Kit" %}</a></li>
+          <li><a href="{% url 'bulk_export' %}">{% trans "Bulk Export" %}</a></li>
+        </ul>
+      </div>
+
+      <!-- Templates -->
+      <div class="ft-col">
+        <h4>{% trans "Templates" %}</h4>
+        <ul>
+          <li><a href="{% url 'category' 'resume' %}">{% trans "Resume" %}</a></li>
+          <li><a href="{% url 'category' 'invoice' %}">{% trans "Invoice" %}</a></li>
+          <li><a href="{% url 'category' 'wedding' %}">{% trans "Wedding" %}<span class="ribbon">70+</span></a></li>
+          <li><a href="{% url 'category' 'festival' %}">{% trans "Festival" %}</a></li>
+          <li><a href="{% url 'category' 'card' %}">{% trans "Visiting Card" %}</a></li>
+          <li><a href="{% url 'category' 'certificate' %}">{% trans "Certificate" %}</a></li>
+          <li><a href="{% url 'category' 'social' %}">{% trans "Social Post" %}</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources -->
+      <div class="ft-col">
+        <h4>{% trans "Resources" %}</h4>
+        <ul>
+          <li><a href="{% url 'faq' %}">{% trans "FAQ" %}</a></li>
+          <li><a href="/sitemap.xml">{% trans "Sitemap" %}</a></li>
+          <li><a href="{% url 'documents' %}">{% trans "My Documents" %}</a></li>
+          <li><a href="{% url 'analytics' %}">{% trans "Analytics" %}</a></li>
+          <li><a href="#" onclick="if(window.PC&&PC.openCmdK)PC.openCmdK();return false">{% trans "Search" %} <kbd style="font-family:monospace;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:1px 5px;font-size:9px;color:#cbd5e1;margin-left:3px">⌘K</kbd></a></li>
+          <li><a href="https://github.com">{% trans "GitHub" %}</a></li>
+        </ul>
+      </div>
+
+      <!-- Company -->
+      <div class="ft-col">
+        <h4>{% trans "Company" %}</h4>
+        <ul>
+          <li><a href="{% url 'about' %}">{% trans "About Us" %}</a></li>
+          <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>
+          <li><a href="{% url 'pricing' %}#faq">{% trans "Lifetime Deal" %}<span class="ribbon gold">⚡</span></a></li>
+          <li><a href="#">{% trans "Careers" %}</a></li>
+          <li><a href="#">{% trans "Press Kit" %}</a></li>
+          <li><a href="#">{% trans "Affiliate Program" %}</a></li>
+          <li><a href="mailto:{{ SUPPORT_EMAIL|default:'support@pagecraft.app' }}">{% trans "Support" %}</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trust strip: payments + lang + status -->
+  <div class="ft-trust">
+    <div class="item">
+      <span>{% trans "Secure payments" %}</span>
+      <div class="pay">
+        <span class="badge">UPI</span>
+        <span class="badge">VISA</span>
+        <span class="badge">Mastercard</span>
+        <span class="badge">RuPay</span>
+        <span class="badge">PayPal</span>
+      </div>
+    </div>
+    <div class="item">
+      <a href="#" class="lang-pill">🌐 EN ▾</a>
+      <span class="ft-status"><span class="dot"></span>{% trans "All systems operational" %}</span>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="ft-bottom">
+    <div class="copy">© 2026 <strong>Pagecraft</strong>. {% trans "All rights reserved." %}</div>
+    <div class="legal">
+      <a href="#">{% trans "Terms" %}</a>
+      <a href="#">{% trans "Privacy" %}</a>
+      <a href="#">{% trans "Cookies" %}</a>
+      <a href="#">{% trans "DMCA" %}</a>
+      <a href="#">{% trans "Refunds" %}</a>
+      <a href="#">{% trans "Acceptable Use" %}</a>
+    </div>
+    <div class="made">{% trans "Made with" %} <span style="color:#ef4444">♥</span> {% trans "in" %} <span class="flag">🇮🇳</span> Bangalore</div>
+  </div>
+</footer>
+
+<!-- ========== GLOBAL LOADER ========== -->
+<div id="pcLoader" class="pc-loader-overlay">
+  <div class="pc-loader-card">
+    <div class="pc-spinner-wrap">
+      <div class="pc-spinner-ring"></div>
+      <div class="pc-spinner-ring"></div>
+      <div class="pc-spinner-ring"></div>
+      <div class="pc-spinner-core">✦</div>
+    </div>
+    <div id="pcLoaderText" class="pc-loader-text">Loading...</div>
+    <div id="pcLoaderSub" class="pc-loader-sub"></div>
+    <div id="pcLoaderProgress" class="pc-loader-progress"><div class="pc-loader-progress-bar"></div></div>
+  </div>
+</div>
+
+<!-- ========== COMMAND PALETTE (Ctrl+K) ========== -->
+<div id="cmdK" class="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] hidden items-start justify-center p-4 pt-24" onclick="if(event.target===this)closeCmdK()">
+  <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden border border-slate-200" style="animation:pc-pop .25s cubic-bezier(.34,1.56,.64,1)">
+    <div class="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
+      <span class="text-2xl text-slate-400">🔍</span>
+      <input id="cmdInput" type="text" placeholder="Type a command, template name, or page..." class="flex-1 outline-none bg-transparent text-lg font-medium" autocomplete="off">
+      <kbd class="hidden sm:inline-block px-2 py-1 bg-slate-100 rounded text-xs font-mono text-slate-500">esc</kbd>
+    </div>
+    <div id="cmdResults" class="max-h-96 overflow-y-auto p-2"></div>
+    <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 text-xs text-slate-500 flex items-center justify-between">
+      <span><kbd class="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[10px]">↑↓</kbd> navigate · <kbd class="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[10px]">↵</kbd> select</span>
+      <span>{% trans "Pagecraft Command Palette" %}</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PWA INSTALL PROMPT ========== -->
+<div id="installPrompt" class="fixed bottom-24 right-6 max-w-xs bg-white border border-indigo-200 rounded-2xl shadow-2xl p-5 z-[70] hidden">
+  <div class="flex items-start gap-3">
+    <span class="text-3xl">📱</span>
+    <div class="flex-1">
+      <div class="font-bold text-sm mb-1">{% trans "Install Pagecraft" %}</div>
+      <p class="text-xs text-slate-500">{% trans "Add to home screen for instant access" %}</p>
+      <div class="flex gap-2 mt-3">
+        <button type="button" id="installBtn" class="flex-1 px-3 py-1.5 rounded-lg gradient-bg text-white text-xs font-bold">{% trans "Install" %}</button>
+        <button type="button" onclick="document.getElementById('installPrompt').classList.add('hidden');localStorage.setItem('pc_no_install','1')" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600">{% trans "Later" %}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// Bump visit counter (used by PWA prompt to wait until 2nd visit)
+(function() {
+  try {
+    const v = parseInt(localStorage.getItem('pc_visit_count') || '0', 10) + 1;
+    localStorage.setItem('pc_visit_count', String(v));
+  } catch (e) {}
+})();
+
+let _installEvent;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _installEvent = e;
+  if (localStorage.getItem('pc_no_install')) return;
+  // Show only after 2nd visit, with a 6 sec delay so it never blocks first impression
+  const visits = parseInt(localStorage.getItem('pc_visit_count') || '0', 10);
+  if (visits >= 2) {
+    setTimeout(() => document.getElementById('installPrompt')?.classList.remove('hidden'), 6000);
+  }
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.addEventListener('click', async () => {
+    if (!_installEvent) return;
+    _installEvent.prompt();
+    const {outcome} = await _installEvent.userChoice;
+    if (outcome === 'accepted') PC.toast('Pagecraft installed! 🎉', 'success');
+    document.getElementById('installPrompt').classList.add('hidden');
+    _installEvent = null;
+  });
+  const dismiss = document.getElementById('installDismiss');
+  if (dismiss) dismiss.addEventListener('click', () => {
+    localStorage.setItem('pc_no_install', '1');
+    document.getElementById('installPrompt').classList.add('hidden');
+  });
+});
+
+// ===== AUTO-DETECT LANGUAGE FOR INDIAN USERS =====
+// Use Accept-Language header (server-rendered LANGUAGE_CODE) + optional client-side IP fallback.
+// Only suggest once, never force.
+(function() {
+  if (localStorage.getItem('pc_lang_suggested')) return;
+  const currentLang = document.documentElement.lang || 'en';
+  // Already on a non-English language? skip
+  if (currentLang && currentLang !== 'en') return;
+  // Detect Indian browser timezone or language preference (no extra request)
+  const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || '').toLowerCase();
+  const userLangs = (navigator.languages || [navigator.language || '']).map(l => l.toLowerCase());
+  const isIndian = tz.includes('kolkata') || tz.includes('calcutta') ||
+                   userLangs.some(l => l.startsWith('hi') || l.startsWith('ta') || l.startsWith('te') || l.startsWith('bn') || l.startsWith('mr') || l.startsWith('gu') || l.startsWith('pa'));
+  if (!isIndian) return;
+  setTimeout(() => {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;bottom:20px;left:20px;background:#fff;border:1px solid #E5E9F2;border-radius:12px;padding:14px 18px;box-shadow:0 18px 40px rgba(0,0,0,.12);z-index:9999;max-width:340px;font-family:Inter,sans-serif;font-size:14px;display:flex;align-items:center;gap:12px';
+    banner.innerHTML = '<span style="font-size:24px">🇮🇳</span><div style="flex:1"><div style="font-weight:600;color:#0f172a">Hindi mein dekhna chahte ho?</div><div style="font-size:12px;color:#64748b;margin-top:2px">Switch to हिन्दी for full experience</div></div><button id="langSwitchYes" style="background:#0052FF;color:#fff;border:0;padding:8px 14px;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px">Yes</button><button id="langSwitchNo" style="background:transparent;border:0;color:#94a3b8;cursor:pointer;font-size:18px">×</button>';
+    document.body.appendChild(banner);
+    document.getElementById('langSwitchYes').onclick = () => {
+      localStorage.setItem('pc_lang_suggested', '1');
+      // Set Django language cookie + reload
+      document.cookie = 'django_language=hi;path=/;max-age=31536000;samesite=lax';
+      location.reload();
+    };
+    document.getElementById('langSwitchNo').onclick = () => {
+      localStorage.setItem('pc_lang_suggested', '1');
+      banner.remove();
+    };
+  }, 4000);
+})();
+</script>
+
+<!-- ========== ACHIEVEMENTS SYSTEM ========== -->
+<script>
+window.PC_ACH = (function() {
+  const ACH = {
+    first_view: {icon:'👁', name:'First Look', desc:'Viewed your first template'},
+    five_views: {icon:'🔍', name:'Explorer', desc:'Viewed 5 templates'},
+    first_save: {icon:'💾', name:'First Save', desc:'Saved your first document'},
+    first_pdf: {icon:'📥', name:'First Download', desc:'Downloaded your first PDF'},
+    first_ai: {icon:'🤖', name:'AI User', desc:'Used AI enhancement'},
+    first_fav: {icon:'⭐', name:'Collector', desc:'Favorited a template'},
+    first_share: {icon:'🔗', name:'Sharer', desc:'Generated a share link'},
+    night_owl: {icon:'🌙', name:'Night Owl', desc:'Used dark mode'},
+  };
+  function unlock(key) {
+    if (!ACH[key]) return;
+    let earned = JSON.parse(localStorage.getItem('pc_ach') || '[]');
+    if (earned.includes(key)) return;
+    earned.push(key);
+    localStorage.setItem('pc_ach', JSON.stringify(earned));
+    const a = ACH[key];
+    PC.toast(`🏆 Achievement: ${a.icon} ${a.name}`, 'success');
+    PC.confetti(40);
+  }
+  function list() { return JSON.parse(localStorage.getItem('pc_ach') || '[]').map(k => ACH[k]).filter(Boolean); }
+  return {unlock, list, ACH};
+})();
+// Trigger night owl on first dark mode toggle
+document.addEventListener('click', e => {
+  if (e.target.closest('button')?.onclick?.toString().includes('toggleDarkMode')) {
+    setTimeout(() => PC_ACH.unlock('night_owl'), 300);
+  }
+});
+</script>
+
+<!-- ========== COOKIE BANNER ========== -->
+<div id="cookieBanner" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md bg-white border border-slate-200 rounded-2xl shadow-2xl p-5 z-[80] hidden">
+  <div class="flex items-start gap-3">
+    <span class="text-3xl">🍪</span>
+    <div class="flex-1">
+      <div class="font-bold text-sm mb-1">{% trans "We use cookies" %}</div>
+      <p class="text-xs text-slate-500 leading-relaxed">{% trans "We use cookies for auto-save, dark mode preference, and to remember your favorite templates. No tracking, no ads." %}</p>
+      <div class="flex gap-2 mt-3">
+        <button type="button" onclick="acceptCookies()" class="flex-1 px-4 py-2 rounded-xl gradient-bg text-white text-xs font-bold">{% trans "Accept" %}</button>
+        <a href="#" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50">{% trans "Learn more" %}</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  if (!localStorage.getItem('pc_cookies_ok')) {
+    setTimeout(() => document.getElementById('cookieBanner').classList.remove('hidden'), 1500);
+  }
+})();
+function acceptCookies() {
+  localStorage.setItem('pc_cookies_ok', '1');
+  document.getElementById('cookieBanner').classList.add('hidden');
+  PC.toast('Thanks! Cookies enabled.', 'success');
+}
+</script>
+
+<!-- ========== FLOATING HELP BUBBLE ========== -->
+<div class="fixed bottom-6 left-6 z-40 group">
+  <button type="button" onclick="document.getElementById('helpPanel').classList.toggle('hidden')"
+          class="w-14 h-14 rounded-full gradient-bg text-white text-2xl shadow-2xl hover:scale-110 transition flex items-center justify-center">
+    💬
+  </button>
+  <div id="helpPanel" class="hidden absolute bottom-16 left-0 w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 p-5">
+    <div class="font-bold text-lg mb-1">👋 {% trans "Need help?" %}</div>
+    <p class="text-xs text-slate-500 mb-4">{% trans "Pick an option below or press Ctrl+K to search anything." %}</p>
+    <div class="space-y-1">
+      <button type="button" onclick="openCmdK();document.getElementById('helpPanel').classList.add('hidden')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 text-sm flex items-center gap-2">🔍 {% trans "Search Pagecraft" %} <kbd class="ml-auto text-[10px] bg-slate-100 px-1.5 py-0.5 rounded">⌘K</kbd></button>
+      <a href="{% url 'faq' %}" class="block px-3 py-2 rounded-lg hover:bg-slate-50 text-sm">❓ {% trans "FAQ" %}</a>
+      <a href="{% url 'contact' %}" class="block px-3 py-2 rounded-lg hover:bg-slate-50 text-sm">✉️ {% trans "Contact Us" %}</a>
+      <a href="{% url 'features' %}" class="block px-3 py-2 rounded-lg hover:bg-slate-50 text-sm">⚡ {% trans "Browse Features" %}</a>
+      <a href="{% url 'ai_template' %}" class="block px-3 py-2 rounded-lg hover:bg-slate-50 text-sm">🤖 {% trans "AI Template Generator" %}</a>
+    </div>
+    <div class="border-t border-slate-100 mt-3 pt-3 text-xs text-slate-400 text-center">{% trans "Pagecraft is open source · Made with ❤" %}</div>
+  </div>
+</div>
+
+<!-- ========== TOP LOADING BAR ========== -->
+<div id="pcProgressBar" class="pc-progress-bar"></div>
+
+<!-- ========== BACK TO TOP BUTTON ========== -->
+<button id="backToTop" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+        class="fixed bottom-6 right-6 w-12 h-12 rounded-full gradient-bg text-white text-xl shadow-2xl hidden hover:scale-110 transition z-40"
+        title="Back to top">↑</button>
+<script>
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('backToTop');
+  if (window.scrollY > 500) btn.classList.remove('hidden');
+  else btn.classList.add('hidden');
+});
+</script>
+
+<!-- ========== CUSTOM DIALOG MODAL ========== -->
+<div id="pcDialog" class="pc-loader-overlay">
+  <div class="pc-loader-card" style="max-width:440px;padding:36px 32px">
+    <div id="pcDialogIcon" class="text-6xl mb-3 text-center">ℹ️</div>
+    <div id="pcDialogTitle" class="text-2xl font-extrabold text-center mb-2 text-slate-900">Title</div>
+    <div id="pcDialogMessage" class="text-sm text-slate-600 text-center mb-6 leading-relaxed">Message</div>
+    <div class="flex flex-col-reverse sm:flex-row gap-3">
+      <button type="button" id="pcDialogCancel" class="flex-1 px-5 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition">Cancel</button>
+      <button type="button" id="pcDialogConfirm" class="flex-1 px-5 py-3 rounded-xl text-white font-bold shadow-lg transition" style="background:linear-gradient(135deg,#6366f1,#a855f7)">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TOAST CONTAINER ========== -->
+<div id="pcToast" class="pc-toast"></div>
+
+<script>
+// ========== PAGECRAFT GLOBAL LOADER & TOAST API ==========
+window.PC = (function(){
+  const overlay = document.getElementById('pcLoader');
+  const text = document.getElementById('pcLoaderText');
+  const sub = document.getElementById('pcLoaderSub');
+  const prog = document.getElementById('pcLoaderProgress');
+  const toast = document.getElementById('pcToast');
+  const progBar = document.getElementById('pcProgressBar');
+  let toastTimer, progTimer;
+  return {
+    loader: {
+      show(label, subtitle, showBar) {
+        text.textContent = label || 'Loading...';
+        sub.textContent = subtitle || '';
+        prog.classList.toggle('show', !!showBar);
+        overlay.classList.add('show');
+      },
+      sub(s) { sub.textContent = s || ''; },
+      hide() { overlay.classList.remove('show'); },
+    },
+    toast(message, type) {
+      clearTimeout(toastTimer);
+      toast.className = 'pc-toast' + (type ? ' ' + type : '');
+      const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : '✦';
+      toast.innerHTML = `<span style="font-size:18px">${icon}</span><span>${message}</span>`;
+      toast.classList.add('show');
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+    },
+    // Top progress bar — auto-hides after 2 seconds max (safety net)
+    progress: {
+      _autoHide: null,
+      start() {
+        progBar.classList.remove('done');
+        progBar.style.width = '0%';
+        let pct = 0;
+        clearInterval(progTimer);
+        clearTimeout(this._autoHide);
+        progTimer = setInterval(() => {
+          pct = Math.min(90, pct + Math.random() * 18);
+          progBar.style.width = pct + '%';
+          if (pct >= 90) clearInterval(progTimer);
+        }, 150);
+        // SAFETY: always finish within 2 seconds
+        this._autoHide = setTimeout(() => this.done(), 2000);
+      },
+      done() {
+        clearInterval(progTimer);
+        clearTimeout(this._autoHide);
+        progBar.style.width = '100%';
+        setTimeout(() => progBar.classList.add('done'), 150);
+        setTimeout(() => { progBar.style.width = '0%'; progBar.classList.remove('done'); }, 500);
+      },
+    },
+    // ===== CUSTOM DIALOG (replaces window.alert/confirm) =====
+    dialog(opts) {
+      // opts: {type, icon, title, message, confirmText, cancelText, hideCancel}
+      // returns Promise<boolean>
+      return new Promise((resolve) => {
+        const overlay = document.getElementById('pcDialog');
+        const iconEl = document.getElementById('pcDialogIcon');
+        const titleEl = document.getElementById('pcDialogTitle');
+        const msgEl = document.getElementById('pcDialogMessage');
+        const okBtn = document.getElementById('pcDialogConfirm');
+        const cancelBtn = document.getElementById('pcDialogCancel');
+
+        // Type-based defaults
+        const typeMap = {
+          info:    {icon: 'ℹ️', color: 'linear-gradient(135deg,#6366f1,#a855f7)'},
+          success: {icon: '✅', color: 'linear-gradient(135deg,#10b981,#059669)'},
+          warning: {icon: '⚠️', color: 'linear-gradient(135deg,#f59e0b,#d97706)'},
+          error:   {icon: '❌', color: 'linear-gradient(135deg,#ef4444,#dc2626)'},
+          pro:     {icon: '⭐', color: 'linear-gradient(135deg,#fbbf24,#f59e0b)'},
+          login:   {icon: '🔐', color: 'linear-gradient(135deg,#6366f1,#a855f7)'},
+        };
+        const t = typeMap[opts.type] || typeMap.info;
+
+        iconEl.textContent = opts.icon || t.icon;
+        titleEl.textContent = opts.title || '';
+        msgEl.innerHTML = (opts.message || '').replace(/\n/g, '<br>');
+        okBtn.textContent = opts.confirmText || 'OK';
+        okBtn.style.background = t.color;
+
+        if (opts.hideCancel) {
+          cancelBtn.style.display = 'none';
+        } else {
+          cancelBtn.style.display = '';
+          cancelBtn.textContent = opts.cancelText || 'Cancel';
+        }
+
+        const cleanup = () => {
+          overlay.classList.remove('show');
+          okBtn.onclick = null;
+          cancelBtn.onclick = null;
+          overlay.onclick = null;
+          document.removeEventListener('keydown', onKey);
+        };
+        const onKey = (e) => {
+          if (e.key === 'Escape') { cleanup(); resolve(false); }
+          if (e.key === 'Enter')  { cleanup(); resolve(true); }
+        };
+        okBtn.onclick = () => { cleanup(); resolve(true); };
+        cancelBtn.onclick = () => { cleanup(); resolve(false); };
+        overlay.onclick = (e) => { if (e.target === overlay) { cleanup(); resolve(false); } };
+        document.addEventListener('keydown', onKey);
+
+        overlay.classList.add('show');
+      });
+    },
+    // Convenience: alert (single OK button)
+    alert(title, message, type) {
+      return this.dialog({type: type || 'info', title, message, hideCancel: true, confirmText: 'OK'});
+    },
+    // Convenience: confirm (OK + Cancel)
+    confirm(title, message, opts) {
+      return this.dialog({...(opts || {}), title, message});
+    },
+    // Confetti burst from a point (default top center)
+    confetti(count) {
+      count = count || 60;
+      const colors = ['#6366f1','#a855f7','#ec4899','#f59e0b','#10b981','#3b82f6'];
+      for (let i = 0; i < count; i++) {
+        const c = document.createElement('div');
+        c.className = 'pc-confetti';
+        c.style.left = (Math.random() * 100) + 'vw';
+        c.style.top = '-20px';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        c.style.width = (6 + Math.random() * 8) + 'px';
+        c.style.height = c.style.width;
+        c.style.animationDelay = (Math.random() * 0.5) + 's';
+        c.style.animationDuration = (2.5 + Math.random() * 1.5) + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 4000);
+      }
+    },
+  };
+})();
+
+// Auto-trigger top progress bar on link clicks (internal navigation)
+document.addEventListener('click', function(e) {
+  const link = e.target.closest('a');
+  if (link && link.href && link.target !== '_blank' && !link.href.startsWith('javascript:')
+      && !link.href.startsWith('mailto:') && !e.ctrlKey && !e.metaKey) {
+    const url = new URL(link.href, window.location.origin);
+    if (url.origin === window.location.origin && !link.href.includes('#')) {
+      PC.progress.start();
+    }
+  }
+});
+window.addEventListener('beforeunload', () => PC.progress.start());
+window.addEventListener('pageshow', () => PC.progress.done());
+
+// ========== COMMAND PALETTE ==========
+const CMD_PAGES = [
+  {icon:'🏠', label:'Home',                 url:'{% url "home" %}',           kw:'home start'},
+  {icon:'📄', label:'All Templates',        url:'{% url "all_templates" %}',  kw:'browse templates'},
+  {icon:'🤖', label:'AI Template Generator',url:'{% url "ai_template" %}',    kw:'ai generator gemini'},
+  {icon:'🎨', label:'Brand Kit',            url:'{% url "brand_kit" %}',      kw:'brand kit logo colors'},
+  {icon:'📊', label:'Analytics Dashboard',  url:'{% url "analytics" %}',      kw:'analytics stats dashboard'},
+  {icon:'📁', label:'My Documents',         url:'{% url "documents" %}',      kw:'my documents saved'},
+  {icon:'⚙', label:'Profile Settings',     url:'{% url "profile" %}',        kw:'profile settings account'},
+  {icon:'💎', label:'Pricing',              url:'{% url "pricing" %}',        kw:'pricing plans payment'},
+  {icon:'🆚', label:'Compare',              url:'{% url "compare" %}',        kw:'compare canva adobe'},
+  {icon:'⚡', label:'Features',             url:'{% url "features" %}',       kw:'features capabilities'},
+  {icon:'❓', label:'FAQ',                  url:'{% url "faq" %}',            kw:'faq help questions'},
+  {icon:'✉️', label:'Contact',              url:'{% url "contact" %}',        kw:'contact support email'},
+  {icon:'📦', label:'Bulk Export',          url:'{% url "bulk_export" %}',    kw:'bulk export multiple'},
+  {icon:'🌙', label:'Toggle Dark Mode',     action:'darkmode',                kw:'dark light theme'},
+];
+
+const CMD_CATEGORIES = [
+  {icon:'📄', label:'Resumes',         url:'{% url "category" "resume" %}',       kw:'resume cv'},
+  {icon:'✉️', label:'Cover Letters',   url:'{% url "category" "cover_letter" %}', kw:'cover letter'},
+  {icon:'🧾', label:'Invoices',        url:'{% url "category" "invoice" %}',      kw:'invoice bill'},
+  {icon:'🎁', label:'Gift Vouchers',   url:'{% url "category" "voucher" %}',      kw:'voucher gift'},
+  {icon:'💳', label:'Visiting Cards',  url:'{% url "category" "card" %}',         kw:'card business visiting'},
+  {icon:'🏆', label:'Certificates',    url:'{% url "category" "certificate" %}',  kw:'certificate award diploma'},
+  {icon:'📱', label:'Social Posts',    url:'{% url "category" "social" %}',       kw:'social media post instagram'},
+  {icon:'📋', label:'Flyers & Posters',url:'{% url "category" "flyer" %}',        kw:'flyer poster'},
+  {icon:'💍', label:'Wedding Invites', url:'{% url "category" "wedding" %}',      kw:'wedding shaadi marriage hindu muslim christian'},
+  {icon:'🎂', label:'Birthday Invites',url:'{% url "category" "birthday" %}',     kw:'birthday party'},
+  {icon:'🪔', label:'Festival Cards',  url:'{% url "category" "festival" %}',     kw:'festival diwali holi onam pongal'},
+  {icon:'🍽', label:'Menu Cards',      url:'{% url "category" "menu" %}',         kw:'menu restaurant cafe'},
+  {icon:'🎫', label:'Event Tickets',   url:'{% url "category" "ticket" %}',       kw:'ticket event concert'},
+];
+
+let cmdSelected = 0;
+let cmdFlatList = [];  // flat list of all rendered items in order (for arrow navigation)
+
+function openCmdK() {
+  document.getElementById('cmdK').classList.remove('hidden');
+  document.getElementById('cmdK').classList.add('flex');
+  document.getElementById('cmdInput').value = '';
+  document.getElementById('cmdInput').focus();
+  renderCmdResults('');
+}
+function closeCmdK() {
+  document.getElementById('cmdK').classList.add('hidden');
+  document.getElementById('cmdK').classList.remove('flex');
+}
+
+function _matches(item, q) {
+  if (!q) return true;
+  return item.label.toLowerCase().includes(q) || (item.kw||'').includes(q);
+}
+
+const CAT_LABELS = {
+  resume:'📄 Resumes', cover_letter:'✉️ Cover Letters', invoice:'🧾 Invoices',
+  voucher:'🎁 Vouchers', card:'💳 Cards', certificate:'🏆 Certificates',
+  social:'📱 Social', flyer:'📋 Flyers', wedding:'💍 Wedding',
+  birthday:'🎂 Birthday', festival:'🪔 Festival', menu:'🍽 Menu', ticket:'🎫 Ticket',
+};
+
+async function renderCmdResults(query) {
+  const q = query.trim().toLowerCase();
+  const pages = CMD_PAGES.filter(c => _matches(c, q));
+  const cats = CMD_CATEGORIES.filter(c => _matches(c, q));
+
+  // Server-side template search if 1+ char
+  let templates = [];
+  if (q.length >= 1) {
+    try {
+      const r = await fetch('/api/templates/?q=' + encodeURIComponent(q));
+      const data = await r.json();
+      const list = (data.results || data || []).slice(0, 8);
+      templates = list.map(t => ({
+        icon:'📄', label:t.title,
+        sub: CAT_LABELS[t.category] || t.category,
+        url:'/editor/' + t.id + '/', kw:'',
+      }));
+    } catch(e) {}
+  }
+
+  // Build flat list for arrow navigation (in display order)
+  cmdFlatList = [];
+  let html = '';
+  let globalIdx = 0;
+
+  // Section helper
+  const renderSection = (title, items) => {
+    if (!items.length) return '';
+    let s = `<div class="px-4 pt-3 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">${title} <span class="text-slate-300 ml-1">${items.length}</span></div>`;
+    items.forEach(it => {
+      cmdFlatList.push(it);
+      const i = globalIdx++;
+      s += `
+        <div class="cmd-item flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer mx-2 ${i === cmdSelected ? 'bg-indigo-50' : 'hover:bg-slate-50'}" data-idx="${i}">
+          <span class="text-xl shrink-0">${it.icon}</span>
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold text-sm truncate">${it.label}</div>
+            ${it.sub ? '<div class="text-xs text-slate-500 truncate">' + it.sub + '</div>' : ''}
+          </div>
+          <span class="text-xs text-slate-300">↵</span>
+        </div>`;
+    });
+    return s;
+  };
+
+  html += renderSection('Categories', cats);
+  html += renderSection('Templates', templates);
+  html += renderSection('Pages & Tools', pages);
+
+  if (!cmdFlatList.length) {
+    html = '<div class="text-center py-10 text-slate-400 text-sm">No results found for "' + (query || '') + '"</div>';
+  }
+
+  cmdSelected = 0;
+  document.getElementById('cmdResults').innerHTML = html;
+  document.querySelectorAll('.cmd-item').forEach(el => {
+    el.addEventListener('click', () => execCmd(parseInt(el.dataset.idx)));
+    el.addEventListener('mouseenter', () => {
+      cmdSelected = parseInt(el.dataset.idx);
+      updateCmdSel();
+    });
+  });
+}
+
+function updateCmdSel() {
+  document.querySelectorAll('.cmd-item').forEach((el, i) => {
+    el.classList.toggle('bg-indigo-50', i === cmdSelected);
+    el.classList.toggle('hover:bg-slate-50', i !== cmdSelected);
+    if (i === cmdSelected) el.scrollIntoView({block:'nearest'});
+  });
+}
+
+function execCmd(idx) {
+  const c = cmdFlatList[idx];
+  if (!c) return;
+  closeCmdK();
+  if (c.action === 'darkmode') { toggleDarkMode(); return; }
+  if (c.url) window.location.href = c.url;
+}
+
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openCmdK(); return; }
+  const palette = document.getElementById('cmdK');
+  if (palette.classList.contains('flex')) {
+    if (e.key === 'Escape') { e.preventDefault(); closeCmdK(); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); cmdSelected = Math.min(cmdSelected + 1, cmdFlatList.length - 1); updateCmdSel(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); cmdSelected = Math.max(cmdSelected - 1, 0); updateCmdSel(); }
+    else if (e.key === 'Enter') { e.preventDefault(); execCmd(cmdSelected); }
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('cmdInput');
+  if (inp) {
+    let t;
+    inp.addEventListener('input', e => {
+      clearTimeout(t);
+      t = setTimeout(() => renderCmdResults(e.target.value), 150);
+    });
+  }
+});
+</script>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

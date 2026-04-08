@@ -1,0 +1,1610 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% if template.meta_title %}{{ template.meta_title }}{% else %}{{ template.title }} — Free {{ template.get_category_display }} Template | Pagecraft{% endif %}{% endblock %}
+{% block description %}{% if template.meta_description %}{{ template.meta_description }}{% else %}{{ template.description }} Edit online for free, no signup needed. Download as PDF, PNG or JPG.{% endif %}{% endblock %}
+{% block keywords %}{% if template.keywords %}{{ template.keywords }}{% else %}{{ template.title }}, {{ template.get_category_display }} template, free template{% endif %}{% endblock %}
+{% block og_title %}{{ template.title }} — Pagecraft{% endblock %}
+{% block og_description %}{% if template.meta_description %}{{ template.meta_description }}{% else %}{{ template.description }}{% endif %}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block twitter_title %}{{ template.title }} — Pagecraft{% endblock %}
+{% block twitter_description %}{% if template.meta_description %}{{ template.meta_description }}{% else %}{{ template.description }}{% endif %}{% endblock %}
+{% block schema_jsonld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "name": "{{ template.title|escapejs }}",
+  "description": "{{ template.description|escapejs }}",
+  "url": "{{ request.build_absolute_uri }}",
+  "image": "{% block og_image %}https://via.placeholder.com/1200x630/0052ff/ffffff?text={{ template.title|urlencode }}{% endblock %}",
+  "author": {"@type": "Organization", "name": "Pagecraft"},
+  "publisher": {"@type": "Organization", "name": "Pagecraft", "logo": {"@type": "ImageObject", "url": "{{ request.scheme }}://{{ request.get_host }}/static/icon-512.png"}},
+  "genre": "{{ template.get_category_display }}",
+  "keywords": "{{ template.keywords|escapejs }}",
+  "datePublished": "{{ template.created_at|date:'c' }}",
+  "dateModified": "{{ template.updated_at|date:'c' }}",
+  "interactionStatistic": [
+    {"@type": "InteractionCounter", "interactionType": "https://schema.org/ViewAction", "userInteractionCount": {{ template.view_count }}},
+    {"@type": "InteractionCounter", "interactionType": "https://schema.org/DownloadAction", "userInteractionCount": {{ template.download_count }}}
+  ],
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "{{ request.scheme }}://{{ request.get_host }}/"},
+    {"@type": "ListItem", "position": 2, "name": "Templates", "item": "{{ request.scheme }}://{{ request.get_host }}/templates/"},
+    {"@type": "ListItem", "position": 3, "name": "{{ template.get_category_display }}", "item": "{{ request.scheme }}://{{ request.get_host }}/category/{{ template.category }}/"},
+    {"@type": "ListItem", "position": 4, "name": "{{ template.title|escapejs }}", "item": "{{ request.build_absolute_uri }}"}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-6 py-8">
+  <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
+    <div class="flex-1 min-w-0">
+      <a href="{% url 'category' template.category %}" class="text-indigo-600 text-sm font-semibold hover:underline">← {% trans "Back to templates" %}</a>
+      <div class="flex items-center gap-3 mt-3">
+        <a href="{% url 'editor' prev_id %}" title="Previous template (←)" class="w-10 h-10 rounded-xl bg-white border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 flex items-center justify-center text-lg font-bold text-slate-600 transition shrink-0">‹</a>
+        <div class="flex-1 min-w-0">
+          <h1 class="text-2xl md:text-3xl font-extrabold truncate">{{ template.title }}</h1>
+          <p class="text-slate-500 text-sm mt-1 truncate">{{ template.description }} · <span class="text-indigo-600 font-semibold">{{ category_position }}</span></p>
+        </div>
+        <a href="{% url 'editor' next_id %}" title="Next template (→)" class="w-10 h-10 rounded-xl bg-white border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 flex items-center justify-center text-lg font-bold text-slate-600 transition shrink-0">›</a>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-3 items-center">
+      <select id="langSelect" class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold text-sm">
+        <option value="">🌐 {% trans "Translate to..." %}</option>
+        <option value="en">English</option>
+        <option value="hi">हिन्दी (Hindi)</option>
+        <option value="es">Español (Spanish)</option>
+        <option value="fr">Français (French)</option>
+        <option value="de">Deutsch (German)</option>
+        <option value="zh">中文 (Chinese)</option>
+        <option value="ar">العربية (Arabic)</option>
+        <option value="ru">Русский (Russian)</option>
+        <option value="pt">Português (Portuguese)</option>
+        <option value="ja">日本語 (Japanese)</option>
+      </select>
+      <a href="{% url 'compare_templates' template.category %}" class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition text-sm">🔀 {% trans "Compare" %}</a>
+      <a href="{% url 'template_clone' template.id %}" class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition text-sm">📋 {% trans "Duplicate" %}</a>
+      <button type="button" onclick="document.getElementById('toolPanel').classList.toggle('hidden')" class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition text-sm">⚙ {% trans "Tools" %}</button>
+      <button type="button" onclick="undo()" title="Undo (Ctrl+Z)" class="px-3 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition text-sm">↶</button>
+      <button type="button" onclick="redo()" title="Redo (Ctrl+Y)" class="px-3 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition text-sm">↷</button>
+      {% if user.is_authenticated %}
+        <button type="button" onclick="openShareModal()" class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition text-sm">🔗 {% trans "Share" %}</button>
+        <button type="button" onclick="applyBrandKit()" class="px-4 py-2.5 rounded-xl font-semibold transition text-sm" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff">🎨 {% trans "Apply Brand" %}</button>
+        <button type="button" onclick="whatsappShare()" class="px-4 py-2.5 rounded-xl font-semibold transition text-sm" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff">💬 {% trans "WhatsApp" %}</button>
+        <button type="button" onclick="emailDoc()" class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition text-sm">✉ {% trans "Email" %}</button>
+        <button type="button" onclick="printDoc()" class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition text-sm">🖨 {% trans "Print" %}</button>
+        <button type="button" onclick="toggleFav()" id="favBtn" class="px-3 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition text-sm">☆</button>
+      {% endif %}
+      <button type="button" onclick="openImageStudio()" class="px-5 py-2.5 rounded-xl font-semibold transition text-sm" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff">🍌 {% trans "AI Image" %}</button>
+      <button type="button" onclick="surpriseMe()" title="Random template + AI fill" class="px-4 py-2.5 rounded-xl font-semibold transition text-sm" style="background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff">🎲 {% trans "Surprise Me" %}</button>
+      <button onclick="loadSample()" class="px-5 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition">🎯 {% trans "Demo Data" %}</button>
+
+      {% if user.is_authenticated %}
+        <button onclick="saveDoc()" class="px-5 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition">💾 {% trans "Save" %}</button>
+        <div class="relative inline-block" id="dlWrap">
+          <button type="button" onclick="toggleDownloadMenu(event)" class="btn-primary">⬇ {% trans "Download" %} ▾</button>
+          <div id="dlMenu" class="absolute right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 w-52 z-50" style="display:none">
+            <button type="button" onclick="exportPDF();closeDownloadMenu()" class="w-full text-left px-4 py-3 hover:bg-indigo-50 text-sm font-semibold flex items-center gap-3">📄 <span>{% trans "Download PDF" %}</span></button>
+            <button type="button" onclick="exportImage('png');closeDownloadMenu()" class="w-full text-left px-4 py-3 hover:bg-indigo-50 text-sm font-semibold flex items-center gap-3">🖼 <span>{% trans "Download PNG" %}</span></button>
+            <button type="button" onclick="exportImage('jpeg');closeDownloadMenu()" class="w-full text-left px-4 py-3 hover:bg-indigo-50 text-sm font-semibold flex items-center gap-3">📸 <span>{% trans "Download JPG" %}</span></button>
+            <div class="border-t border-slate-100 my-1"></div>
+            <button type="button" onclick="exportGIF();closeDownloadMenu()" class="w-full text-left px-4 py-3 hover:bg-indigo-50 text-sm font-semibold flex items-center gap-3 text-pink-600">🎬 <span>{% trans "Download GIF (animated)" %}</span></button>
+          </div>
+        </div>
+      {% else %}
+        <a href="{% url 'login' %}?next={{ request.path }}" data-tip="Login to save & download" class="px-5 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold text-slate-400 cursor-pointer hover:border-indigo-300 hover:text-slate-600 transition flex items-center gap-2">
+          🔒 {% trans "Save" %}
+        </a>
+        <a href="{% url 'login' %}?next={{ request.path }}" data-tip="Login to download PDF/PNG/GIF" class="px-5 py-2.5 rounded-xl font-bold text-white shadow-md hover:shadow-lg transition flex items-center gap-2" style="background:linear-gradient(135deg,#94a3b8,#64748b)">
+          🔒 {% trans "Login to Download" %}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ============ TOOL PANEL (Color, Currency, Paper, Photo, Animation) ============ -->
+  <div id="toolPanel" class="hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-5">
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">🎨 {% trans "Theme Color" %}</label>
+        <input type="color" id="themeColor" value="#6366f1" class="w-full h-10 rounded-lg border border-slate-200 cursor-pointer">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">💰 {% trans "Currency" %}</label>
+        <select id="currencySel" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm">
+          <option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option>
+          <option value="£">£ GBP</option><option value="¥">¥ JPY</option><option value="A$">A$ AUD</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">📐 {% trans "PDF Size" %}</label>
+        <select id="paperSize" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm">
+          <option value="a4">A4</option><option value="a3">A3</option><option value="a5">A5</option>
+          <option value="letter">US Letter</option><option value="legal">Legal</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">📷 {% trans "Photo" %}</label>
+        <input type="file" id="photoUp" accept="image/*" class="w-full text-xs">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">✨ {% trans "Animation" %}</label>
+        <button type="button" id="animBtn" onclick="toggleAnimation()" class="w-full px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-semibold">{% trans "Off" %}</button>
+      </div>
+    </div>
+    <div class="mt-4 text-xs text-slate-500 text-center flex items-center justify-center gap-3 flex-wrap">
+      <span id="autoSaveStatus" class="text-green-600">💾 {% trans "Auto-saved" %}</span>
+      <span>·</span>
+      <button type="button" onclick="openKbModal()" class="text-indigo-600 hover:underline">⌨ {% trans "Shortcuts (?)" %}</button>
+    </div>
+  </div>
+
+  <!-- ============ SHARE MODAL ============ -->
+  <div id="shareModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4" onclick="if(event.target===this)closeShareModal()">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
+      <div class="flex items-start justify-between mb-5">
+        <div>
+          <h2 class="text-2xl font-extrabold flex items-center gap-2">🔗 {% trans "Share Document" %}</h2>
+          <p class="text-sm text-slate-500 mt-1">{% trans "Anyone with the link can view" %}</p>
+        </div>
+        <button type="button" onclick="closeShareModal()" class="text-2xl text-slate-400 hover:text-slate-700 leading-none">×</button>
+      </div>
+      <div id="shareContent">
+        <button type="button" onclick="generateShareLink()" class="btn-primary w-full">🔗 {% trans "Generate Public Link" %}</button>
+        <p class="text-xs text-slate-500 mt-3 text-center">{% trans "First save your document, then click to generate a shareable link" %}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ KEYBOARD SHORTCUTS MODAL ============ -->
+  <div id="kbModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4" onclick="if(event.target===this)closeKbModal()">
+    <div class="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl">
+      <div class="flex items-start justify-between mb-5">
+        <h2 class="text-2xl font-extrabold flex items-center gap-2">⌨ {% trans "Keyboard Shortcuts" %}</h2>
+        <button type="button" onclick="closeKbModal()" class="text-2xl text-slate-400 hover:text-slate-700">×</button>
+      </div>
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between items-center py-2 border-b border-slate-100"><span>💾 Save document</span><kbd class="px-2 py-1 bg-slate-100 rounded text-xs font-mono">Ctrl + S</kbd></div>
+        <div class="flex justify-between items-center py-2 border-b border-slate-100"><span>⬇ Download PDF</span><kbd class="px-2 py-1 bg-slate-100 rounded text-xs font-mono">Ctrl + D</kbd></div>
+        <div class="flex justify-between items-center py-2 border-b border-slate-100"><span>↶ Undo</span><kbd class="px-2 py-1 bg-slate-100 rounded text-xs font-mono">Ctrl + Z</kbd></div>
+        <div class="flex justify-between items-center py-2 border-b border-slate-100"><span>↷ Redo</span><kbd class="px-2 py-1 bg-slate-100 rounded text-xs font-mono">Ctrl + Y</kbd></div>
+        <div class="flex justify-between items-center py-2 border-b border-slate-100"><span>← Previous template</span><kbd class="px-2 py-1 bg-slate-100 rounded text-xs font-mono">Alt + ←</kbd></div>
+        <div class="flex justify-between items-center py-2 border-b border-slate-100"><span>→ Next template</span><kbd class="px-2 py-1 bg-slate-100 rounded text-xs font-mono">Alt + →</kbd></div>
+        <div class="flex justify-between items-center py-2"><span>❓ Show this help</span><kbd class="px-2 py-1 bg-slate-100 rounded text-xs font-mono">?</kbd></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- FORM -->
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+      <h2 class="text-xl font-bold mb-6 flex items-center gap-2">📝 {% trans "Fill Details" %}</h2>
+      <form id="docForm" class="space-y-5"></form>
+    </div>
+
+    <!-- ============ AI IMAGE STUDIO MODAL ============ -->
+    <div id="imgModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4" onclick="if(event.target===this)closeImageStudio()">
+      <div class="bg-white rounded-3xl p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-start justify-between mb-5">
+          <div>
+            <h2 class="text-2xl font-extrabold flex items-center gap-2">🍌 {% trans "AI Image Studio" %}</h2>
+            <p class="text-sm text-slate-500 mt-1">{% trans "Powered by Gemini 2.5 Flash Image (Nano Banana)" %}</p>
+          </div>
+          <button type="button" onclick="closeImageStudio()" class="text-2xl text-slate-400 hover:text-slate-700 leading-none">×</button>
+        </div>
+
+        <label class="block text-sm font-bold text-slate-700 mb-2">{% trans "Describe the image" %}</label>
+        <textarea id="imgPrompt" rows="3" placeholder="e.g. A royal Indian wedding background with peacocks, lotus flowers, gold and maroon colors"
+          class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-300 focus:border-amber-500 outline-none mb-4"></textarea>
+
+        <label class="block text-sm font-bold text-slate-700 mb-2">{% trans "Style" %} <span class="text-slate-400 font-normal">({% trans "optional" %})</span></label>
+        <div class="flex flex-wrap gap-2 mb-5">
+          <button type="button" onclick="setStyle('')" class="style-chip px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-200 hover:border-amber-400" data-style="">None</button>
+          <button type="button" onclick="setStyle('photorealistic')" class="style-chip px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-200 hover:border-amber-400" data-style="photorealistic">📷 Photo</button>
+          <button type="button" onclick="setStyle('watercolor painting')" class="style-chip px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-200 hover:border-amber-400" data-style="watercolor painting">🎨 Watercolor</button>
+          <button type="button" onclick="setStyle('flat illustration vector')" class="style-chip px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-200 hover:border-amber-400" data-style="flat illustration vector">🖌 Flat</button>
+          <button type="button" onclick="setStyle('traditional Indian art with intricate patterns')" class="style-chip px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-200 hover:border-amber-400" data-style="traditional Indian art with intricate patterns">🪔 Indian</button>
+          <button type="button" onclick="setStyle('minimalist line art')" class="style-chip px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-200 hover:border-amber-400" data-style="minimalist line art">✏ Line</button>
+          <button type="button" onclick="setStyle('3d render')" class="style-chip px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-200 hover:border-amber-400" data-style="3d render">🎲 3D</button>
+        </div>
+
+        <button type="button" id="genBtn" onclick="generateImage()" class="w-full py-3 rounded-xl font-bold text-white text-lg shadow-lg" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">🪄 {% trans "Generate Image" %}</button>
+
+        <div id="imgResult" class="mt-6"></div>
+      </div>
+    </div>
+
+    <!-- ============ PREMIUM LIVE PREVIEW ============ -->
+    <div id="previewCard" class="bg-white rounded-3xl shadow-sm border border-slate-100 lg:sticky lg:top-24 lg:self-start overflow-hidden">
+      <!-- Header bar 1: title + main actions -->
+      <div class="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="w-3 h-3 rounded-full bg-red-400 shrink-0"></span>
+          <span class="w-3 h-3 rounded-full bg-amber-400 shrink-0"></span>
+          <span class="w-3 h-3 rounded-full bg-green-400 shrink-0"></span>
+          <span class="ml-2 text-sm font-bold text-slate-700 whitespace-nowrap">{% trans "Live Preview" %}</span>
+          <span id="prevLoading" class="hidden ml-1 inline-block w-3 h-3 border-2 border-indigo-500 border-r-transparent rounded-full animate-spin shrink-0"></span>
+        </div>
+        <div class="flex items-center gap-1 shrink-0">
+          <button type="button" onclick="updatePreview()" data-tip="Refresh" class="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </button>
+          <button type="button" onclick="toggleFullscreen()" data-tip="Fullscreen" class="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Header bar 2: tools (device, bg, zoom) -->
+      <div class="flex items-center justify-between px-5 py-2 border-b border-slate-100 bg-white">
+        <!-- Device mode -->
+        <div class="inline-flex items-center bg-slate-100 rounded-lg p-0.5">
+          <button type="button" onclick="setDeviceMode('desktop')" id="dev-desktop" data-tip="Desktop" class="dev-btn px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1 bg-white shadow-sm text-indigo-600">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </button>
+          <button type="button" onclick="setDeviceMode('tablet')" id="dev-tablet" data-tip="Tablet" class="dev-btn px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1 text-slate-500">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18h2"/></svg>
+          </button>
+          <button type="button" onclick="setDeviceMode('mobile')" id="dev-mobile" data-tip="Mobile" class="dev-btn px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1 text-slate-500">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+          </button>
+        </div>
+
+        <!-- BG mode -->
+        <div class="inline-flex items-center bg-slate-100 rounded-lg p-0.5">
+          <button type="button" onclick="setBgMode('light')" id="bg-light" data-tip="Light" class="bg-btn px-2.5 py-1 rounded-md text-xs font-bold bg-white shadow-sm text-indigo-600">Light</button>
+          <button type="button" onclick="setBgMode('dark')" id="bg-dark" data-tip="Dark" class="bg-btn px-2.5 py-1 rounded-md text-xs font-bold text-slate-500">Dark</button>
+          <button type="button" onclick="setBgMode('grid')" id="bg-grid" data-tip="Grid" class="bg-btn px-2.5 py-1 rounded-md text-xs font-bold text-slate-500">Grid</button>
+        </div>
+
+        <!-- Zoom -->
+        <div class="inline-flex items-center bg-slate-100 rounded-lg p-0.5">
+          <button type="button" onclick="zoom(-0.05)" data-tip="Zoom out" class="px-2 py-1 rounded-md text-sm font-bold text-slate-600 hover:bg-white">−</button>
+          <button type="button" onclick="resetZoom()" data-tip="Fit" id="zoomLabel" class="px-2 py-1 rounded-md text-xs font-bold text-slate-600 hover:bg-white font-mono min-w-[42px]">100%</button>
+          <button type="button" onclick="zoom(0.05)" data-tip="Zoom in" class="px-2 py-1 rounded-md text-sm font-bold text-slate-600 hover:bg-white">+</button>
+        </div>
+      </div>
+
+      <!-- Preview area -->
+      <div id="previewWrap" class="overflow-auto flex items-start justify-center transition-all duration-300" style="min-height:560px;padding:24px;background:#f8fafc;background-image:radial-gradient(circle,#e2e8f0 1px,transparent 1px);background-size:20px 20px">
+        <div id="previewDevice" class="transition-all duration-300" style="width:100%;display:flex;justify-content:center">
+          <div id="preview" style="transform-origin:top center;transition:transform .2s ease;filter:drop-shadow(0 25px 50px rgba(15,23,42,.15))"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SIMILAR TEMPLATES ============ -->
+  {% if related_items %}
+  <div class="mt-16 mb-8">
+    <div class="flex items-end justify-between mb-6">
+      <div>
+        <div class="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-1">{% trans "You might also like" %}</div>
+        <h2 class="text-2xl md:text-3xl font-extrabold">🔗 {% if template.sub_category %}{% trans "Similar" %} {{ template.sub_category|title }} {% trans "Templates" %}{% else %}{% trans "Similar Templates" %}{% endif %}</h2>
+      </div>
+      <a href="{% url 'category' template.category %}" class="text-indigo-600 font-semibold text-sm hover:underline whitespace-nowrap">{% trans "View all" %} {{ template.get_category_display }} →</a>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      {% for it in related_items %}
+      <a href="{% url 'editor' it.tpl.id %}" class="card-hover bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 block group relative">
+        {% with tpl=it.tpl %}{% include 'partials/_tpl_badges.html' %}{% endwith %}
+        <div class="preview-frame relative {% if template.category == 'certificate' or template.category == 'ticket' %}landscape{% elif template.category == 'card' or template.category == 'social' or template.category == 'wedding' or template.category == 'birthday' or template.category == 'festival' or template.category == 'voucher' %}center{% endif %}" style="height:170px">
+          <div class="skeleton-shimmer absolute inset-0"></div>
+          <iframe data-srcdoc="{{ it.preview_html|escape }}" scrolling="no" class="lazy-iframe opacity-0 transition-opacity duration-300"></iframe>
+        </div>
+        <div class="p-3 border-t border-slate-100">
+          <h3 class="font-bold text-xs truncate group-hover:text-indigo-600 transition">{{ it.tpl.title }}</h3>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+<!-- ============ MOBILE STICKY ACTION BAR ============ -->
+<div class="pc-mobile-bar show">
+  <button type="button" onclick="loadSample()">🎯</button>
+  <button type="button" onclick="undo()">↶</button>
+  <button type="button" onclick="redo()">↷</button>
+  {% if user.is_authenticated %}
+    <button type="button" onclick="saveDoc()">💾 Save</button>
+    <button type="button" onclick="exportPDF()" class="primary">⬇ PDF</button>
+  {% else %}
+    <a href="{% url 'login' %}?next={{ request.path }}" class="primary text-center">🔒 Login</a>
+  {% endif %}
+</div>
+
+<script>document.body.classList.add('has-mobile-bar')</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+<script>
+const TEMPLATE = {{ template_json|safe }};
+const TEMPLATE_ID = {{ template.id }};
+const HAS_NO_WATERMARK = {{ has_no_watermark|yesno:"true,false" }};
+const ABSOLUTE_URL = "{{ share_url_absolute|default:''|escapejs }}";
+const csrf = '{{ csrf_token }}';
+
+function buildForm() {
+  const form = document.getElementById('docForm');
+  form.innerHTML = '';
+  TEMPLATE.fields_schema.forEach(f => {
+    const wrap = document.createElement('div');
+
+    if (f.type === 'items') {
+      // Dynamic list of items (add/remove rows)
+      buildItemsField(wrap, f);
+      form.appendChild(wrap);
+      return;
+    }
+
+    const label = document.createElement('label');
+    label.className = 'flex items-center justify-between text-sm font-bold text-slate-700 mb-2';
+    const span = document.createElement('span');
+    span.textContent = f.label;
+    label.appendChild(span);
+
+    if (f.ai) {
+      const aiBtn = document.createElement('button');
+      aiBtn.type = 'button';
+      aiBtn.className = 'ai-btn';
+      aiBtn.textContent = '✨ AI';
+      aiBtn.onclick = () => enhanceField(f.name, 'improve', aiBtn);
+      label.appendChild(aiBtn);
+    }
+
+    let input;
+    if (f.type === 'textarea') {
+      input = document.createElement('textarea');
+      input.rows = 4;
+    } else {
+      input = document.createElement('input');
+      input.type = f.type || 'text';
+    }
+    input.name = f.name;
+    input.id = 'f_' + f.name;
+    input.className = 'w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none transition';
+    input.addEventListener('input', updatePreview);
+
+    wrap.appendChild(label);
+    wrap.appendChild(input);
+    form.appendChild(wrap);
+  });
+}
+
+// ---------- DYNAMIC ITEMS FIELD ----------
+function buildItemsField(wrap, f) {
+  const header = document.createElement('div');
+  header.className = 'flex items-center justify-between mb-3';
+  header.innerHTML = `<span class="text-sm font-bold text-slate-700">${f.label}</span>`;
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700';
+  addBtn.textContent = '+ Add Item';
+  header.appendChild(addBtn);
+  wrap.appendChild(header);
+
+  const container = document.createElement('div');
+  container.id = 'items_' + f.name;
+  container.className = 'space-y-2';
+  wrap.appendChild(container);
+
+  // Live grand total bar (only shown when items have qty + price)
+  const totalBar = document.createElement('div');
+  totalBar.id = 'liveTotalBar_' + f.name;
+  totalBar.className = 'mt-3 hidden bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-3 flex items-center justify-between';
+  totalBar.innerHTML = `<div class="text-xs font-semibold text-indigo-700 uppercase tracking-wide">Live Total (${f.item_fields.length} items)</div><div class="text-2xl font-extrabold gradient-text" id="liveTotal_${f.name}">₹0</div>`;
+  wrap.appendChild(totalBar);
+
+  // Store item field schema on the wrap for later
+  wrap.dataset.itemFields = JSON.stringify(f.item_fields);
+  wrap.dataset.fieldName = f.name;
+
+  addBtn.onclick = () => { addItemRow(container, f.item_fields); updatePreview(); refreshLiveTotal(f.name); };
+}
+
+function refreshLiveTotal(fieldName) {
+  const data = getData();
+  const items = data[fieldName] || [];
+  const hasQtyPrice = items.length && items[0].qty !== undefined && items[0].price !== undefined;
+  const bar = document.getElementById('liveTotalBar_' + fieldName);
+  if (!bar) return;
+  if (!hasQtyPrice || !items.length) { bar.classList.add('hidden'); return; }
+  bar.classList.remove('hidden');
+  let total = 0;
+  items.forEach(it => { total += (parseFloat(it.qty) || 0) * (parseFloat(it.price) || 0); });
+  bar.querySelector('.text-xs').textContent = `Live Total (${items.length} item${items.length!==1?'s':''})`;
+  document.getElementById('liveTotal_' + fieldName).textContent = '₹' + total.toLocaleString('en-IN', {maximumFractionDigits:2});
+}
+
+function addItemRow(container, itemFields, values) {
+  values = values || {};
+  const row = document.createElement('div');
+  row.className = 'flex gap-2 items-start bg-slate-50 p-2 rounded-lg cursor-move';
+  row.draggable = true;
+  // Drag handle
+  const handle = document.createElement('div');
+  handle.className = 'flex items-center text-slate-400 hover:text-slate-700 px-1 select-none';
+  handle.innerHTML = '⋮⋮';
+  handle.title = 'Drag to reorder';
+  row.appendChild(handle);
+  itemFields.forEach(itf => {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = itf.placeholder || itf.label;
+    inp.value = values[itf.name] || '';
+    inp.dataset.itemKey = itf.name;
+    inp.className = 'flex-1 min-w-0 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none';
+    inp.addEventListener('input', updatePreview);
+    inp.addEventListener('input', pushHistory);
+    row.appendChild(inp);
+  });
+  const rmBtn = document.createElement('button');
+  rmBtn.type = 'button';
+  rmBtn.className = 'px-2.5 h-9 bg-red-50 text-red-600 rounded-lg text-sm font-bold hover:bg-red-100 flex-shrink-0';
+  rmBtn.textContent = '✕';
+  rmBtn.onclick = () => { row.remove(); updatePreview(); pushHistory(); };
+  row.appendChild(rmBtn);
+
+  // Drag and drop reorder
+  row.addEventListener('dragstart', (e) => {
+    row.classList.add('opacity-50');
+    e.dataTransfer.effectAllowed = 'move';
+    window._dragRow = row;
+  });
+  row.addEventListener('dragend', () => row.classList.remove('opacity-50'));
+  row.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const dragging = window._dragRow;
+    if (!dragging || dragging === row) return;
+    const rect = row.getBoundingClientRect();
+    const after = (e.clientY - rect.top) > rect.height / 2;
+    container.insertBefore(dragging, after ? row.nextSibling : row);
+  });
+  row.addEventListener('drop', (e) => {
+    e.preventDefault();
+    updatePreview();
+    pushHistory();
+  });
+
+  container.appendChild(row);
+}
+
+function getData() {
+  const d = {};
+  TEMPLATE.fields_schema.forEach(f => {
+    if (f.type === 'items') {
+      const container = document.getElementById('items_' + f.name);
+      if (!container) { d[f.name] = []; return; }
+      d[f.name] = Array.from(container.children).map(row => {
+        const obj = {};
+        row.querySelectorAll('input[data-item-key]').forEach(inp => {
+          obj[inp.dataset.itemKey] = inp.value;
+        });
+        return obj;
+      }).filter(o => Object.values(o).some(v => v && String(v).trim()));
+    } else {
+      const el = document.getElementById('f_' + f.name);
+      if (el) d[f.name] = el.value;
+    }
+  });
+  if (d.skills) d.skills_list = d.skills.split(',').map(s => s.trim()).filter(Boolean);
+  // Single-item legacy support
+  if (d.qty && d.price) d.total = (parseFloat(d.qty) * parseFloat(d.price)).toFixed(2);
+  // Items array: compute per-item total + grand total (used by invoices)
+  if (Array.isArray(d.items)) {
+    let grand = 0;
+    d.items.forEach(it => {
+      const qty = parseFloat(it.qty) || 0;
+      const price = parseFloat(it.price) || 0;
+      const lineTotal = qty * price;
+      it.total = lineTotal.toFixed(2);
+      grand += lineTotal;
+    });
+    if (grand > 0) d.total = grand.toFixed(2);
+  }
+  return d;
+}
+
+function setData(data) {
+  TEMPLATE.fields_schema.forEach(f => {
+    if (f.type === 'items') {
+      const container = document.getElementById('items_' + f.name);
+      if (!container) return;
+      container.innerHTML = '';
+      const arr = data[f.name] || [];
+      arr.forEach(itemValues => addItemRow(container, f.item_fields, itemValues));
+    } else if (data[f.name] !== undefined) {
+      const el = document.getElementById('f_' + f.name);
+      if (el) el.value = data[f.name];
+    }
+  });
+}
+
+let userZoom = null;  // null = auto-fit; number = manual override
+
+async function updatePreview() {
+  const spinner = document.getElementById('prevLoading');
+  if (spinner) spinner.classList.remove('hidden');
+  try {
+    const res = await fetch(`/api/templates/${TEMPLATE_ID}/render/`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+      body: JSON.stringify({data: getData()}),
+    });
+    const j = await res.json();
+    document.getElementById('preview').innerHTML = j.html;
+    requestAnimationFrame(() => fitPreview());
+    TEMPLATE.fields_schema.forEach(f => {
+      if (f.type === 'items') refreshLiveTotal(f.name);
+    });
+  } finally {
+    if (spinner) setTimeout(() => spinner.classList.add('hidden'), 200);
+  }
+}
+
+// ========== DEVICE MODE (desktop / tablet / mobile) ==========
+let deviceMode = 'desktop';
+const DEVICE_WIDTHS = {desktop: '100%', tablet: '768px', mobile: '380px'};
+function setDeviceMode(mode) {
+  deviceMode = mode;
+  const dev = document.getElementById('previewDevice');
+  dev.style.maxWidth = DEVICE_WIDTHS[mode];
+  dev.style.transition = 'max-width .35s cubic-bezier(.4,0,.2,1)';
+  document.querySelectorAll('.dev-btn').forEach(b => {
+    b.classList.remove('bg-white','shadow-sm','text-indigo-600');
+    b.classList.add('text-slate-500');
+  });
+  const active = document.getElementById('dev-' + mode);
+  if (active) {
+    active.classList.add('bg-white','shadow-sm','text-indigo-600');
+    active.classList.remove('text-slate-500');
+  }
+  setTimeout(() => fitPreview(), 100);
+}
+
+// ========== BG MODE (light / dark / grid) ==========
+function setBgMode(mode) {
+  const wrap = document.getElementById('previewWrap');
+  wrap.style.backgroundImage = '';
+  wrap.style.backgroundSize = '';
+  if (mode === 'light') {
+    wrap.style.background = '#f8fafc';
+    wrap.style.backgroundImage = 'radial-gradient(circle,#e2e8f0 1px,transparent 1px)';
+    wrap.style.backgroundSize = '20px 20px';
+  } else if (mode === 'dark') {
+    wrap.style.background = '#0f172a';
+    wrap.style.backgroundImage = 'radial-gradient(circle,#334155 1px,transparent 1px)';
+    wrap.style.backgroundSize = '20px 20px';
+  } else if (mode === 'grid') {
+    wrap.style.background = '#fff';
+    wrap.style.backgroundImage = 'linear-gradient(#e2e8f0 1px,transparent 1px),linear-gradient(90deg,#e2e8f0 1px,transparent 1px)';
+    wrap.style.backgroundSize = '24px 24px';
+  }
+  document.querySelectorAll('.bg-btn').forEach(b => {
+    b.classList.remove('bg-white','shadow-sm','text-indigo-600');
+    b.classList.add('text-slate-500');
+  });
+  const active = document.getElementById('bg-' + mode);
+  if (active) {
+    active.classList.add('bg-white','shadow-sm','text-indigo-600');
+    active.classList.remove('text-slate-500');
+  }
+}
+
+// ========== FULLSCREEN PREVIEW ==========
+function toggleFullscreen() {
+  const card = document.getElementById('previewCard');
+  if (!document.fullscreenElement) {
+    card.requestFullscreen?.().then(() => {
+      card.style.background = '#0f172a';
+      setTimeout(fitPreview, 200);
+    }).catch(() => PC.toast('Fullscreen not supported', 'warning'));
+  } else {
+    document.exitFullscreen?.();
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  const card = document.getElementById('previewCard');
+  if (!document.fullscreenElement) {
+    card.style.background = '';
+  }
+  setTimeout(fitPreview, 200);
+});
+
+function fitPreview() {
+  const wrap = document.getElementById('previewWrap');
+  const preview = document.getElementById('preview');
+  if (!wrap || !preview) return;
+  // Reset transform to measure natural size
+  preview.style.transform = 'scale(1)';
+  const wrapW = wrap.clientWidth - 36;  // padding
+  const wrapH = wrap.clientHeight - 36;
+  const innerW = preview.scrollWidth || 1;
+  const innerH = preview.scrollHeight || 1;
+  const scale = userZoom !== null ? userZoom
+    : Math.min(wrapW / innerW, wrapH / innerH, 1);
+  preview.style.transform = `scale(${scale})`;
+  // Compensate for scaled height so wrapper fits without scroll
+  preview.style.marginBottom = `${(scale - 1) * innerH}px`;
+  preview.style.marginRight  = `${(scale - 1) * innerW}px`;
+  document.getElementById('zoomLabel').textContent = Math.round(scale * 100) + '%';
+}
+
+function zoom(delta) {
+  const current = parseFloat(document.getElementById('zoomLabel').textContent) / 100;
+  userZoom = Math.max(0.2, Math.min(2, current + delta));
+  fitPreview();
+}
+
+function resetZoom() {
+  userZoom = null;
+  fitPreview();
+}
+
+window.addEventListener('resize', () => { if (userZoom === null) fitPreview(); });
+
+// ========== AUTO-SAVE TO LOCALSTORAGE ==========
+const AUTO_KEY = 'pc_draft_' + TEMPLATE_ID;
+let autoSaveTimer;
+function scheduleAutoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(AUTO_KEY, JSON.stringify({data: getData(), ts: Date.now()}));
+      const s = document.getElementById('autoSaveStatus');
+      if (s) { s.textContent = '💾 Auto-saved ' + new Date().toLocaleTimeString(); }
+    } catch (e) {}
+  }, 800);
+}
+function loadAutoSave() {
+  try {
+    const raw = localStorage.getItem(AUTO_KEY);
+    if (!raw) return false;
+    const stored = JSON.parse(raw);
+    if (stored && stored.data && (Date.now() - stored.ts) < 7*24*60*60*1000) {
+      setData(stored.data);
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+// ========== UNDO / REDO HISTORY ==========
+const _hist = {stack: [], idx: -1, max: 50};
+function pushHistory() {
+  try {
+    const snap = JSON.stringify(getData());
+    if (_hist.stack[_hist.idx] === snap) return;
+    _hist.stack = _hist.stack.slice(0, _hist.idx + 1);
+    _hist.stack.push(snap);
+    if (_hist.stack.length > _hist.max) _hist.stack.shift();
+    _hist.idx = _hist.stack.length - 1;
+  } catch (e) {}
+}
+function undo() {
+  if (_hist.idx <= 0) { PC.toast('Nothing to undo', 'warning'); return; }
+  _hist.idx--;
+  setData(JSON.parse(_hist.stack[_hist.idx]));
+  updatePreview();
+  PC.toast('Undo', 'success');
+}
+function redo() {
+  if (_hist.idx >= _hist.stack.length - 1) { PC.toast('Nothing to redo', 'warning'); return; }
+  _hist.idx++;
+  setData(JSON.parse(_hist.stack[_hist.idx]));
+  updatePreview();
+  PC.toast('Redo', 'success');
+}
+
+// ========== KEYBOARD SHORTCUTS ==========
+const PREV_URL = '{% url "editor" prev_id %}';
+const NEXT_URL = '{% url "editor" next_id %}';
+function openKbModal(){const m=document.getElementById('kbModal');m.classList.remove('hidden');m.classList.add('flex');}
+function closeKbModal(){const m=document.getElementById('kbModal');m.classList.add('hidden');m.classList.remove('flex');}
+document.addEventListener('keydown', function(e) {
+  // Don't intercept if typing in input/textarea (except some chords)
+  const inField = ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName);
+  const ctrl = e.ctrlKey || e.metaKey;
+  if (ctrl && e.key === 's') { e.preventDefault(); saveDoc(); }
+  else if (ctrl && e.key === 'd') { e.preventDefault(); exportPDF(); }
+  else if (ctrl && e.shiftKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); redo(); }
+  else if (ctrl && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); undo(); }
+  else if (ctrl && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); redo(); }
+  else if (e.altKey && e.key === 'ArrowLeft') { e.preventDefault(); window.location.href = PREV_URL; }
+  else if (e.altKey && e.key === 'ArrowRight') { e.preventDefault(); window.location.href = NEXT_URL; }
+  else if (!inField && e.key === '?') { e.preventDefault(); openKbModal(); }
+  else if (e.key === 'Escape') { closeKbModal(); closeShareModal && closeShareModal(); closeImageStudio && closeImageStudio(); }
+});
+
+// ========== TOOL PANEL: Theme Color ==========
+document.getElementById('themeColor')?.addEventListener('input', function() {
+  const c = this.value;
+  document.getElementById('preview').style.setProperty('--theme-color', c);
+  // Inject CSS that overrides common color usages
+  let s = document.getElementById('themeOverride');
+  if (!s) { s = document.createElement('style'); s.id = 'themeOverride'; document.head.appendChild(s); }
+  s.textContent = `#preview h1,#preview h2{color:${c}!important}#preview .role,#preview .label{color:${c}!important}#preview a{color:${c}!important}`;
+});
+
+// ========== TOOL PANEL: Currency ==========
+document.getElementById('currencySel')?.addEventListener('change', function() {
+  const newCur = this.value;
+  // Replace ₹ in preview HTML
+  const p = document.getElementById('preview');
+  p.innerHTML = p.innerHTML.replace(/₹|\$|€|£|¥|A\$/g, newCur);
+});
+
+// ========== TOOL PANEL: Photo Upload ==========
+let uploadedPhoto = null;
+document.getElementById('photoUp')?.addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    uploadedPhoto = ev.target.result;
+    // Inject as background of any element with class .photo or first letter avatar
+    let s = document.getElementById('photoOverride');
+    if (!s) { s = document.createElement('style'); s.id = 'photoOverride'; document.head.appendChild(s); }
+    s.textContent = `#preview .photo{background-image:url('${uploadedPhoto}')!important;background-size:cover!important;background-position:center!important;color:transparent!important}`;
+    PC.toast('Photo applied to template', 'success');
+  };
+  reader.readAsDataURL(file);
+});
+
+// ========== TOOL PANEL: Animation Toggle ==========
+let animationOn = false;
+function toggleAnimation() {
+  animationOn = !animationOn;
+  const btn = document.getElementById('animBtn');
+  let s = document.getElementById('animStyle');
+  if (!s) { s = document.createElement('style'); s.id = 'animStyle'; document.head.appendChild(s); }
+  if (animationOn) {
+    btn.textContent = '✨ On';
+    btn.classList.add('bg-indigo-100','text-indigo-700');
+    s.textContent = `@keyframes pcFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes pcShimmer{0%{opacity:.8}50%{opacity:1}100%{opacity:.8}}#preview h1{animation:pcFloat 3s ease-in-out infinite}#preview h2{animation:pcShimmer 2s ease-in-out infinite}`;
+  } else {
+    btn.textContent = 'Off';
+    btn.classList.remove('bg-indigo-100','text-indigo-700');
+    s.textContent = '';
+  }
+}
+
+// ========== SHARE MODAL ==========
+let savedDocId = null;
+function openShareModal() {
+  document.getElementById('shareModal').classList.remove('hidden');
+  document.getElementById('shareModal').classList.add('flex');
+}
+function closeShareModal() {
+  document.getElementById('shareModal').classList.add('hidden');
+  document.getElementById('shareModal').classList.remove('flex');
+}
+async function generateShareLink() {
+  PC.loader.show('Saving and generating link...');
+  try {
+    // Save first if not saved
+    if (!savedDocId) {
+      const r = await fetch('/api/documents/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+        body: JSON.stringify({template: TEMPLATE_ID, title: TEMPLATE.title, data: getData()}),
+      });
+      const j = await r.json();
+      savedDocId = j.id;
+    }
+    const r2 = await fetch('/api/doc/' + savedDocId + '/share/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+      body: '{}',
+    });
+    const j2 = await r2.json();
+    PC.loader.hide();
+    document.getElementById('shareContent').innerHTML = `
+      <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
+        <div class="text-sm font-bold text-green-800 mb-2">✅ Link generated!</div>
+        <input type="text" value="${j2.share_url}" readonly class="w-full px-3 py-2 border border-green-300 rounded-lg text-xs bg-white font-mono" onclick="this.select()">
+      </div>
+      <button type="button" onclick="navigator.clipboard.writeText('${j2.share_url}').then(()=>PC.toast('Copied!','success'))" class="btn-primary w-full">📋 Copy Link</button>
+      <a href="${j2.share_url}" target="_blank" class="block text-center mt-3 text-indigo-600 text-sm font-semibold hover:underline">🔗 Open in new tab →</a>
+    `;
+  } catch (e) {
+    PC.loader.hide();
+    PC.toast('Failed to generate link', 'error');
+  }
+}
+
+// Wire auto-save AND history into all input changes
+setTimeout(() => {
+  document.querySelectorAll('#docForm input, #docForm textarea').forEach(el => {
+    el.addEventListener('input', scheduleAutoSave);
+    el.addEventListener('change', pushHistory);
+  });
+  pushHistory();  // initial state
+}, 500);
+
+// ========== QR CODE INJECTION (for vouchers / tickets) ==========
+(function() {
+  if (!['voucher', 'ticket'].includes(TEMPLATE.category)) return;
+  // Load qrcodejs
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+  script.onload = injectQRControl;
+  document.head.appendChild(script);
+})();
+function injectQRControl() {
+  const tools = document.getElementById('toolPanel');
+  if (!tools) return;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">📱 QR Code</label>
+    <input type="text" id="qrText" placeholder="https://your-link" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm">
+    <button type="button" onclick="generateQR()" class="mt-1 w-full px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold">Add QR</button>`;
+  tools.querySelector('.grid').appendChild(wrap);
+}
+// ========== PRINT ==========
+function printDoc() {
+  const html = document.getElementById('preview').innerHTML;
+  const w = window.open('', '_blank', 'width=800,height=900');
+  w.document.write('<!doctype html><html><head><title>Print</title><style>body{margin:0;padding:20px;font-family:sans-serif}@media print{body{padding:0}}</style></head><body>' + html + '<script>window.onload=()=>setTimeout(()=>{window.print();window.close()},300)<\/script></body></html>');
+  w.document.close();
+}
+
+// ========== FAVORITES (localStorage) ==========
+function getFavs() { try { return JSON.parse(localStorage.getItem('pc_favs')||'[]'); } catch { return []; } }
+function isFav() { return getFavs().includes(TEMPLATE_ID); }
+function toggleFav() {
+  let favs = getFavs();
+  if (favs.includes(TEMPLATE_ID)) {
+    favs = favs.filter(id => id !== TEMPLATE_ID);
+    PC.toast('Removed from favorites', 'warning');
+  } else {
+    favs.push(TEMPLATE_ID);
+    PC.toast('Added to favorites ⭐', 'success');
+    PC_ACH.unlock('first_fav');
+  }
+  localStorage.setItem('pc_favs', JSON.stringify(favs));
+  updateFavBtn();
+}
+function updateFavBtn() {
+  const btn = document.getElementById('favBtn');
+  if (!btn) return;
+  if (isFav()) {
+    btn.textContent = '★';
+    btn.classList.add('text-yellow-500','border-yellow-300','bg-yellow-50');
+  } else {
+    btn.textContent = '☆';
+    btn.classList.remove('text-yellow-500','border-yellow-300','bg-yellow-50');
+  }
+}
+setTimeout(updateFavBtn, 100);
+
+// ========== RECENTLY VIEWED (localStorage) ==========
+(function trackRecent() {
+  try {
+    let recent = JSON.parse(localStorage.getItem('pc_recent') || '[]');
+    const wasNew = !recent.includes(TEMPLATE_ID);
+    recent = recent.filter(id => id !== TEMPLATE_ID);
+    recent.unshift(TEMPLATE_ID);
+    recent = recent.slice(0, 10);
+    localStorage.setItem('pc_recent', JSON.stringify(recent));
+    // Achievements
+    setTimeout(() => {
+      PC_ACH.unlock('first_view');
+      if (recent.length >= 5) PC_ACH.unlock('five_views');
+    }, 800);
+  } catch (e) {}
+})();
+
+// ========== LAZY-LOAD RELATED TEMPLATE IFRAMES ==========
+(function() {
+  const iframes = document.querySelectorAll('iframe.lazy-iframe');
+  if (!iframes.length) return;
+  if (!('IntersectionObserver' in window)) {
+    iframes.forEach(f => { f.srcdoc = f.dataset.srcdoc; f.classList.remove('opacity-0'); });
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const f = entry.target;
+        f.srcdoc = f.dataset.srcdoc;
+        f.addEventListener('load', () => {
+          f.classList.remove('opacity-0');
+          f.parentElement.querySelector('.skeleton-shimmer')?.remove();
+        }, {once: true});
+        setTimeout(() => {
+          f.classList.remove('opacity-0');
+          f.parentElement.querySelector('.skeleton-shimmer')?.remove();
+        }, 1500);
+        io.unobserve(f);
+      }
+    });
+  }, {rootMargin: '300px'});
+  iframes.forEach(f => io.observe(f));
+})();
+
+// ========== APPLY BRAND KIT ==========
+let brandApplied = false;
+async function applyBrandKit() {
+  if (brandApplied) {
+    // Toggle off — remove brand styles
+    document.getElementById('brandKitOverride')?.remove();
+    brandApplied = false;
+    PC.toast('Brand removed', 'warning');
+    return;
+  }
+  PC.loader.show('Loading brand kit...');
+  try {
+    const r = await fetch('/api/brand-kit/');
+    if (r.status === 401) {
+      PC.loader.hide();
+      PC.toast('Please log in to use Brand Kit', 'warning');
+      setTimeout(() => window.location.href = '/login/?next=' + encodeURIComponent(location.pathname), 1000);
+      return;
+    }
+    const k = await r.json();
+    PC.loader.hide();
+    if (!k.has_kit) {
+      PC.toast('No brand kit yet — set one up first', 'warning');
+      setTimeout(() => window.location.href = '/brand-kit/', 1200);
+      return;
+    }
+    // Inject brand override CSS
+    let s = document.getElementById('brandKitOverride');
+    if (!s) { s = document.createElement('style'); s.id = 'brandKitOverride'; document.head.appendChild(s); }
+    // Load Google Font for brand
+    const hf = encodeURIComponent(k.heading_font);
+    const bf = encodeURIComponent(k.body_font);
+    let fontLink = document.getElementById('brandFonts');
+    if (!fontLink) { fontLink = document.createElement('link'); fontLink.rel = 'stylesheet'; fontLink.id = 'brandFonts'; document.head.appendChild(fontLink); }
+    fontLink.href = `https://fonts.googleapis.com/css2?family=${hf}:wght@400;700&family=${bf}:wght@400;700&display=swap`;
+    // Override styles inside #preview
+    s.textContent = `
+      #preview h1, #preview h2, #preview h3 { font-family: '${k.heading_font}', serif !important; color: ${k.primary_color} !important; }
+      #preview p, #preview .body, #preview pre, #preview span, #preview div { font-family: '${k.body_font}', sans-serif !important; }
+      #preview .role, #preview .label, #preview .small, #preview .sub { color: ${k.secondary_color} !important; }
+      #preview .price, #preview .total, #preview .amp, #preview .amt { color: ${k.accent_color} !important; }
+      #preview .ico, #preview .logo, #preview img.logo { color: ${k.primary_color} !important; }
+      #preview .name, #preview h1.couple { color: ${k.primary_color} !important; }
+      #preview a { color: ${k.primary_color} !important; }
+    `;
+    // If kit has logo, swap any element with class .photo or .logo
+    if (k.logo) {
+      const preview = document.getElementById('preview');
+      preview.querySelectorAll('.photo, .logo, .mono').forEach(el => {
+        el.style.backgroundImage = `url('${k.logo}')`;
+        el.style.backgroundSize = 'contain';
+        el.style.backgroundRepeat = 'no-repeat';
+        el.style.backgroundPosition = 'center';
+        el.style.color = 'transparent';
+      });
+    }
+    brandApplied = true;
+    PC.toast('Brand applied! Click again to remove.', 'success');
+    PC_ACH.unlock('first_brand');
+  } catch (e) {
+    PC.loader.hide();
+    PC.toast('Failed: ' + e.message, 'error');
+  }
+}
+
+function emailDoc() {
+  const subject = encodeURIComponent('Check out my ' + TEMPLATE.title);
+  const body = encodeURIComponent('Hi,\n\nI just created this with Pagecraft. View it here:\n\n' + window.location.href + '\n\nMade with ✦ Pagecraft');
+  window.location.href = `mailto:?subject=${subject}&body=${body}`;
+}
+
+function whatsappShare() {
+  const text = encodeURIComponent(`✨ Check out my ${TEMPLATE.title} I made with Pagecraft!\n\n${window.location.href}\n\n— Made with ✦ Pagecraft`);
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+  PC_ACH.unlock?.('first_share');
+}
+
+// ===== SURPRISE ME — random template + sample data =====
+async function surpriseMe() {
+  PC.loader?.show?.('Picking something fun...');
+  try {
+    const r = await fetch('/api/templates/?random=1&limit=1', {headers: {'Accept': 'application/json'}});
+    const data = await r.json();
+    const list = data.results || data;
+    if (Array.isArray(list) && list.length) {
+      const pick = list[Math.floor(Math.random() * list.length)];
+      window.location.href = '/editor/' + pick.id + '/?surprise=1';
+      return;
+    }
+  } catch (e) {}
+  // Fallback: navigate to current category random
+  window.location.href = '/editor/' + TEMPLATE.id + '/?surprise=1';
+}
+
+// On surprise visit auto-load sample data
+(function() {
+  if (new URLSearchParams(location.search).get('surprise') === '1') {
+    setTimeout(() => { try { loadSample(); PC.toast('🎲 Surprise! Try this template.', 'success'); } catch (e) {} }, 600);
+  }
+})();
+
+function generateQR() {
+  const text = document.getElementById('qrText').value.trim();
+  if (!text) { PC.toast('Enter a link or text first', 'warning'); return; }
+  const tmp = document.createElement('div');
+  new QRCode(tmp, {text, width: 120, height: 120});
+  setTimeout(() => {
+    const img = tmp.querySelector('img') || tmp.querySelector('canvas');
+    if (!img) return;
+    const dataUrl = img.tagName === 'CANVAS' ? img.toDataURL() : img.src;
+    const preview = document.getElementById('preview');
+    let qrEl = preview.querySelector('.pc-qr');
+    if (!qrEl) {
+      qrEl = document.createElement('img');
+      qrEl.className = 'pc-qr';
+      qrEl.style.cssText = 'position:absolute;bottom:14px;right:14px;width:80px;height:80px;border:3px solid #fff;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:10';
+      preview.style.position = 'relative';
+      preview.appendChild(qrEl);
+    }
+    qrEl.src = dataUrl;
+    PC.toast('QR code added!', 'success');
+  }, 200);
+}
+
+// On page load, offer to restore draft
+setTimeout(() => {
+  if (loadAutoSave()) {
+    PC.toast('Draft restored from auto-save', 'success');
+    updatePreview();
+  }
+}, 700);
+
+// Update PDF export to use selected paper size
+const _origExportPDF = exportPDF;
+exportPDF = async function() {
+  if (!await checkDownloadAllowed('pdf')) return;
+  const size = document.getElementById('paperSize')?.value || 'a4';
+  const t = getRenderTarget();
+  try {
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: safeName('pdf'),
+      image: {type: 'jpeg', quality: 0.98},
+      html2canvas: {scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false},
+      jsPDF: {unit: 'mm', format: size, orientation: 'portrait'},
+    };
+    await html2pdf().set(opt).from(t.el).save();
+    PC.toast('PDF downloaded', 'success');
+    PC_ACH.unlock('first_pdf');
+  } catch (e) {
+    PC.toast('PDF export failed', 'error');
+  } finally {
+    t.restore();
+    if (userZoom === null) requestAnimationFrame(fitPreview);
+  }
+};
+
+// ========== AI IMAGE STUDIO (Nano Banana) ==========
+let currentStyle = '';
+let lastImageDataUrl = null;
+let bgImageDataUrl = null;
+
+function openImageStudio() {
+  document.getElementById('imgModal').classList.remove('hidden');
+  document.getElementById('imgModal').classList.add('flex');
+  document.getElementById('imgPrompt').focus();
+}
+
+function closeImageStudio() {
+  document.getElementById('imgModal').classList.add('hidden');
+  document.getElementById('imgModal').classList.remove('flex');
+}
+
+function setStyle(s) {
+  currentStyle = s;
+  document.querySelectorAll('.style-chip').forEach(c => {
+    if (c.dataset.style === s) {
+      c.classList.add('bg-amber-100','border-amber-500','text-amber-700');
+    } else {
+      c.classList.remove('bg-amber-100','border-amber-500','text-amber-700');
+    }
+  });
+}
+
+async function generateImage() {
+  const prompt = document.getElementById('imgPrompt').value.trim();
+  if (!prompt) { PC.toast('Please enter a prompt', 'warning'); return; }
+  const btn = document.getElementById('genBtn');
+  const result = document.getElementById('imgResult');
+  btn.disabled = true;
+  const oldText = btn.textContent;
+  btn.innerHTML = '<span class="pc-btn-spinner"></span>Generating...';
+  PC.loader.show('🍌 Nano Banana is painting...', 'This usually takes 10-30 seconds', true);
+  result.innerHTML = '';
+
+  try {
+    const r = await fetch('/api/ai/image/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+      body: JSON.stringify({prompt, style: currentStyle}),
+    });
+    const j = await r.json();
+    PC.loader.hide();
+
+    if (j.image) {
+      lastImageDataUrl = j.image;
+      PC.toast('Image generated!', 'success');
+      result.innerHTML = `
+        <div class="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 shadow-sm">
+          <img src="${j.image}" alt="generated" class="w-full h-auto block">
+        </div>
+        <div class="grid grid-cols-3 gap-2 mt-4">
+          <button type="button" onclick="useAsBackground()" class="px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700">🖼 Use as BG</button>
+          <button type="button" onclick="downloadGenerated()" class="px-3 py-2.5 rounded-xl bg-white border border-slate-200 font-semibold text-sm hover:bg-slate-50">⬇ Download</button>
+          <button type="button" onclick="copyImageUrl()" class="px-3 py-2.5 rounded-xl bg-white border border-slate-200 font-semibold text-sm hover:bg-slate-50">📋 Copy URL</button>
+        </div>`;
+    } else if (j.error === 'rate_limit') {
+      // Friendly quota UI with live countdown
+      const seconds = j.retry_after || 60;
+      result.innerHTML = `
+        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-6 text-center">
+          <div class="text-5xl mb-3">⏰</div>
+          <div class="font-bold text-amber-900 text-lg mb-1">Free quota reached</div>
+          <div class="text-sm text-amber-800 mb-4">${j.message || 'Please wait before generating another image.'}</div>
+          <div class="bg-white rounded-xl p-4 mb-4">
+            <div class="text-xs text-slate-500 uppercase tracking-wide mb-1">Retry in</div>
+            <div id="retryTimer" class="text-4xl font-extrabold text-amber-600 font-mono">${seconds}s</div>
+          </div>
+          <button type="button" id="retryBtn" disabled onclick="generateImage()" class="px-5 py-2.5 bg-amber-500 text-white rounded-xl font-bold disabled:opacity-50">Try Again</button>
+          <div class="text-xs text-slate-500 mt-3">Tip: get a paid Gemini key at <a href="https://aistudio.google.com/apikey" target="_blank" class="text-indigo-600 underline">aistudio.google.com</a> for higher limits.</div>
+        </div>`;
+      startRetryCountdown(seconds);
+    } else {
+      result.innerHTML = `
+        <div class="bg-red-50 border border-red-200 rounded-2xl p-4 text-sm text-red-700">
+          <strong>❌ ${j.message || j.error || 'Unknown error'}</strong>
+          ${j.detail ? '<div class="text-xs mt-2 opacity-75 font-mono break-all">' + j.detail + '</div>' : ''}
+          ${j.tried ? '<div class="text-xs mt-2">Tried: ' + j.tried.join(', ') + '</div>' : ''}
+        </div>`;
+    }
+  } catch (e) {
+    PC.loader.hide();
+    result.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">Network error: ${e}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = oldText;
+  }
+}
+
+function startRetryCountdown(seconds) {
+  const timerEl = document.getElementById('retryTimer');
+  const btn = document.getElementById('retryBtn');
+  if (!timerEl || !btn) return;
+  let s = seconds;
+  const tick = () => {
+    if (s <= 0) {
+      timerEl.textContent = 'Ready';
+      timerEl.classList.remove('text-amber-600');
+      timerEl.classList.add('text-green-600');
+      btn.disabled = false;
+      return;
+    }
+    timerEl.textContent = s + 's';
+    s--;
+    setTimeout(tick, 1000);
+  };
+  tick();
+}
+
+function useAsBackground() {
+  if (!lastImageDataUrl) return;
+  bgImageDataUrl = lastImageDataUrl;
+  // Apply as background to the preview wrapper
+  const previewWrap = document.getElementById('previewWrap');
+  previewWrap.style.backgroundImage = `url('${bgImageDataUrl}')`;
+  previewWrap.style.backgroundSize = 'cover';
+  previewWrap.style.backgroundPosition = 'center';
+  closeImageStudio();
+}
+
+function clearBackground() {
+  bgImageDataUrl = null;
+  const previewWrap = document.getElementById('previewWrap');
+  previewWrap.style.backgroundImage = '';
+  closeImageStudio();
+}
+
+function downloadGenerated() {
+  if (!lastImageDataUrl) return;
+  const a = document.createElement('a');
+  a.href = lastImageDataUrl;
+  a.download = 'pagecraft-ai-' + Date.now() + '.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+async function copyImageUrl() {
+  if (!lastImageDataUrl) return;
+  try {
+    await navigator.clipboard.writeText(lastImageDataUrl);
+    PC.toast('Image URL copied to clipboard!', 'success');
+  } catch (e) {
+    PC.toast('Could not copy — try Download instead.', 'error');
+  }
+}
+
+function loadSample() {
+  setData(TEMPLATE.sample_data);
+  updatePreview();
+}
+
+async function enhanceField(field, mode, btn) {
+  const el = document.getElementById('f_' + field);
+  btn.disabled = true; const old = btn.textContent; btn.textContent = '⏳';
+  try {
+    const r = await fetch('/api/ai/enhance/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+      body: JSON.stringify({
+        text: el.value,
+        mode: el.value.trim() ? mode : 'autofill',
+        context: {field, category: TEMPLATE.category},
+      }),
+    });
+    const j = await r.json();
+    el.value = j.result;
+    updatePreview();
+    PC_ACH.unlock('first_ai');
+  } finally {
+    btn.disabled = false; btn.textContent = old;
+  }
+}
+
+async function saveDoc() {
+  PC.loader.show('Saving document...', 'Storing your work safely');
+  try {
+    const r = await fetch('/api/documents/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+      body: JSON.stringify({template: TEMPLATE_ID, title: TEMPLATE.title, data: getData()}),
+    });
+    PC.loader.hide();
+    if (r.ok) {
+      PC.toast('Saved! Check "My Documents".', 'success');
+      PC_ACH.unlock('first_save');
+      return;
+    }
+    const j = await r.json();
+    if (r.status === 401) {
+      const ok = await PC.confirm('Login Required', j.message || 'Please log in to save documents.', {
+        type: 'login', confirmText: 'Sign In', cancelText: 'Not now',
+      });
+      if (ok) window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname);
+    } else if (r.status === 403) {
+      const ok = await PC.confirm('Free Plan Limit Reached', j.message, {
+        type: 'pro', confirmText: '⭐ View Pricing', cancelText: 'Maybe later',
+      });
+      if (ok) window.location.href = '/pricing/';
+    } else {
+      PC.toast('Save failed', 'error');
+    }
+  } catch (e) {
+    PC.loader.hide();
+    PC.toast('Save failed: ' + e.message, 'error');
+  }
+}
+
+// ---------- DOWNLOAD MENU TOGGLE ----------
+function toggleDownloadMenu(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('dlMenu');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+function closeDownloadMenu() {
+  document.getElementById('dlMenu').style.display = 'none';
+}
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('dlWrap');
+  if (wrap && !wrap.contains(e.target)) closeDownloadMenu();
+});
+
+// ---------- CLIENT-SIDE EXPORTS (PDF / PNG / JPG) ----------
+function safeName(ext) {
+  return TEMPLATE.title.replace(/[^a-z0-9]/gi, '_') + '.' + ext;
+}
+
+// ========== DOWNLOAD GATE — login + plan limit check ==========
+async function checkDownloadAllowed(format) {
+  try {
+    const r = await fetch('/api/check-download/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+      body: JSON.stringify({format: format}),
+    });
+    if (r.ok) {
+      const j = await r.json();
+      if (!j.unlimited && j.remaining !== null) {
+        PC.toast(`✅ Downloaded! ${j.remaining} downloads remaining on Free plan.`,
+                 j.remaining <= 1 ? 'warning' : 'success');
+      }
+      return true;
+    }
+    const j = await r.json();
+    // 401 = login required
+    if (r.status === 401) {
+      const ok = await PC.confirm('Login Required', j.message + '\n\nWould you like to sign in now?', {
+        type: 'login',
+        confirmText: 'Sign In',
+        cancelText: 'Not now',
+      });
+      if (ok) window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname);
+      return false;
+    }
+    // 403 = plan gate
+    if (r.status === 403) {
+      const isPro = j.reason === 'pro_required';
+      const upgrade = await PC.confirm(
+        isPro ? 'Pro Feature 🔒' : 'Free Plan Limit Reached',
+        j.message,
+        {
+          type: 'pro',
+          confirmText: '⭐ View Pricing',
+          cancelText: 'Maybe later',
+        }
+      );
+      if (upgrade) window.location.href = '/pricing/';
+      return false;
+    }
+    PC.toast('Download check failed', 'error');
+    return false;
+  } catch (e) {
+    PC.toast('Network error: ' + e.message, 'error');
+    return false;
+  }
+}
+
+// Always render at the template's natural size (zoom-independent)
+function getRenderTarget() {
+  const preview = document.getElementById('preview');
+  // Reset transform so html2canvas captures natural size, restore after
+  const oldTransform = preview.style.transform;
+  const oldMargin = preview.style.marginBottom;
+  const oldMarginR = preview.style.marginRight;
+  preview.style.transform = 'scale(1)';
+  preview.style.marginBottom = '0';
+  preview.style.marginRight = '0';
+
+  // Inject "Made with Pagecraft" watermark for free users
+  let watermarkEl = null;
+  if (!HAS_NO_WATERMARK) {
+    watermarkEl = document.createElement('div');
+    watermarkEl.id = '__pc_watermark';
+    watermarkEl.style.cssText = 'position:absolute;bottom:8px;right:10px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);color:#0052FF;font-family:Inter,system-ui,sans-serif;font-size:9px;font-weight:600;padding:4px 9px;border-radius:14px;border:1px solid rgba(0,82,255,.2);letter-spacing:.02em;z-index:99999;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.08);white-space:nowrap';
+    watermarkEl.innerHTML = '<span style="opacity:.7">Made with</span> <span style="font-weight:800">✦ Pagecraft</span>';
+    if (getComputedStyle(preview).position === 'static') preview.style.position = 'relative';
+    preview.appendChild(watermarkEl);
+  }
+
+  return {
+    el: preview,
+    restore: () => {
+      preview.style.transform = oldTransform;
+      preview.style.marginBottom = oldMargin;
+      preview.style.marginRight = oldMarginR;
+      if (watermarkEl && watermarkEl.parentNode) watermarkEl.parentNode.removeChild(watermarkEl);
+    },
+  };
+}
+
+async function exportPDF() {
+  if (!await checkDownloadAllowed('pdf')) return;
+  const t = getRenderTarget();
+  try {
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: safeName('pdf'),
+      image: {type: 'jpeg', quality: 0.98},
+      html2canvas: {scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false},
+      jsPDF: {unit: 'mm', format: 'a4', orientation: 'portrait'},
+    };
+    await html2pdf().set(opt).from(t.el).save();
+  } catch (e) {
+    PC.alert('PDF Export Failed', e.message, 'error');
+    console.error(e);
+  } finally {
+    t.restore();
+    if (userZoom === null) requestAnimationFrame(fitPreview);
+  }
+}
+
+// ========== GIF EXPORT (animated templates) ==========
+let _gifWorkerBlobUrl = null;
+
+async function _getGifWorkerUrl() {
+  // Cache the Blob URL across calls
+  if (_gifWorkerBlobUrl) return _gifWorkerBlobUrl;
+  // Fetch worker script as TEXT (CORS-permissive) then make a same-origin Blob URL
+  const sources = [
+    'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js',
+    'https://unpkg.com/gif.js@0.2.0/dist/gif.worker.js',
+  ];
+  for (const src of sources) {
+    try {
+      const r = await fetch(src);
+      if (!r.ok) continue;
+      const code = await r.text();
+      const blob = new Blob([code], {type: 'application/javascript'});
+      _gifWorkerBlobUrl = URL.createObjectURL(blob);
+      return _gifWorkerBlobUrl;
+    } catch (e) { continue; }
+  }
+  return null;  // signal failure → fall back to no-workers
+}
+
+async function exportGIF() {
+  if (typeof GIF === 'undefined' || typeof html2canvas === 'undefined') {
+    PC.toast('GIF library not loaded — refresh and try again', 'error');
+    return;
+  }
+  if (!await checkDownloadAllowed('gif')) return;
+  const t = getRenderTarget();
+  const el = t.el;
+  const rect = el.getBoundingClientRect();
+  const width = Math.min(Math.round(rect.width), 600);
+  const height = Math.min(Math.round(rect.height), 800);
+
+  PC.loader.show('🎬 Recording animation...', 'Loading worker...', true);
+
+  try {
+    // Resolve worker URL via Blob (avoids CORS) or fall back to main-thread
+    const workerUrl = await _getGifWorkerUrl();
+    const gifOpts = {
+      quality: 10,
+      width: width,
+      height: height,
+    };
+    if (workerUrl) {
+      gifOpts.workers = 2;
+      gifOpts.workerScript = workerUrl;
+    } else {
+      gifOpts.workers = 0;  // main thread fallback (slower but works)
+    }
+    const gif = new GIF(gifOpts);
+
+    const TOTAL_FRAMES = 20;
+    const FRAME_DELAY = 100;
+    const GIF_DELAY = 100;
+
+    // Restart animations by re-mounting the preview HTML
+    const html = el.innerHTML;
+    el.innerHTML = '';
+    void el.offsetHeight;
+    el.innerHTML = html;
+
+    PC.loader.sub('Capturing frames...');
+    for (let i = 0; i < TOTAL_FRAMES; i++) {
+      PC.loader.sub(`Frame ${i + 1} / ${TOTAL_FRAMES}`);
+      const canvas = await html2canvas(el, {
+        scale: 1,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        width: width,
+        height: height,
+      });
+      gif.addFrame(canvas, {delay: GIF_DELAY, copy: true});
+      await new Promise(r => setTimeout(r, FRAME_DELAY));
+    }
+
+    PC.loader.sub('Encoding GIF...');
+    gif.on('progress', p => {
+      PC.loader.sub('Encoding ' + Math.round(p * 100) + '%');
+    });
+    gif.on('finished', blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = safeName('gif');
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+      PC.loader.hide();
+      PC.toast('🎬 GIF downloaded!', 'success');
+      PC_ACH.unlock?.('first_pdf');
+    });
+    gif.on('abort', () => {
+      PC.loader.hide();
+      PC.toast('GIF encoding aborted', 'error');
+    });
+    gif.render();
+  } catch (e) {
+    PC.loader.hide();
+    PC.toast('GIF export failed: ' + e.message, 'error');
+    console.error(e);
+  } finally {
+    t.restore();
+    if (userZoom === null) requestAnimationFrame(fitPreview);
+  }
+}
+
+async function exportImage(format) {
+  if (typeof html2canvas === 'undefined') {
+    PC.alert('Library Not Loaded', 'Image library not loaded yet. Please refresh the page and try again.', 'warning');
+    return;
+  }
+  if (!await checkDownloadAllowed(format === 'jpeg' ? 'jpg' : 'png')) return;
+  const t = getRenderTarget();
+  try {
+    const canvas = await html2canvas(t.el, {
+      scale: 3,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      windowWidth: t.el.scrollWidth,
+      windowHeight: t.el.scrollHeight,
+    });
+    const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+    canvas.toBlob(function(blob) {
+      if (!blob) { PC.toast('Image generation failed', 'error'); return; }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = safeName(format === 'jpeg' ? 'jpg' : 'png');
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+    }, mime, 0.95);
+  } catch (e) {
+    PC.alert('Image Export Failed', e.message, 'error');
+    console.error(e);
+  } finally {
+    t.restore();
+    if (userZoom === null) requestAnimationFrame(fitPreview);
+  }
+}
+
+// ---------- AI TRANSLATION ----------
+document.getElementById('langSelect').addEventListener('change', async function() {
+  const lang = this.value;
+  if (!lang) return;
+  this.disabled = true;
+  const langName = this.options[this.selectedIndex].text;
+  PC.loader.show('Translating...', 'Converting all fields to ' + langName, true);
+  try {
+    const r = await fetch('/api/ai/translate/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+      body: JSON.stringify({data: getData(), language: lang}),
+    });
+    const j = await r.json();
+    setData(j.data);
+    await updatePreview();
+    PC.toast('Translated to ' + langName, 'success');
+  } catch (e) {
+    PC.toast('Translation failed: ' + e.message, 'error');
+  } finally {
+    PC.loader.hide();
+    this.disabled = false;
+  }
+});
+
+buildForm();
+loadSample();
+</script>
+{% endblock %}

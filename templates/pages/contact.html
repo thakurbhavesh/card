@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Contact" %} — Pagecraft{% endblock %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto px-6 py-20">
+  <div class="text-center mb-12">
+    <div class="inline-block text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-3">{% trans "Contact" %}</div>
+    <h1 class="text-5xl font-extrabold mb-4">{% trans "Let's talk" %}</h1>
+    <p class="text-xl text-slate-600">{% trans "Got a question, suggestion, or just want to say hi?" %}</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 text-center">
+      <div class="text-4xl mb-3">📧</div>
+      <h3 class="font-bold mb-1">{% trans "Email" %}</h3>
+      <p class="text-sm text-slate-500">hello@pagecraft.ai</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 text-center">
+      <div class="text-4xl mb-3">📱</div>
+      <h3 class="font-bold mb-1">{% trans "Phone" %}</h3>
+      <p class="text-sm text-slate-500">+91 98765 43210</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 text-center">
+      <div class="text-4xl mb-3">📍</div>
+      <h3 class="font-bold mb-1">{% trans "Office" %}</h3>
+      <p class="text-sm text-slate-500">Bangalore, India</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl p-10 shadow-sm border border-slate-100">
+    {% if sent %}
+      <div class="text-center py-10">
+        <div class="text-6xl mb-4">✅</div>
+        <h2 class="text-2xl font-bold mb-2">{% trans "Message Sent!" %}</h2>
+        <p class="text-slate-500">{% trans "Thanks for reaching out. We'll get back within 24 hours." %}</p>
+      </div>
+    {% else %}
+      <h2 class="text-2xl font-bold mb-6">{% trans "Send us a message" %}</h2>
+      <form method="post" class="space-y-5">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-semibold mb-2">{% trans "Your Name" %}</label>
+            <input type="text" name="name" required class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-2">{% trans "Email" %}</label>
+            <input type="email" name="email" required class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-2">{% trans "Subject" %}</label>
+          <input type="text" name="subject" required class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-2">{% trans "Message" %}</label>
+          <textarea name="message" rows="6" required class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none"></textarea>
+        </div>
+        <button type="submit" class="btn-primary w-full text-lg">{% trans "Send Message" %} →</button>
+      </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

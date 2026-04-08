@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}Sign in — Pagecraft{% endblock %}
+{% block description %}Sign in to your Pagecraft account. Continue creating beautiful documents with AI.{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --pc-blue:#0052FF;--pc-blue-dark:#0040CC;--pc-blue-deep:#001A66;
+    --pc-cyan:#00C4CC;--pc-cyan-light:#7DF9FF;
+    --pc-ink:#0A0E27;--pc-ink-soft:#1E293B;
+    --pc-line:#E5E9F2;--pc-line-soft:#F1F5F9;
+    --pc-bg:#FAFBFF;
+  }
+  .h-display{font-family:'Space Grotesk',Inter,sans-serif;letter-spacing:-0.035em;font-weight:700;line-height:.95;color:var(--pc-ink)}
+  .h-italic{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400}
+
+  .login-wrap{display:grid;grid-template-columns:1fr 1.05fr;min-height:calc(100vh - 80px);background:var(--pc-bg)}
+  .login-form-side{padding:60px;display:flex;flex-direction:column;justify-content:center;background:#fff;position:relative;overflow:hidden}
+  .login-form-side::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,82,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.04) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at top left,#000 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at top left,#000 20%,transparent 70%);pointer-events:none}
+  .login-form-side > *{position:relative;z-index:1}
+
+  .login-visual-side{background:linear-gradient(160deg,var(--pc-blue) 0%,var(--pc-blue-dark) 50%,var(--pc-blue-deep) 100%);color:#fff;padding:60px 50px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+  .login-visual-side::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.07) 1.5px,transparent 1.5px);background-size:30px 30px;pointer-events:none}
+  .login-visual-side::after{content:'✦';position:absolute;font-family:'Instrument Serif',serif;font-style:italic;font-size:480px;line-height:.7;left:-100px;bottom:-180px;color:rgba(255,255,255,.05);pointer-events:none}
+  .login-visual-side > *{position:relative;z-index:1}
+
+  /* Form */
+  .fld{margin-bottom:16px}
+  .fld label{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-bottom:6px}
+  .fld input{width:100%;padding:13px 15px;border:1px solid var(--pc-line);border-radius:10px;font-size:14px;font-family:Inter,sans-serif;background:#fff;color:var(--pc-ink);transition:all .2s;box-sizing:border-box}
+  .fld input:focus{outline:none;border-color:var(--pc-blue);box-shadow:0 0 0 3px rgba(0,82,255,.12)}
+  .fld input::placeholder{color:#cbd5e1}
+  .fld .pw-wrap{position:relative}
+  .fld .pw-wrap input{padding-right:46px}
+  .fld .pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:transparent;border:0;font-size:18px;cursor:pointer;color:#94a3b8;padding:6px;border-radius:6px;transition:all .15s}
+  .fld .pw-toggle:hover{background:#f0f5ff;color:var(--pc-blue)}
+
+  .check-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#64748b;margin-bottom:18px}
+  .check-row label{display:flex;align-items:center;gap:8px;cursor:pointer}
+  .check-row input{width:16px;height:16px;accent-color:var(--pc-blue)}
+  .check-row a{color:var(--pc-blue);font-weight:600;text-decoration:none}
+  .check-row a:hover{text-decoration:underline}
+
+  .btn-bl{display:flex;justify-content:center;align-items:center;gap:8px;width:100%;background:var(--pc-blue);color:#fff;font-weight:700;padding:15px;border-radius:10px;font-size:15px;border:1px solid var(--pc-blue);box-shadow:0 2px 0 var(--pc-blue-dark),0 8px 20px rgba(0,82,255,.25);font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:all .2s}
+  .btn-bl:hover{transform:translateY(-1px);background:var(--pc-blue-dark)}
+
+  .err-banner{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:13px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;font-family:'Space Grotesk',sans-serif;display:flex;align-items:flex-start;gap:10px}
+  .err-banner .ic{font-size:16px;line-height:1;flex-shrink:0;margin-top:1px}
+
+  .or-divider{display:flex;align-items:center;gap:14px;margin:22px 0;color:#94a3b8;font-size:11px;font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+  .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--pc-line)}
+
+  .perk{display:flex;align-items:flex-start;gap:14px;margin:18px 0}
+  .perk .ic{width:44px;height:44px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;backdrop-filter:blur(8px)}
+  .perk h4{margin:0;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:#fff}
+  .perk p{margin:2px 0 0;font-size:13px;color:rgba(255,255,255,.75);line-height:1.45}
+
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px;padding-top:24px;border-top:1px solid rgba(255,255,255,.15)}
+  .stat-row .stat{text-align:center}
+  .stat-row .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;color:var(--pc-cyan-light);letter-spacing:-0.02em;line-height:1}
+  .stat-row .lbl{font-size:10px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;font-family:'Space Grotesk',sans-serif}
+
+  @media (max-width:1024px){
+    .login-wrap{grid-template-columns:1fr}
+    .login-visual-side{display:none}
+    .login-form-side{padding:40px 24px}
+  }
+</style>
+
+<div class="login-wrap">
+  <!-- LEFT: Form -->
+  <div class="login-form-side">
+    <div style="max-width:440px;width:100%;margin:0 auto">
+      <a href="{% url 'home' %}" style="display:inline-block;font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-size:32px;font-weight:700;color:var(--pc-blue);text-decoration:none;margin-bottom:34px">✦ Pagecraft</a>
+
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--pc-blue);margin-bottom:8px">
+        <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--pc-cyan);margin-right:8px;vertical-align:middle"></span>{% trans "Sign In" %}
+      </div>
+      <h1 class="h-display" style="font-size:42px;margin-bottom:6px">{% trans "Welcome" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "back" %}</span></h1>
+      <p style="color:#64748b;font-size:14px;margin-bottom:28px">{% trans "Continue creating beautiful documents." %}</p>
+
+      {% if form.errors %}
+      <div class="err-banner">
+        <span class="ic">⚠</span>
+        <span>{% trans "Invalid username or password. Please try again." %}</span>
+      </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="fld">
+          <label>{% trans "Username or email" %}</label>
+          <input type="text" name="username" required autofocus placeholder="aarav.sharma" autocomplete="username">
+        </div>
+        <div class="fld">
+          <label>{% trans "Password" %}</label>
+          <div class="pw-wrap">
+            <input type="password" name="password" id="pwd" required placeholder="••••••••" autocomplete="current-password">
+            <button type="button" class="pw-toggle" id="pwToggle" aria-label="Toggle password visibility">👁</button>
+          </div>
+        </div>
+        <div class="check-row">
+          <label><input type="checkbox" name="remember"> <span>{% trans "Remember me" %}</span></label>
+          <a href="#">{% trans "Forgot password?" %}</a>
+        </div>
+        <button type="submit" class="btn-bl">{% trans "Sign in" %} →</button>
+      </form>
+
+      <div class="or-divider">{% trans "or" %}</div>
+
+      <div style="text-align:center">
+        <p style="color:#64748b;font-size:14px;margin-bottom:14px">{% trans "Don't have an account?" %}</p>
+        <a href="{% url 'signup' %}" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--pc-ink);font-weight:600;padding:13px 26px;border-radius:10px;font-size:14px;font-family:'Space Grotesk',sans-serif;border:1px solid var(--pc-line);text-decoration:none;transition:all .2s">{% trans "Create free account" %} →</a>
+      </div>
+
+      <div style="text-align:center;margin-top:24px;font-size:11px;color:#94a3b8;font-family:'Space Grotesk',sans-serif">
+        ✓ {% trans "Free forever" %} &nbsp;·&nbsp; ✓ {% trans "No credit card" %} &nbsp;·&nbsp; ✓ 496+ {% trans "templates" %}
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Marketing -->
+  <div class="login-visual-side">
+    <div style="font-family:'Instrument Serif',serif;font-style:italic;font-size:36px;font-weight:700;margin-bottom:30px">✦ Pagecraft</div>
+    <h2 class="h-display" style="font-size:46px;color:#fff">
+      {% trans "Pick up where you" %}<br>
+      <span class="h-italic" style="color:var(--pc-cyan-light)">{% trans "left off" %}</span>
+    </h2>
+    <p style="font-size:16px;color:rgba(255,255,255,.85);line-height:1.6;margin-top:18px;max-width:400px">
+      {% trans "Your saved drafts, brand kit and recent templates are right here. Sign in and continue building." %}
+    </p>
+
+    <div style="margin-top:36px">
+      <div class="perk">
+        <div class="ic">💾</div>
+        <div><h4>{% trans "Saved drafts auto-restored" %}</h4><p>{% trans "Continue any document from where you left it." %}</p></div>
+      </div>
+      <div class="perk">
+        <div class="ic">🎨</div>
+        <div><h4>{% trans "Your Brand Kit" %}</h4><p>{% trans "Logo + colors + fonts ready to apply with one click." %}</p></div>
+      </div>
+      <div class="perk">
+        <div class="ic">📂</div>
+        <div><h4>{% trans "All your documents" %}</h4><p>{% trans "Organized library — search, filter, share." %}</p></div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="num">496+</div><div class="lbl">{% trans "Templates" %}</div></div>
+      <div class="stat"><div class="num">2k+</div><div class="lbl">{% trans "Users" %}</div></div>
+      <div class="stat"><div class="num">10</div><div class="lbl">{% trans "Languages" %}</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Password show/hide toggle
+(function() {
+  const btn = document.getElementById('pwToggle');
+  const pwd = document.getElementById('pwd');
+  if (!btn || !pwd) return;
+  btn.addEventListener('click', () => {
+    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+    btn.textContent = pwd.type === 'password' ? '👁' : '🙈';
+  });
+})();
+</script>
+{% endblock %}

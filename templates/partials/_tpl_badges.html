@@ -1,0 +1,11 @@
+{% comment %}Reusable template badges. Pass tpl.{% endcomment %}
+{% if tpl.tags %}
+<div class="tpl-badges">
+  {% if 'hot' in tpl.tags %}<span class="tb tb-hot">🔥 Hot</span>{% endif %}
+  {% if 'trending' in tpl.tags %}<span class="tb tb-trending">📈 Trending</span>{% endif %}
+  {% if 'new' in tpl.tags and 'hot' not in tpl.tags and 'trending' not in tpl.tags %}<span class="tb tb-new">🆕 New</span>{% endif %}
+  {% if 'premium' in tpl.tags %}<span class="tb tb-premium">⭐ Premium</span>{% endif %}
+  {% if 'animated' in tpl.tags %}<span class="tb tb-animated">🎬 Animated</span>{% endif %}
+  {% if 'indian' in tpl.tags %}<span class="tb tb-indian">🇮🇳 Indian</span>{% endif %}
+</div>
+{% endif %}

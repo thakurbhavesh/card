@@ -1,0 +1,21 @@
+[project]
+name = "ai-doc-generator"
+version = "0.1.0"
+description = "AI-powered document generator (resumes, invoices, cards, social posts) built with Django + SQLite"
+requires-python = ">=3.10"
+dependencies = [
+    "django>=4.2,<5.1",
+    "djangorestframework>=3.14",
+    "pillow>=10.0",
+    "google-generativeai>=0.8",
+    "deep-translator>=1.11",
+    "python-dotenv>=1.0",
+    "django-cors-headers>=4.3",
+    "gunicorn>=21.2",
+    "whitenoise>=6.6",
+    "dj-database-url>=2.1",
+    "psycopg2-binary>=2.9",
+]
+
+[tool.uv]
+package = false

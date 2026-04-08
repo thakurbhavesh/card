@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}Features — 30+ tools for documents, AI & sharing | Pagecraft{% endblock %}
+{% block description %}AI generator, multi-language translation, brand kit, PWA, surprise me, smart search, similar templates and more — every Pagecraft feature in one place.{% endblock %}
+{% block keywords %}pagecraft features, ai template generator, multi-language documents, brand kit, free templates{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --pc-blue:#0052FF;--pc-blue-dark:#0040CC;--pc-blue-deep:#001A66;
+    --pc-cyan:#00C4CC;--pc-cyan-light:#7DF9FF;
+    --pc-ink:#0A0E27;--pc-ink-soft:#1E293B;
+    --pc-line:#E5E9F2;--pc-line-soft:#F1F5F9;
+    --pc-bg:#FAFBFF;--pc-blueprint:#E0EBFF;
+  }
+  .h-display{font-family:'Space Grotesk',Inter,sans-serif;letter-spacing:-0.035em;font-weight:700;line-height:.95;color:var(--pc-ink)}
+  .h-italic{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-0.01em}
+  .text-eyebrow{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--pc-blue)}
+  .text-eyebrow .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--pc-cyan);margin-right:8px;vertical-align:middle}
+
+  /* HERO */
+  .feat-hero{position:relative;overflow:hidden;background:var(--pc-bg);padding:80px 0 60px}
+  .feat-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,82,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.05) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,#000 30%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 70%)}
+  .feat-hero .symbol{position:absolute;font-family:'Instrument Serif',serif;font-style:italic;font-size:200px;line-height:1;color:rgba(0,82,255,.06);pointer-events:none}
+
+  /* BENTO */
+  .bento-feat{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--pc-line);border:1px solid var(--pc-line);border-radius:14px;overflow:hidden}
+  .bento-cell{background:#fff;padding:30px 26px;transition:all .25s;position:relative;overflow:hidden}
+  .bento-cell:hover{background:#FAFBFF}
+  .bento-cell.span-2{grid-column:span 2}
+  .bento-cell.span-3{grid-column:span 3}
+  .bento-cell.row-2{grid-row:span 2}
+  .bento-cell.featured{background:linear-gradient(135deg,var(--pc-blue) 0%,var(--pc-blue-dark) 60%,var(--pc-blue-deep) 100%);color:#fff;padding:42px 38px}
+  .bento-cell.featured::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.07) 1.5px,transparent 1.5px);background-size:30px 30px;pointer-events:none}
+  .bento-cell.featured::after{content:'✦';position:absolute;font-family:'Instrument Serif',serif;font-style:italic;font-size:300px;line-height:.7;right:-50px;bottom:-100px;color:rgba(255,255,255,.06);pointer-events:none}
+  .bento-cell.cyan{background:var(--pc-cyan);color:var(--pc-ink-soft)}
+  .bento-cell.cyan::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.18) 1.5px,transparent 1.5px);background-size:24px 24px;pointer-events:none}
+  .bento-cell.dark{background:var(--pc-ink);color:#fff}
+  .bento-cell.dark::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,196,204,.12) 1.5px,transparent 1.5px);background-size:30px 30px;pointer-events:none}
+  .bento-cell > *{position:relative}
+  .bento-icon{font-size:34px;margin-bottom:14px;display:inline-block}
+  .bento-h{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:21px;margin-bottom:6px;letter-spacing:-0.01em;line-height:1.15}
+  .bento-p{font-size:14px;color:#64748b;line-height:1.55}
+  .bento-cell.featured .bento-p,.bento-cell.dark .bento-p{color:rgba(255,255,255,.85)}
+  .bento-cell.cyan .bento-p{color:rgba(15,23,42,.7)}
+  .bento-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(0,82,255,.08);border:1px solid rgba(0,82,255,.15);color:var(--pc-blue);font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:4px;margin-bottom:10px}
+  .bento-tag.pink{background:rgba(236,72,153,.08);border-color:rgba(236,72,153,.2);color:#db2777}
+  .bento-tag.green{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.2);color:#059669}
+  .bento-tag.cyan{background:rgba(0,196,204,.12);border-color:rgba(0,196,204,.25);color:#0891b2}
+
+  /* feature group section */
+  .feat-section{padding:80px 0;border-top:1px solid var(--pc-line)}
+  .feat-section.bg-blueprint{background-color:#F0F5FF;background-image:linear-gradient(rgba(0,82,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.08) 1px,transparent 1px),linear-gradient(rgba(0,82,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.04) 1px,transparent 1px);background-size:80px 80px,80px 80px,16px 16px,16px 16px}
+
+  .stat-pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--pc-line);border-radius:999px;padding:8px 16px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--pc-ink-soft)}
+  .stat-pill .num{font-size:18px;font-weight:700;color:var(--pc-blue)}
+
+  .btn-bl{display:inline-flex;align-items:center;gap:8px;background:var(--pc-blue);color:#fff;font-weight:600;padding:14px 24px;border-radius:10px;font-size:15px;border:1px solid var(--pc-blue);box-shadow:0 2px 0 var(--pc-blue-dark),0 8px 20px rgba(0,82,255,.25);font-family:'Space Grotesk',sans-serif;transition:all .2s}
+  .btn-bl:hover{transform:translateY(-1px);background:var(--pc-blue-dark)}
+
+  /* Mobile collapse */
+  @media (max-width:1024px){
+    .bento-feat{grid-template-columns:repeat(2,1fr)}
+    .bento-cell.span-3,.bento-cell.span-2{grid-column:span 2}
+    .bento-cell.row-2{grid-row:auto}
+  }
+  @media (max-width:640px){
+    .bento-feat{grid-template-columns:1fr}
+    .bento-cell.span-3,.bento-cell.span-2{grid-column:span 1}
+  }
+</style>
+
+<!-- ============== HERO ============== -->
+<section class="feat-hero">
+  <div class="symbol" style="top:8%;left:5%">✦</div>
+  <div class="symbol" style="bottom:5%;right:6%">✶</div>
+  <div class="max-w-5xl mx-auto px-6 text-center relative">
+    <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Features" %}</div>
+    <h1 class="h-display" style="font-size:clamp(46px,7vw,80px)">
+      {% trans "Everything you need" %}<br>
+      <span class="h-italic" style="color:var(--pc-blue)">{% trans "to create beautifully" %}</span>
+    </h1>
+    <p class="text-lg mt-6 max-w-2xl mx-auto" style="color:#475569;line-height:1.6">
+      {% trans "30+ powerful tools. AI-powered. Free forever. Built for the way you actually work." %}
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-3 mt-10">
+      <div class="stat-pill"><span class="num">{{ total_templates }}+</span> {% trans "templates" %}</div>
+      <div class="stat-pill"><span class="num">13</span> {% trans "categories" %}</div>
+      <div class="stat-pill"><span class="num">10</span> {% trans "languages" %}</div>
+      <div class="stat-pill"><span class="num">∞</span> {% trans "AI generations" %}</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== AI & CONTENT FEATURES ============== -->
+<section class="feat-section bg-blueprint">
+  <div class="max-w-7xl mx-auto px-6 relative">
+    <div class="text-center mb-14">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "AI & Content" %}</div>
+      <h2 class="h-display" style="font-size:clamp(36px,5vw,56px)">
+        {% trans "AI does the" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "heavy lifting" %}</span>
+      </h2>
+      <p class="text-lg mt-4 max-w-2xl mx-auto" style="color:#475569">{% trans "Six AI superpowers built into every editor — at no extra cost." %}</p>
+    </div>
+    <div class="bento-feat">
+      <!-- Featured: AI Generator -->
+      <div class="bento-cell featured span-2 row-2">
+        <div class="bento-tag" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff">★ Most Popular</div>
+        <div class="bento-icon" style="font-size:46px">🤖</div>
+        <h3 class="h-display" style="font-size:32px;margin-bottom:14px">{% trans "AI Template" %} <span class="h-italic" style="color:var(--pc-cyan-light)">{% trans "Generator" %}</span></h3>
+        <p class="bento-p" style="font-size:16px;line-height:1.55;max-width:420px">{% trans "Describe your dream template in plain English. Gemini designs it in 20 seconds. Save it. Use it. Done." %}</p>
+        <a href="{% url 'ai_template' %}" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--pc-blue);padding:12px 22px;border-radius:10px;font-family:'Space Grotesk';font-weight:600;font-size:14px;margin-top:24px">{% trans "Try AI Generator" %} →</a>
+        <div class="grid grid-cols-2 gap-2 mt-8 max-w-sm">
+          <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:14px">
+            <div class="h-display" style="font-size:26px;color:var(--pc-cyan-light)">~20s</div>
+            <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-top:4px">Avg generation</div>
+          </div>
+          <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:14px">
+            <div class="h-display" style="font-size:26px;color:var(--pc-cyan-light)">5+</div>
+            <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-top:4px">AI models</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-cell">
+        <div class="bento-tag green">✦ Free</div>
+        <div class="bento-icon">✨</div>
+        <div class="bento-h">{% trans "AI Text Enhance" %}</div>
+        <p class="bento-p">{% trans "One-click polish for any text field. Action verbs, professional tone." %}</p>
+      </div>
+
+      <div class="bento-cell">
+        <div class="bento-tag green">✦ Free</div>
+        <div class="bento-icon">🌐</div>
+        <div class="bento-h">{% trans "10-Language Translate" %}</div>
+        <p class="bento-p">EN · HI · ES · FR · DE · ZH · AR · RU · PT · JA</p>
+      </div>
+
+      <div class="bento-cell cyan">
+        <div class="bento-tag" style="background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.35);color:var(--pc-ink)">🆕 New</div>
+        <div class="bento-icon">🎲</div>
+        <div class="bento-h">{% trans "Surprise Me" %}</div>
+        <p class="bento-p">{% trans "Random template + AI sample data. Perfect when you're stuck." %}</p>
+      </div>
+
+      <div class="bento-cell">
+        <div class="bento-tag pink">🆕 New</div>
+        <div class="bento-icon">🎨</div>
+        <div class="bento-h">{% trans "Smart Color Filter" %}</div>
+        <p class="bento-p">{% trans "Browse templates by dominant color. \"Show me red wedding cards\" — done." %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== EDITOR & WORKFLOW ============== -->
+<section class="feat-section">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-14">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Editor & Workflow" %}</div>
+      <h2 class="h-display" style="font-size:clamp(36px,5vw,56px)">
+        {% trans "Built for" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "speed" %}</span>
+      </h2>
+      <p class="text-lg mt-4 max-w-2xl mx-auto" style="color:#475569">{% trans "Every interaction tuned for fluency — keyboard-first, instant feedback, zero friction." %}</p>
+    </div>
+    <div class="bento-feat">
+      <div class="bento-cell">
+        <div class="bento-icon">👁</div>
+        <div class="bento-h">{% trans "Live Preview" %}</div>
+        <p class="bento-p">{% trans "Instant updates. Desktop · Tablet · Mobile views. Light/Dark backgrounds." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">💾</div>
+        <div class="bento-h">{% trans "Auto-Save" %}</div>
+        <p class="bento-p">{% trans "Every keystroke saved to localStorage. Never lose work." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">↶</div>
+        <div class="bento-h">{% trans "50-Step Undo/Redo" %}</div>
+        <p class="bento-p">Ctrl+Z · Ctrl+Y. Experiment freely.</p>
+      </div>
+      <div class="bento-cell dark">
+        <div class="bento-icon">⌨</div>
+        <div class="bento-h">{% trans "Command Palette" %}</div>
+        <p class="bento-p">{% trans "Press Ctrl+K from anywhere. Search, jump, toggle." %}</p>
+        <kbd style="display:inline-block;margin-top:10px;padding:4px 9px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:11px">Ctrl + K</kbd>
+      </div>
+
+      <div class="bento-cell">
+        <div class="bento-icon">🔀</div>
+        <div class="bento-h">{% trans "Compare Templates" %}</div>
+        <p class="bento-p">{% trans "Same content rendered across every template — pick the best fit." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">🔗</div>
+        <div class="bento-h">{% trans "Similar Templates" %}</div>
+        <p class="bento-p">{% trans "Smart sub-category match — see related designs in the sidebar." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">📋</div>
+        <div class="bento-h">{% trans "Duplicate" %}</div>
+        <p class="bento-p">{% trans "Copy any template into your library and edit independently." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">🌓</div>
+        <div class="bento-h">{% trans "Dark Mode" %}</div>
+        <p class="bento-p">{% trans "Easy on the eyes. Persists across sessions." %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== EXPORT & SHARING ============== -->
+<section class="feat-section bg-blueprint">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-14">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Export & Sharing" %}</div>
+      <h2 class="h-display" style="font-size:clamp(36px,5vw,56px)">
+        {% trans "Anywhere your work" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "needs to go" %}</span>
+      </h2>
+    </div>
+    <div class="bento-feat">
+      <!-- WhatsApp featured -->
+      <div class="bento-cell span-2" style="background:linear-gradient(135deg,#25d366 0%,#128c7e 100%);color:#fff">
+        <div class="bento-tag" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff">🇮🇳 Made for India</div>
+        <div class="bento-icon" style="font-size:46px">💬</div>
+        <h3 class="h-display" style="font-size:28px;margin-bottom:10px;color:#fff">{% trans "WhatsApp Share" %}</h3>
+        <p class="bento-p" style="color:rgba(255,255,255,.9);font-size:15px">{% trans "Direct WhatsApp send button. The way Indians actually share things." %}</p>
+      </div>
+
+      <div class="bento-cell">
+        <div class="bento-icon">📄</div>
+        <div class="bento-h">{% trans "PDF · PNG · JPG" %}</div>
+        <p class="bento-p">{% trans "Real PDF (not HTML). High-resolution PNG. A4/A3/A5/Letter/Legal sizes." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">🎬</div>
+        <div class="bento-h">{% trans "GIF Export" %}</div>
+        <p class="bento-p">{% trans "Animated templates export as GIF for WhatsApp sharing." %}</p>
+      </div>
+
+      <div class="bento-cell">
+        <div class="bento-icon">🔗</div>
+        <div class="bento-h">{% trans "Public Share Links" %}</div>
+        <p class="bento-p">{% trans "One-click share links. Recipients view without login." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">✉</div>
+        <div class="bento-h">{% trans "Email Share" %}</div>
+        <p class="bento-p">{% trans "Send directly via email with pre-filled subject + body." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">🖨</div>
+        <div class="bento-h">{% trans "Print Optimized" %}</div>
+        <p class="bento-p">{% trans "Press Ctrl+P. UI hides. Clean printer-ready output." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">📥</div>
+        <div class="bento-h">{% trans "Bulk Export" %}</div>
+        <p class="bento-p">{% trans "Export multiple documents as a single ZIP archive." %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== DESIGN & PERSONALIZATION ============== -->
+<section class="feat-section">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-14">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Design & Personalization" %}</div>
+      <h2 class="h-display" style="font-size:clamp(36px,5vw,56px)">
+        {% trans "Make it" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "yours" %}</span>
+      </h2>
+    </div>
+    <div class="bento-feat">
+      <div class="bento-cell span-2 cyan">
+        <div class="bento-tag" style="background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.35);color:var(--pc-ink)">⭐ Pro Feature</div>
+        <div class="bento-icon" style="font-size:42px">🎨</div>
+        <h3 class="h-display" style="font-size:28px;margin-bottom:10px">{% trans "Brand Kit" %}</h3>
+        <p class="bento-p" style="font-size:15px">{% trans "Save your logo, colors and fonts once. Apply them to all templates with one click." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">🍌</div>
+        <div class="bento-h">{% trans "Nano Banana" %}</div>
+        <p class="bento-p">{% trans "AI image generation right inside the editor." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">📐</div>
+        <div class="bento-h">{% trans "Multiple Sizes" %}</div>
+        <p class="bento-p">{% trans "A4, A3, A5, US Letter, Legal — switch with one click." %}</p>
+      </div>
+
+      <div class="bento-cell">
+        <div class="bento-icon">📚</div>
+        <div class="bento-h">{{ total_templates }}+ {% trans "Premium Templates" %}</div>
+        <p class="bento-p">{% trans "Hand-crafted across 13 categories. Real designer feel." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">💍</div>
+        <div class="bento-h">{% trans "Indian Wedding & Festival" %}</div>
+        <p class="bento-p">{% trans "70+ Indian wedding designs across all religions and regions." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">🆕</div>
+        <div class="bento-h">{% trans "Smart Badges" %}</div>
+        <p class="bento-p">{% trans "NEW · HOT · TRENDING · PREMIUM · INDIAN — find what fits fast." %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== DISCOVERY & SEO ============== -->
+<section class="feat-section bg-blueprint">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-14">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Discovery & SEO" %}</div>
+      <h2 class="h-display" style="font-size:clamp(36px,5vw,56px)">
+        {% trans "Find anything" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "in seconds" %}</span>
+      </h2>
+    </div>
+    <div class="bento-feat">
+      <div class="bento-cell">
+        <div class="bento-icon">🔍</div>
+        <div class="bento-h">{% trans "Smart Search" %}</div>
+        <p class="bento-p">{% trans "Search by name, color, language, or occasion. Lightning fast." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">🎨</div>
+        <div class="bento-h">{% trans "Color Filter" %}</div>
+        <p class="bento-p">{% trans "11 color buckets. \"Show me red wedding cards\" — done." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">📈</div>
+        <div class="bento-h">{% trans "Sort by Trend" %}</div>
+        <p class="bento-p">{% trans "Newest, most popular, or trending — your choice." %}</p>
+      </div>
+      <div class="bento-cell dark">
+        <div class="bento-icon">🪔</div>
+        <div class="bento-h">{% trans "Date-Aware Hero" %}</div>
+        <p class="bento-p">{% trans "Festival hero auto-shows Diwali/Holi/Eid templates near the date." %}</p>
+      </div>
+
+      <div class="bento-cell span-2">
+        <div class="bento-tag">{% trans "SEO Built-in" %}</div>
+        <div class="bento-icon">🌐</div>
+        <div class="bento-h">{% trans "Per-Template SEO" %}</div>
+        <p class="bento-p">{% trans "Every template has unique meta tags, JSON-LD schema, breadcrumbs and sitemap entry — Google ranks each one independently." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">🤝</div>
+        <div class="bento-h">{% trans "Auto Language Detect" %}</div>
+        <p class="bento-p">{% trans "Indian visitors see a soft Hindi switch suggestion." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">📊</div>
+        <div class="bento-h">{% trans "FAQ Schema" %}</div>
+        <p class="bento-p">{% trans "Category FAQs render as Google rich snippets." %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== ACCOUNT & MOBILE ============== -->
+<section class="feat-section">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-14">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Account & Mobile" %}</div>
+      <h2 class="h-display" style="font-size:clamp(36px,5vw,56px)">
+        {% trans "Anywhere, on" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "any device" %}</span>
+      </h2>
+    </div>
+    <div class="bento-feat">
+      <div class="bento-cell">
+        <div class="bento-icon">📱</div>
+        <div class="bento-h">{% trans "PWA Install" %}</div>
+        <p class="bento-p">{% trans "Install as a real app from Chrome/Edge — works offline." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">📂</div>
+        <div class="bento-h">{% trans "My Documents" %}</div>
+        <p class="bento-p">{% trans "All your saved work in one organized library." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">🏆</div>
+        <div class="bento-h">{% trans "Achievements" %}</div>
+        <p class="bento-p">{% trans "8 unlockable badges as you explore the app." %}</p>
+      </div>
+      <div class="bento-cell">
+        <div class="bento-icon">📊</div>
+        <div class="bento-h">{% trans "Analytics Dashboard" %}</div>
+        <p class="bento-p">{% trans "See your usage, top categories, recent activity." %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FINAL CTA ============== -->
+<section class="max-w-6xl mx-auto px-6 py-24">
+  <div style="background:var(--pc-ink);color:#fff;border-radius:18px;padding:80px 40px;position:relative;overflow:hidden;text-align:center">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,82,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.18) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%)"></div>
+    <div style="position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(0,82,255,.4),transparent 60%);top:-200px;left:50%;transform:translateX(-50%);filter:blur(60px);pointer-events:none"></div>
+    <div style="position:absolute;font-family:'Instrument Serif',serif;font-style:italic;color:rgba(0,196,204,.08);pointer-events:none;line-height:1;top:30px;left:40px;font-size:120px">✦</div>
+    <div style="position:absolute;font-family:'Instrument Serif',serif;font-style:italic;color:rgba(0,196,204,.08);pointer-events:none;line-height:1;bottom:30px;right:40px;font-size:140px">✶</div>
+    <div class="relative">
+      <h2 class="h-display" style="font-size:clamp(36px,6vw,64px);color:#fff">
+        {% trans "Try every feature" %}<br>
+        <span class="h-italic" style="color:var(--pc-cyan-light)">{% trans "free forever" %}</span>
+      </h2>
+      <p class="text-lg mt-6 max-w-xl mx-auto" style="color:#cbd5e1">{% trans "No credit card. No watermark. No catch. Just create." %}</p>
+      <div class="flex flex-wrap gap-3 justify-center mt-10">
+        <a href="{% url 'home' %}#categories" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--pc-blue);padding:16px 32px;border-radius:10px;font-family:'Space Grotesk';font-weight:700;font-size:16px;box-shadow:0 12px 30px -8px rgba(0,196,204,.4)">{% trans "Start Creating" %} →</a>
+        <a href="{% url 'compare' %}" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);padding:16px 32px;border-radius:10px;font-family:'Space Grotesk';font-weight:600;font-size:16px;backdrop-filter:blur(8px)">{% trans "vs Canva, Adobe & Word" %}</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}500 — Server Error · Pagecraft{% endblock %}
+
+{% block content %}
+<section class="max-w-2xl mx-auto px-6 py-24 text-center">
+  <div class="text-9xl font-extrabold gradient-text mb-4 leading-none">500</div>
+  <h1 class="text-3xl font-extrabold mb-3">{% trans "Something Went Wrong" %}</h1>
+  <p class="text-slate-500 text-lg mb-10">{% trans "We're working on it. Please try again in a moment." %}</p>
+  <div class="flex flex-wrap justify-center gap-3">
+    <a href="{% url 'home' %}" class="btn-primary">🏠 {% trans "Go Home" %}</a>
+    <a href="javascript:location.reload()" class="btn-secondary">🔄 {% trans "Reload Page" %}</a>
+  </div>
+</section>
+{% endblock %}

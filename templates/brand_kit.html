@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Brand Kit" %} — Pagecraft{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-6 py-12">
+  <!-- Header -->
+  <div class="mb-10">
+    <div class="inline-block text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-3">{% trans "Pro Feature" %}</div>
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-3">🎨 {% trans "Your Brand Kit" %}</h1>
+    <p class="text-slate-500 text-lg max-w-2xl">{% trans "Save your logo, brand colors, and fonts once. Apply them to any of 358+ templates in one click — your brand, instantly." %}</p>
+  </div>
+
+  {% if messages %}
+    {% for m in messages %}
+      <div class="mb-4 p-4 rounded-xl bg-green-50 border border-green-200 text-green-800 text-sm font-semibold flex items-center gap-2">
+        ✅ {{ m }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" id="brandForm" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {% csrf_token %}
+
+    <!-- LEFT 2-cols: Form -->
+    <div class="lg:col-span-2 space-y-6">
+
+      <!-- Identity -->
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+        <h3 class="font-bold text-xl mb-5 flex items-center gap-2">🪪 {% trans "Brand Identity" %}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">{% trans "Brand Name" %}</label>
+            <input type="text" name="brand_name" id="f_brand" value="{{ kit.brand_name }}" placeholder="Pagecraft Inc."
+                   class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">{% trans "Tagline" %}</label>
+            <input type="text" name="tagline" id="f_tagline" value="{{ kit.tagline }}" placeholder="Craft beautiful documents"
+                   class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- Logo upload -->
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+        <h3 class="font-bold text-xl mb-5 flex items-center gap-2">🖼 {% trans "Logo" %}</h3>
+        <div class="flex items-center gap-5">
+          <div id="logoPreview" class="w-32 h-32 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 flex items-center justify-center text-4xl text-slate-400 overflow-hidden">
+            {% if kit.logo %}<img src="{{ kit.logo }}" class="w-full h-full object-contain">{% else %}🖼{% endif %}
+          </div>
+          <div class="flex-1">
+            <input type="file" id="logoFile" accept="image/*" class="hidden">
+            <button type="button" onclick="document.getElementById('logoFile').click()" class="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 text-sm">📷 {% trans "Upload Logo" %}</button>
+            {% if kit.logo %}<button type="submit" name="clear_logo" value="1" class="ml-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 text-sm">{% trans "Remove" %}</button>{% endif %}
+            <div class="text-xs text-slate-500 mt-2">PNG / JPG / SVG · Max 2 MB · Square or wide aspect</div>
+            <input type="hidden" name="logo" id="f_logo" value="{{ kit.logo }}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Colors -->
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+        <h3 class="font-bold text-xl mb-5 flex items-center gap-2">🎨 {% trans "Brand Colors" %}</h3>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">{% trans "Primary" %}</label>
+            <div class="relative">
+              <input type="color" name="primary_color" id="f_primary" value="{{ kit.primary_color }}" class="w-full h-12 rounded-lg cursor-pointer border border-slate-200">
+              <div class="text-xs text-center mt-1 font-mono text-slate-500" id="hex_primary">{{ kit.primary_color }}</div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">{% trans "Secondary" %}</label>
+            <input type="color" name="secondary_color" id="f_secondary" value="{{ kit.secondary_color }}" class="w-full h-12 rounded-lg cursor-pointer border border-slate-200">
+            <div class="text-xs text-center mt-1 font-mono text-slate-500" id="hex_secondary">{{ kit.secondary_color }}</div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">{% trans "Accent" %}</label>
+            <input type="color" name="accent_color" id="f_accent" value="{{ kit.accent_color }}" class="w-full h-12 rounded-lg cursor-pointer border border-slate-200">
+            <div class="text-xs text-center mt-1 font-mono text-slate-500" id="hex_accent">{{ kit.accent_color }}</div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">{% trans "Text" %}</label>
+            <input type="color" name="text_color" id="f_text" value="{{ kit.text_color }}" class="w-full h-12 rounded-lg cursor-pointer border border-slate-200">
+            <div class="text-xs text-center mt-1 font-mono text-slate-500" id="hex_text">{{ kit.text_color }}</div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">{% trans "Background" %}</label>
+            <input type="color" name="background_color" id="f_bg" value="{{ kit.background_color }}" class="w-full h-12 rounded-lg cursor-pointer border border-slate-200">
+            <div class="text-xs text-center mt-1 font-mono text-slate-500" id="hex_bg">{{ kit.background_color }}</div>
+          </div>
+        </div>
+        <!-- Quick palette presets -->
+        <div class="mt-5 pt-5 border-t border-slate-100">
+          <div class="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">{% trans "Quick Palettes" %}</div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="applyPalette('#6366f1','#a855f7','#ec4899')" class="px-3 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:scale-105 transition">Indigo</button>
+            <button type="button" onclick="applyPalette('#0f172a','#fbbf24','#f59e0b')" class="px-3 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-slate-900 to-amber-500 hover:scale-105 transition">Black Gold</button>
+            <button type="button" onclick="applyPalette('#064e3b','#10b981','#fbbf24')" class="px-3 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-emerald-900 via-emerald-500 to-amber-400 hover:scale-105 transition">Emerald Lux</button>
+            <button type="button" onclick="applyPalette('#7a0019','#c9a227','#fff8e1')" class="px-3 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-red-900 via-amber-600 to-amber-100 hover:scale-105 transition">Royal Maroon</button>
+            <button type="button" onclick="applyPalette('#1e40af','#3b82f6','#fbbf24')" class="px-3 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-blue-800 via-blue-500 to-amber-400 hover:scale-105 transition">Corporate</button>
+            <button type="button" onclick="applyPalette('#ec4899','#f97316','#fbbf24')" class="px-3 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-pink-500 via-orange-500 to-amber-400 hover:scale-105 transition">Sunset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fonts -->
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+        <h3 class="font-bold text-xl mb-5 flex items-center gap-2">🔤 {% trans "Typography" %}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">{% trans "Heading Font" %}</label>
+            <select name="heading_font" id="f_hfont" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none">
+              {% for v, lbl in fonts %}<option value="{{ v }}" {% if kit.heading_font == v %}selected{% endif %}>{{ lbl }}</option>{% endfor %}
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">{% trans "Body Font" %}</label>
+            <select name="body_font" id="f_bfont" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none">
+              {% for v, lbl in fonts %}<option value="{{ v }}" {% if kit.body_font == v %}selected{% endif %}>{{ lbl }}</option>{% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+        <h3 class="font-bold text-xl mb-5 flex items-center gap-2">📞 {% trans "Brand Contact" %}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">Website</label>
+            <input type="text" name="website" value="{{ kit.website }}" placeholder="pagecraft.ai" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">Email</label>
+            <input type="text" name="email" value="{{ kit.email }}" placeholder="hello@…" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">Phone</label>
+            <input type="text" name="phone" value="{{ kit.phone }}" placeholder="+91 …" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none text-sm">
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary w-full text-lg py-4">💾 {% trans "Save Brand Kit" %}</button>
+    </div>
+
+    <!-- RIGHT: Live preview -->
+    <div class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+        <h3 class="font-bold text-sm uppercase tracking-wider text-slate-500 mb-4">{% trans "Live Preview" %}</h3>
+        <div id="livePreview" class="rounded-2xl p-8 border border-slate-200 transition-all">
+          <div id="logoSlot" class="w-16 h-16 rounded-2xl mb-4 flex items-center justify-center text-3xl text-white font-bold" style="background:#6366f1">P</div>
+          <h2 id="prevName" class="text-2xl font-extrabold mb-1" style="font-family:Inter,sans-serif;color:#0f172a">Your Brand</h2>
+          <div id="prevTagline" class="text-sm mb-4" style="color:#a855f7">Craft beautiful documents</div>
+          <button type="button" id="prevBtn" class="px-4 py-2 rounded-lg text-white font-bold text-sm" style="background:#6366f1">Call to Action</button>
+          <div id="prevAccent" class="mt-4 h-1 rounded" style="background:#ec4899"></div>
+        </div>
+      </div>
+      <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-5 text-sm border border-indigo-100">
+        <div class="font-bold text-indigo-700 mb-1">💡 {% trans "How to use" %}</div>
+        <p class="text-slate-600 text-xs leading-relaxed">{% trans "After saving, open any template editor and click the new" %} <strong>🎨 {% trans "Apply Brand" %}</strong> {% trans "button. Your colors, fonts, and logo will instantly skin the template." %}</p>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Live preview update
+function updatePreview() {
+  const primary = document.getElementById('f_primary').value;
+  const secondary = document.getElementById('f_secondary').value;
+  const accent = document.getElementById('f_accent').value;
+  const text = document.getElementById('f_text').value;
+  const bg = document.getElementById('f_bg').value;
+  const hfont = document.getElementById('f_hfont').value;
+  const bfont = document.getElementById('f_bfont').value;
+  const brand = document.getElementById('f_brand').value || 'Your Brand';
+  const tagline = document.getElementById('f_tagline').value || 'Craft beautiful documents';
+  const logo = document.getElementById('f_logo').value;
+
+  const wrap = document.getElementById('livePreview');
+  wrap.style.background = bg;
+
+  const logoSlot = document.getElementById('logoSlot');
+  if (logo) {
+    logoSlot.style.background = bg;
+    logoSlot.innerHTML = `<img src="${logo}" class="w-full h-full object-contain rounded-2xl">`;
+  } else {
+    logoSlot.style.background = primary;
+    logoSlot.innerHTML = brand.charAt(0).toUpperCase();
+  }
+
+  const name = document.getElementById('prevName');
+  name.textContent = brand;
+  name.style.color = text;
+  name.style.fontFamily = hfont + ',sans-serif';
+
+  const tag = document.getElementById('prevTagline');
+  tag.textContent = tagline;
+  tag.style.color = secondary;
+  tag.style.fontFamily = bfont + ',sans-serif';
+
+  const btn = document.getElementById('prevBtn');
+  btn.style.background = primary;
+  btn.style.fontFamily = bfont + ',sans-serif';
+
+  document.getElementById('prevAccent').style.background = accent;
+
+  // Update hex labels
+  document.getElementById('hex_primary').textContent = primary;
+  document.getElementById('hex_secondary').textContent = secondary;
+  document.getElementById('hex_accent').textContent = accent;
+  document.getElementById('hex_text').textContent = text;
+  document.getElementById('hex_bg').textContent = bg;
+}
+
+// Wire all inputs
+['f_primary','f_secondary','f_accent','f_text','f_bg','f_hfont','f_bfont','f_brand','f_tagline'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updatePreview);
+  document.getElementById(id).addEventListener('change', updatePreview);
+});
+
+// Quick palette presets
+function applyPalette(p, s, a) {
+  document.getElementById('f_primary').value = p;
+  document.getElementById('f_secondary').value = s;
+  document.getElementById('f_accent').value = a;
+  updatePreview();
+}
+
+// Logo file upload → base64
+document.getElementById('logoFile').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { PC.toast('File too large (max 2 MB)', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById('f_logo').value = ev.target.result;
+    updatePreview();
+    PC.toast('Logo loaded! Click Save to keep.', 'success');
+  };
+  reader.readAsDataURL(file);
+});
+
+updatePreview();
+</script>
+{% endblock %}

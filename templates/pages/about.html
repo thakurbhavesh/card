@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "About" %} — Pagecraft{% endblock %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto px-6 py-20">
+  <div class="text-center mb-16">
+    <div class="inline-block text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-3">{% trans "Our Story" %}</div>
+    <h1 class="text-5xl font-extrabold mb-4">{% trans "About" %} <span class="gradient-text">Pagecraft</span></h1>
+    <p class="text-xl text-slate-600 max-w-2xl mx-auto">{% trans "We believe everyone deserves to create beautiful documents — without paying designer fees or fighting with clunky software." %}</p>
+  </div>
+
+  <div class="bg-white rounded-3xl p-10 shadow-sm border border-slate-100 mb-10">
+    <h2 class="text-2xl font-bold mb-4">🎯 {% trans "Our Mission" %}</h2>
+    <p class="text-slate-600 leading-relaxed text-lg">
+      {% trans "To make professional document creation accessible to everyone — students, freelancers, small business owners, and families planning their special day. By combining beautiful templates with AI assistance, we let anyone produce work that looks like it cost a fortune." %}
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+      <div class="text-4xl mb-3">🚀</div>
+      <h3 class="text-xl font-bold mb-2">{% trans "Built for Speed" %}</h3>
+      <p class="text-slate-500 text-sm">{% trans "Go from blank page to PDF in under 5 minutes — no design experience required." %}</p>
+    </div>
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+      <div class="text-4xl mb-3">🤖</div>
+      <h3 class="text-xl font-bold mb-2">{% trans "AI First" %}</h3>
+      <p class="text-slate-500 text-sm">{% trans "Every template is supercharged with AI text enhancement, summaries and auto-fill." %}</p>
+    </div>
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+      <div class="text-4xl mb-3">🇮🇳</div>
+      <h3 class="text-xl font-bold mb-2">{% trans "Made in India" %}</h3>
+      <p class="text-slate-500 text-sm">{% trans "Designed with Indian users in mind — Hindi support, INR currency, royal wedding cards & more." %}</p>
+    </div>
+  </div>
+
+  <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-12 text-white text-center">
+    <h2 class="text-3xl font-bold mb-3">{% trans "Join Our Journey" %}</h2>
+    <p class="opacity-90 mb-6">{% trans "We're just getting started. Help us build the future of document creation." %}</p>
+    <a href="{% url 'contact' %}" class="inline-block bg-white text-indigo-600 px-8 py-3 rounded-xl font-bold hover:scale-105 transition">{% trans "Get In Touch" %}</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Compare Templates" %} — {{ category_label }}{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-6 py-12">
+  <a href="{% url 'category' category %}" class="text-indigo-600 hover:underline text-sm font-semibold">← {% trans "Back" %}</a>
+  <div class="mt-4 mb-8">
+    <div class="inline-block text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-2">{% trans "Compare Templates" %}</div>
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-3">{% trans "Same Content" %}, <span class="gradient-text">{% trans "Every Template" %}</span></h1>
+    <p class="text-slate-500 text-lg max-w-2xl">{% trans "Fill your details below and see them rendered across all" %} <strong>{{ items|length }}</strong> {{ category_label|lower }} {% trans "templates side by side. Pick the one that fits you best." %}</p>
+  </div>
+
+  <!-- Quick edit form -->
+  <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mb-10">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-bold text-lg flex items-center gap-2">✏ {% trans "Your Content" %}</h2>
+      <button onclick="resetData()" class="text-sm text-indigo-600 hover:underline">↺ {% trans "Reset to demo" %}</button>
+    </div>
+    <div id="quickForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  </div>
+
+  <!-- Templates grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7" id="templatesGrid">
+    {% for it in items %}
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden card-hover" data-tpl-id="{{ it.tpl.id }}">
+      <div class="preview-frame relative {% if category == 'card' or category == 'social' or category == 'wedding' or category == 'birthday' or category == 'festival' or category == 'voucher' %}center{% endif %}">
+        <div class="skeleton-shimmer absolute inset-0"></div>
+        <iframe data-srcdoc="{{ it.preview_html|escape }}" scrolling="no" class="lazy-iframe opacity-0 transition-opacity duration-300"></iframe>
+      </div>
+      <div class="p-5 border-t border-slate-100">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-bold">{{ it.tpl.title }}</h3>
+          <span class="text-xs bg-indigo-50 text-indigo-600 px-2 py-1 rounded-full font-semibold">#{{ forloop.counter }}</span>
+        </div>
+        <p class="text-slate-500 text-xs mb-3">{{ it.tpl.description }}</p>
+        <a href="{% url 'editor' it.tpl.id %}" class="text-indigo-600 font-semibold text-sm hover:underline">{% trans "Use this →" %}</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const BASE_DATA = {{ base_data_json|safe }};
+const csrf = '{{ csrf_token }}';
+const FIELDS = Object.keys(BASE_DATA);
+
+function buildQuickForm() {
+  const form = document.getElementById('quickForm');
+  form.innerHTML = '';
+  FIELDS.forEach(k => {
+    const wrap = document.createElement('div');
+    const label = document.createElement('label');
+    label.className = 'block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wide';
+    label.textContent = k.replace(/_/g, ' ');
+    const value = BASE_DATA[k] || '';
+    let input;
+    if (typeof value === 'string' && value.length > 60) {
+      input = document.createElement('textarea');
+      input.rows = 2;
+    } else {
+      input = document.createElement('input');
+      input.type = 'text';
+    }
+    input.value = value;
+    input.id = 'qf_' + k;
+    input.className = 'w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 outline-none';
+    let timer;
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(refreshAll, 400);
+    });
+    wrap.appendChild(label);
+    wrap.appendChild(input);
+    form.appendChild(wrap);
+  });
+}
+
+function getData() {
+  const d = {};
+  FIELDS.forEach(k => {
+    const el = document.getElementById('qf_' + k);
+    d[k] = el ? el.value : BASE_DATA[k];
+  });
+  if (d.skills) d.skills_list = d.skills.split(',').map(s => s.trim()).filter(Boolean);
+  if (d.qty && d.price) d.total = (parseFloat(d.qty) * parseFloat(d.price)).toFixed(2);
+  return d;
+}
+
+async function refreshAll() {
+  const data = getData();
+  const cards = document.querySelectorAll('[data-tpl-id]');
+  for (const card of cards) {
+    const id = card.dataset.tplId;
+    try {
+      const r = await fetch(`/api/templates/${id}/render/`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+        body: JSON.stringify({data}),
+      });
+      const j = await r.json();
+      const iframe = card.querySelector('iframe');
+      iframe.srcdoc = j.html;
+    } catch (e) { console.error(e); }
+  }
+}
+
+function resetData() {
+  FIELDS.forEach(k => {
+    const el = document.getElementById('qf_' + k);
+    if (el) el.value = BASE_DATA[k] || '';
+  });
+  refreshAll();
+}
+
+buildQuickForm();
+
+// ===== LAZY-LOAD =====
+(function() {
+  const iframes = document.querySelectorAll('iframe.lazy-iframe');
+  if (!('IntersectionObserver' in window)) {
+    iframes.forEach(f => { f.srcdoc = f.dataset.srcdoc; f.classList.remove('opacity-0'); });
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const f = entry.target;
+        f.srcdoc = f.dataset.srcdoc;
+        f.addEventListener('load', () => {
+          f.classList.remove('opacity-0');
+          f.parentElement.querySelector('.skeleton-shimmer')?.remove();
+        }, {once: true});
+        setTimeout(() => {
+          f.classList.remove('opacity-0');
+          f.parentElement.querySelector('.skeleton-shimmer')?.remove();
+        }, 1500);
+        io.unobserve(f);
+      }
+    });
+  }, {rootMargin: '200px'});
+  iframes.forEach(f => io.observe(f));
+})();
+</script>
+{% endblock %}

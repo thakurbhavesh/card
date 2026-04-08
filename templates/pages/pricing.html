@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}Pricing — Free forever, Pro from ₹149/mo, Lifetime ₹1,999 | Pagecraft{% endblock %}
+{% block description %}The most generous free plan in design tools. Pro for ₹149/mo (vs Canva ₹500). Or pay once with Lifetime ₹1,999 — never pay again.{% endblock %}
+{% block keywords %}pagecraft pricing, free canva alternative, lifetime design tool, cheap canva pro alternative{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --pc-blue:#0052FF;--pc-blue-dark:#0040CC;--pc-blue-deep:#001A66;
+    --pc-cyan:#00C4CC;--pc-cyan-light:#7DF9FF;
+    --pc-ink:#0A0E27;--pc-ink-soft:#1E293B;
+    --pc-line:#E5E9F2;--pc-line-soft:#F1F5F9;
+    --pc-bg:#FAFBFF;--pc-blueprint:#E0EBFF;
+  }
+  .h-display{font-family:'Space Grotesk',Inter,sans-serif;letter-spacing:-0.035em;font-weight:700;line-height:.95;color:var(--pc-ink)}
+  .h-italic{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-0.01em}
+  .h-mono{font-family:'JetBrains Mono','Space Grotesk',monospace}
+  .text-eyebrow{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--pc-blue)}
+  .text-eyebrow .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--pc-cyan);margin-right:8px;vertical-align:middle}
+
+  .pr-hero{position:relative;overflow:hidden;background:var(--pc-bg);padding:80px 0 40px}
+  .pr-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,82,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.05) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,#000 30%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 70%)}
+  .pr-hero .symbol{position:absolute;font-family:'Instrument Serif',serif;font-style:italic;font-size:200px;line-height:1;color:rgba(0,82,255,.06);pointer-events:none}
+
+  .toggle-wrap{display:inline-flex;background:#fff;border:1px solid var(--pc-line);border-radius:999px;padding:4px;margin:30px auto 0;position:relative}
+  .toggle-btn{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;padding:9px 22px;border-radius:999px;cursor:pointer;border:0;background:transparent;color:#64748b;transition:all .25s;position:relative;z-index:2}
+  .toggle-btn.active{color:#fff}
+  .toggle-pill{position:absolute;top:4px;left:4px;height:calc(100% - 8px);background:var(--pc-blue);border-radius:999px;transition:all .3s cubic-bezier(.4,0,.2,1);box-shadow:0 4px 12px rgba(0,82,255,.3);z-index:1}
+  .save-tag{display:inline-block;background:var(--pc-cyan);color:var(--pc-ink);font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:5px;margin-left:6px}
+
+  .price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:50px;position:relative}
+  .pcard{background:#fff;border:1px solid var(--pc-line);border-radius:14px;padding:32px 26px 28px;position:relative;display:flex;flex-direction:column;transition:all .3s}
+  .pcard:hover{transform:translateY(-4px);border-color:var(--pc-blue);box-shadow:0 24px 50px -16px rgba(0,82,255,.18)}
+  .pcard.featured{background:linear-gradient(160deg,var(--pc-blue) 0%,var(--pc-blue-dark) 60%,var(--pc-blue-deep) 100%);color:#fff;border-color:var(--pc-blue);transform:scale(1.04);box-shadow:0 20px 50px -12px rgba(0,82,255,.45);overflow:hidden}
+  .pcard.featured::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.08) 1.5px,transparent 1.5px);background-size:24px 24px;pointer-events:none}
+  .pcard.featured::after{content:'✦';position:absolute;font-family:'Instrument Serif',serif;font-style:italic;font-size:280px;line-height:.7;right:-60px;bottom:-100px;color:rgba(255,255,255,.06);pointer-events:none}
+  .pcard.lifetime{background:linear-gradient(160deg,#0a0e27 0%,#001A66 100%);color:#fff;border-color:#0a0e27;overflow:hidden}
+  .pcard.lifetime::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,196,204,.12) 1.5px,transparent 1.5px);background-size:28px 28px;pointer-events:none}
+  .pcard.lifetime::after{content:'∞';position:absolute;font-family:'Instrument Serif',serif;font-style:italic;font-size:260px;line-height:.7;right:-40px;bottom:-90px;color:rgba(0,196,204,.08);pointer-events:none}
+  .pcard > *{position:relative}
+  .pcard .badge-top{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 14px;border-radius:6px;white-space:nowrap}
+  .pcard.featured .badge-top{background:var(--pc-cyan);color:var(--pc-ink)}
+  .pcard.lifetime .badge-top{background:#fbbf24;color:#0a0e27}
+  .pcard .pname{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;letter-spacing:-0.01em;margin-bottom:4px}
+  .pcard .ptag{font-size:12px;color:#64748b;font-family:'Space Grotesk',sans-serif}
+  .pcard.featured .ptag,.pcard.lifetime .ptag{color:rgba(255,255,255,.7)}
+  .pcard .pricebox{margin:22px 0 18px}
+  .pcard .price{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:46px;letter-spacing:-0.04em;line-height:1;display:inline-flex;align-items:baseline;gap:4px}
+  .pcard.featured .price,.pcard.lifetime .price{color:#fff}
+  .pcard .price .currency{font-size:24px;font-weight:600;color:#94a3b8}
+  .pcard.featured .price .currency,.pcard.lifetime .price .currency{color:var(--pc-cyan-light)}
+  .pcard .per{font-size:11px;color:#94a3b8;margin-top:6px;text-transform:uppercase;letter-spacing:.1em;font-family:'Space Grotesk',sans-serif}
+  .pcard.featured .per,.pcard.lifetime .per{color:rgba(255,255,255,.7)}
+  .pcard .strikethrough{color:#94a3b8;font-size:14px;text-decoration:line-through;font-weight:500;margin-left:8px;letter-spacing:0}
+  .pcard.featured .strikethrough,.pcard.lifetime .strikethrough{color:rgba(255,255,255,.45)}
+  .pcard .cta{display:block;width:100%;padding:13px;text-align:center;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;border-radius:10px;transition:all .25s;margin-bottom:20px}
+  .pcard .cta-bl{background:var(--pc-blue);color:#fff;border:1px solid var(--pc-blue);box-shadow:0 2px 0 var(--pc-blue-dark)}
+  .pcard .cta-bl:hover{background:var(--pc-blue-dark)}
+  .pcard .cta-out{background:#fff;color:var(--pc-ink);border:1px solid var(--pc-line)}
+  .pcard .cta-out:hover{border-color:var(--pc-blue);color:var(--pc-blue)}
+  .pcard.featured .cta-out{background:#fff;color:var(--pc-blue);border-color:#fff}
+  .pcard.featured .cta-out:hover{background:var(--pc-cyan-light);border-color:var(--pc-cyan-light);color:var(--pc-ink)}
+  .pcard.lifetime .cta-out{background:#fbbf24;color:#0a0e27;border-color:#fbbf24}
+  .pcard.lifetime .cta-out:hover{background:#fcd34d;border-color:#fcd34d}
+  .pcard ul{list-style:none;padding:0;margin:0;font-size:13px;line-height:1.5;flex:1}
+  .pcard ul li{display:flex;gap:9px;padding:7px 0;border-top:1px solid var(--pc-line-soft);align-items:flex-start}
+  .pcard.featured ul li{border-top-color:rgba(255,255,255,.12);color:rgba(255,255,255,.92)}
+  .pcard.lifetime ul li{border-top-color:rgba(255,255,255,.12);color:rgba(255,255,255,.92)}
+  .pcard ul li:first-child{border-top:0}
+  .pcard ul li .check{color:var(--pc-blue);font-weight:700;font-size:13px;line-height:1.4;flex-shrink:0;width:14px}
+  .pcard.featured ul li .check{color:var(--pc-cyan-light)}
+  .pcard.lifetime ul li .check{color:var(--pc-cyan-light)}
+
+  .pr-section{padding:80px 0;border-top:1px solid var(--pc-line)}
+  .pr-section.bg-blueprint{background-color:#F0F5FF;background-image:linear-gradient(rgba(0,82,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.06) 1px,transparent 1px);background-size:60px 60px}
+
+  .ct-card{background:#fff;border:1px solid var(--pc-line);border-radius:14px;overflow:hidden}
+  .ct-row{display:grid;grid-template-columns:1.6fr repeat(4,1fr);border-top:1px solid var(--pc-line-soft);align-items:center}
+  .ct-row.head{border-top:0;background:var(--pc-ink);color:#fff}
+  .ct-row.head .ct-cell{padding:16px 18px;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+  .ct-row.head .ct-cell.us-col{color:var(--pc-cyan-light)}
+  .ct-cell{padding:14px 18px;font-size:13px;text-align:center}
+  .ct-cell.feat{text-align:left;font-family:'Space Grotesk',sans-serif;font-weight:500;color:var(--pc-ink-soft)}
+  .ct-cell.us-col{background:rgba(0,82,255,.04);color:var(--pc-blue);font-weight:600}
+  .ct-row:not(.head):hover{background:#FAFBFF}
+  .ct-y{color:var(--pc-blue);font-weight:700}
+  .ct-n{color:#cbd5e1}
+
+  .faq-wrap{max-width:760px;margin:0 auto}
+  .faq-item{background:#fff;border:1px solid var(--pc-line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+  .faq-item summary{cursor:pointer;padding:18px 22px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:var(--pc-ink);display:flex;align-items:center;justify-content:space-between;gap:14px;list-style:none}
+  .faq-item summary::-webkit-details-marker{display:none}
+  .faq-item summary:hover{background:#FAFBFF}
+  .faq-item summary .plus{font-size:22px;color:var(--pc-blue);font-weight:700;transition:transform .25s;flex-shrink:0}
+  .faq-item[open] summary .plus{transform:rotate(45deg)}
+  .faq-item .answer{padding:0 22px 18px;color:#64748b;font-size:14px;line-height:1.6}
+
+  @media (max-width:1100px){
+    .price-grid{grid-template-columns:repeat(2,1fr)}
+    .pcard.featured{transform:none}
+  }
+  @media (max-width:680px){
+    .price-grid{grid-template-columns:1fr}
+    .ct-row{grid-template-columns:1.4fr repeat(2,1fr)}
+    .ct-row .ct-cell:nth-child(4),.ct-row .ct-cell:nth-child(5){display:none}
+  }
+</style>
+
+<!-- ============== HERO + PRICING CARDS ============== -->
+<section class="pr-hero">
+  <div class="symbol" style="top:8%;left:5%">₹</div>
+  <div class="symbol" style="bottom:5%;right:6%;font-size:160px">✦</div>
+  <div class="max-w-7xl mx-auto px-6 relative">
+    <div class="text-center">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Pricing" %}</div>
+      <h1 class="h-display" style="font-size:clamp(46px,7vw,80px)">
+        {% trans "Pay" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "less" %}</span>{% trans ", get" %}<br>
+        <span class="h-italic" style="color:var(--pc-blue)">{% trans "everything" %}</span>
+      </h1>
+      <p class="text-lg mt-6 max-w-2xl mx-auto" style="color:#475569;line-height:1.6">
+        {% trans "Generous free plan. Pro for less than half of Canva. Or pay once with Lifetime — never pay again." %}
+      </p>
+
+      <div class="toggle-wrap" id="billingToggle">
+        <div class="toggle-pill" id="togglePill" style="width:100px;left:4px"></div>
+        <button type="button" class="toggle-btn active" data-mode="m" onclick="setBilling('m', this)">{% trans "Monthly" %}</button>
+        <button type="button" class="toggle-btn" data-mode="y" onclick="setBilling('y', this)">{% trans "Yearly" %} <span class="save-tag">Save 33%</span></button>
+      </div>
+    </div>
+
+    <div class="price-grid">
+      <!-- STARTER -->
+      <div class="pcard">
+        <div class="pname">Starter</div>
+        <div class="ptag">{% trans "For trying it out" %}</div>
+        <div class="pricebox">
+          <div class="price"><span class="currency">₹</span>0</div>
+          <div class="per">{% trans "Forever free" %}</div>
+        </div>
+        <a href="{% url 'home' %}#categories" class="cta cta-out">{% trans "Start free" %} →</a>
+        <ul>
+          <li><span class="check">✓</span>{{ total_templates }}+ {% trans "premium templates" %}</li>
+          <li><span class="check">✓</span>{% trans "Unlimited downloads (with watermark)" %}</li>
+          <li><span class="check">✓</span>20 {% trans "saved drafts" %}</li>
+          <li><span class="check">✓</span>30 {% trans "AI calls / day" %}</li>
+          <li><span class="check">✓</span>{% trans "PDF · PNG · JPG export" %}</li>
+          <li><span class="check">✓</span>{% trans "10-language translation" %}</li>
+          <li><span class="check">✓</span>{% trans "Surprise Me · Smart filters" %}</li>
+          <li><span class="check">✓</span>{% trans "Public share links" %}</li>
+        </ul>
+      </div>
+
+      <!-- PRO (FEATURED) -->
+      <div class="pcard featured">
+        <div class="badge-top">★ Most Popular</div>
+        <div class="pname" style="color:#fff">Pro</div>
+        <div class="ptag">{% trans "For serious creators" %}</div>
+        <div class="pricebox">
+          <div class="price"><span class="currency">₹</span><span data-m="149" data-y="99" class="amount">149</span></div>
+          <div class="per"><span class="m-text">/{% trans "month" %}</span><span class="y-text" style="display:none">/{% trans "month, billed yearly" %}</span></div>
+          <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:6px"><span class="m-text">{% trans "Billed monthly" %}</span><span class="y-text" style="display:none">₹1,188/{% trans "year — save ₹600" %}</span></div>
+        </div>
+        <a href="{% url 'checkout' 'pro' %}" class="cta cta-out">{% trans "Get Pro" %} →</a>
+        <ul>
+          <li><span class="check">✓</span>{% trans "Everything in Starter, plus:" %}</li>
+          <li><span class="check">✓</span>{% trans "No watermark" %}</li>
+          <li><span class="check">✓</span>{% trans "Unlimited AI generations" %}</li>
+          <li><span class="check">✓</span>{% trans "Unlimited saved drafts" %}</li>
+          <li><span class="check">✓</span>🎨 {% trans "Brand Kit (logo + colors + fonts)" %}</li>
+          <li><span class="check">✓</span>🤖 {% trans "AI Template Generator" %}</li>
+          <li><span class="check">✓</span>🎬 {% trans "Animated GIF export" %}</li>
+          <li><span class="check">✓</span>📥 {% trans "Bulk export (ZIP)" %}</li>
+          <li><span class="check">✓</span>⚡ {% trans "Priority AI processing" %}</li>
+          <li><span class="check">✓</span>{% trans "Commercial use license" %}</li>
+        </ul>
+      </div>
+
+      <!-- LIFETIME -->
+      <div class="pcard lifetime">
+        <div class="badge-top">⚡ Pay Once</div>
+        <div class="pname" style="color:#fff">Lifetime</div>
+        <div class="ptag">{% trans "Pay once, use forever" %}</div>
+        <div class="pricebox">
+          <div class="price"><span class="currency">₹</span>1,999<span class="strikethrough">₹4,999</span></div>
+          <div class="per">{% trans "One-time payment" %}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:6px">{% trans "Save ₹3,000 vs 2 years of Pro" %}</div>
+        </div>
+        <a href="{% url 'checkout' 'lifetime' %}" class="cta cta-out">{% trans "Get Lifetime" %} →</a>
+        <ul>
+          <li><span class="check">✓</span>{% trans "Everything in Pro, plus:" %}</li>
+          <li><span class="check">✓</span>♾ {% trans "Lifetime updates" %}</li>
+          <li><span class="check">✓</span>{% trans "Never pay again" %}</li>
+          <li><span class="check">✓</span>{% trans "All future templates included" %}</li>
+          <li><span class="check">✓</span>{% trans "All future features included" %}</li>
+          <li><span class="check">✓</span>{% trans "Founder Member badge" %}</li>
+          <li><span class="check">✓</span>{% trans "Early access to new features" %}</li>
+        </ul>
+      </div>
+
+      <!-- BUSINESS -->
+      <div class="pcard">
+        <div class="pname">Business</div>
+        <div class="ptag">{% trans "For teams & agencies" %}</div>
+        <div class="pricebox">
+          <div class="price"><span class="currency">₹</span><span data-m="499" data-y="349" class="amount">499</span></div>
+          <div class="per"><span class="m-text">/{% trans "month" %}</span><span class="y-text" style="display:none">/{% trans "month, billed yearly" %}</span></div>
+        </div>
+        <a href="{% url 'checkout' 'business' %}" class="cta cta-bl">{% trans "Get Business" %} →</a>
+        <ul>
+          <li><span class="check">✓</span>{% trans "Everything in Pro, plus:" %}</li>
+          <li><span class="check">✓</span>👥 5 {% trans "team seats" %}</li>
+          <li><span class="check">✓</span>🔌 {% trans "API access" %}</li>
+          <li><span class="check">✓</span>🪝 {% trans "Webhooks" %}</li>
+          <li><span class="check">✓</span>🏷 {% trans "White-label exports" %}</li>
+          <li><span class="check">✓</span>{% trans "Dedicated support" %}</li>
+          <li><span class="check">✓</span>{% trans "SLA guarantee" %}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="text-center mt-10 text-sm" style="color:#64748b">
+      <span style="color:var(--pc-blue);font-weight:600">✓</span> {% trans "Cancel anytime" %} &nbsp;·&nbsp;
+      <span style="color:var(--pc-blue);font-weight:600">✓</span> {% trans "30-day money-back guarantee" %} &nbsp;·&nbsp;
+      <span style="color:var(--pc-blue);font-weight:600">✓</span> {% trans "Secure UPI / Card / Net Banking" %}
+    </div>
+  </div>
+</section>
+
+<!-- ============== COMPARE WITH ALTERNATIVES ============== -->
+<section class="pr-section bg-blueprint">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>{% trans "Side by side" %}</div>
+      <h2 class="h-display" style="font-size:clamp(36px,5vw,56px)">
+        {% trans "How it" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "compares" %}</span>
+      </h2>
+      <p class="text-lg mt-4 max-w-2xl mx-auto" style="color:#475569">{% trans "Pagecraft Pro costs less than half of Canva Pro — and we have a Lifetime option no one else offers." %}</p>
+    </div>
+    <div class="ct-card">
+      <div class="ct-row head">
+        <div class="ct-cell feat">{% trans "Plan" %}</div>
+        <div class="ct-cell us-col">★ Pagecraft Pro</div>
+        <div class="ct-cell">Canva Pro</div>
+        <div class="ct-cell">Adobe Express</div>
+        <div class="ct-cell">MS 365</div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell feat">{% trans "Monthly price" %}</div>
+        <div class="ct-cell us-col">₹149</div>
+        <div class="ct-cell">₹500</div>
+        <div class="ct-cell">₹830</div>
+        <div class="ct-cell">₹489</div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell feat">{% trans "Yearly cost" %}</div>
+        <div class="ct-cell us-col">₹1,188</div>
+        <div class="ct-cell">₹6,000</div>
+        <div class="ct-cell">₹9,960</div>
+        <div class="ct-cell">₹5,868</div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell feat">{% trans "Lifetime option" %}</div>
+        <div class="ct-cell us-col">✓ ₹1,999</div>
+        <div class="ct-cell ct-n">—</div>
+        <div class="ct-cell ct-n">—</div>
+        <div class="ct-cell ct-n">—</div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell feat">{% trans "Free templates" %}</div>
+        <div class="ct-cell us-col">{{ total_templates }}+</div>
+        <div class="ct-cell">⚠ Few</div>
+        <div class="ct-cell">⚠ Few</div>
+        <div class="ct-cell">~50</div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell feat">{% trans "AI text generation" %}</div>
+        <div class="ct-cell us-col">✓ Free + Pro</div>
+        <div class="ct-cell">⚠ Pro only</div>
+        <div class="ct-cell">⚠ Pro only</div>
+        <div class="ct-cell ct-n">—</div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell feat">{% trans "AI image generation" %}</div>
+        <div class="ct-cell us-col">✓ Pro</div>
+        <div class="ct-cell">⚠ Limited</div>
+        <div class="ct-cell">⚠ Limited</div>
+        <div class="ct-cell ct-n">—</div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell feat">{% trans "Indian wedding/festival templates" %}</div>
+        <div class="ct-cell us-col">✓ 100+</div>
+        <div class="ct-cell">⚠ Few</div>
+        <div class="ct-cell ct-n">—</div>
+        <div class="ct-cell ct-n">—</div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell feat">{% trans "Brand Kit" %}</div>
+        <div class="ct-cell us-col">✓ Pro ₹149</div>
+        <div class="ct-cell">⚠ Pro ₹500</div>
+        <div class="ct-cell">⚠ Pro ₹830</div>
+        <div class="ct-cell ct-n">—</div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-cell feat">{% trans "WhatsApp direct share" %}</div>
+        <div class="ct-cell us-col">✓</div>
+        <div class="ct-cell">⚠ Link only</div>
+        <div class="ct-cell ct-n">—</div>
+        <div class="ct-cell ct-n">—</div>
+      </div>
+    </div>
+
+    <div class="text-center mt-10">
+      <div style="display:inline-block;background:#fff;border:1px solid var(--pc-line);border-radius:14px;padding:24px 38px;font-family:'Space Grotesk',sans-serif">
+        <div style="font-size:13px;color:#64748b;letter-spacing:.05em">{% trans "Switching from Canva Pro saves you" %}</div>
+        <div class="h-display" style="font-size:54px;color:var(--pc-blue);margin-top:6px;line-height:1">₹4,812 <span style="font-size:18px;color:#64748b;font-weight:500;font-family:Inter">/{% trans "year" %}</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FAQ ============== -->
+<section class="pr-section">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-14">
+      <div class="text-eyebrow mb-4"><span class="dot"></span>FAQ</div>
+      <h2 class="h-display" style="font-size:clamp(36px,5vw,56px)">
+        {% trans "Common" %} <span class="h-italic" style="color:var(--pc-blue)">{% trans "questions" %}</span>
+      </h2>
+    </div>
+    <div class="faq-wrap">
+      <details class="faq-item" open>
+        <summary>{% trans "Is the free plan really free forever?" %}<span class="plus">+</span></summary>
+        <div class="answer">{% trans "Yes. Starter is free forever, no credit card needed. You get all 496+ templates, unlimited downloads (with a small Made with Pagecraft watermark), 30 AI calls per day, Surprise Me, translation in 10 languages, and PDF/PNG/JPG export. Most users never need to upgrade." %}</div>
+      </details>
+      <details class="faq-item">
+        <summary>{% trans "What's actually different in Pro?" %}<span class="plus">+</span></summary>
+        <div class="answer">{% trans "Pro removes the watermark, unlocks unlimited AI calls, gives you Brand Kit (save logo + colors + fonts and apply with one click), AI Template Generator, animated GIF export, bulk ZIP export, priority AI processing, and commercial use license. Worth it if you create more than 5 documents a month." %}</div>
+      </details>
+      <details class="faq-item">
+        <summary>{% trans "Lifetime — really pay once and never again?" %}<span class="plus">+</span></summary>
+        <div class="answer">{% trans "Yes. ₹1,999 one-time and you get all Pro features forever, including all future templates and features. We never charge you again. Compare: 2 years of Canva Pro = ₹12,000. Lifetime is for power users who want to lock in low pricing forever." %}</div>
+      </details>
+      <details class="faq-item">
+        <summary>{% trans "Can I cancel anytime?" %}<span class="plus">+</span></summary>
+        <div class="answer">{% trans "Yes. Cancel anytime from your Profile. You keep Pro features until the end of your billing period, then move back to the free plan. We also offer a 30-day money-back guarantee on all paid plans — no questions asked." %}</div>
+      </details>
+      <details class="faq-item">
+        <summary>{% trans "How does the watermark look?" %}<span class="plus">+</span></summary>
+        <div class="answer">{% trans "Tiny pill at the bottom-right of free downloads — Made with Pagecraft in small blue text. Subtle but visible. Pro/Lifetime/Business get clean exports without it." %}</div>
+      </details>
+      <details class="faq-item">
+        <summary>{% trans "What payment methods do you accept?" %}<span class="plus">+</span></summary>
+        <div class="answer">{% trans "UPI (GPay, PhonePe, Paytm), all major credit/debit cards, Net Banking, and international cards via Razorpay. Subscriptions auto-renew, Lifetime is one-time only." %}</div>
+      </details>
+      <details class="faq-item">
+        <summary>{% trans "Can I use Pagecraft for client work?" %}<span class="plus">+</span></summary>
+        <div class="answer">{% trans "Yes — Pro, Lifetime and Business plans include a commercial use license. Use exports in client deliverables, sell printed cards, charge for design work — all permitted. Free plan is for personal use only." %}</div>
+      </details>
+      <details class="faq-item">
+        <summary>{% trans "Do you offer student / NGO discounts?" %}<span class="plus">+</span></summary>
+        <div class="answer">{% trans "Students get 50% off Pro with a valid .edu/.ac.in email. NGOs get free Business plan — email us at support@pagecraft.app with your registration." %}</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FINAL CTA ============== -->
+<section class="max-w-6xl mx-auto px-6 py-24">
+  <div style="background:var(--pc-ink);color:#fff;border-radius:18px;padding:80px 40px;position:relative;overflow:hidden;text-align:center">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,82,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(0,82,255,.18) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%)"></div>
+    <div style="position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(0,82,255,.4),transparent 60%);top:-200px;left:50%;transform:translateX(-50%);filter:blur(60px);pointer-events:none"></div>
+    <div style="position:absolute;font-family:'Instrument Serif',serif;font-style:italic;color:rgba(0,196,204,.08);pointer-events:none;line-height:1;top:30px;left:40px;font-size:120px">✦</div>
+    <div style="position:absolute;font-family:'Instrument Serif',serif;font-style:italic;color:rgba(0,196,204,.08);pointer-events:none;line-height:1;bottom:30px;right:40px;font-size:140px">✶</div>
+    <div class="relative">
+      <h2 class="h-display" style="font-size:clamp(36px,6vw,64px);color:#fff">
+        {% trans "Start free." %}<br>
+        <span class="h-italic" style="color:var(--pc-cyan-light)">{% trans "Upgrade only if you want to." %}</span>
+      </h2>
+      <p class="text-lg mt-6 max-w-xl mx-auto" style="color:#cbd5e1">{% trans "No credit card. No watermark in Pro. 30-day money-back. No catch." %}</p>
+      <div class="flex flex-wrap gap-3 justify-center mt-10">
+        <a href="{% url 'home' %}#categories" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--pc-blue);padding:16px 32px;border-radius:10px;font-family:'Space Grotesk';font-weight:700;font-size:16px;box-shadow:0 12px 30px -8px rgba(0,196,204,.4)">{% trans "Start Free" %} →</a>
+        <a href="{% url 'checkout' 'lifetime' %}" style="display:inline-flex;align-items:center;gap:8px;background:#fbbf24;color:#0a0e27;padding:16px 32px;border-radius:10px;font-family:'Space Grotesk';font-weight:700;font-size:16px">⚡ {% trans "Get Lifetime ₹1,999" %}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function setBilling(mode, btn) {
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const pill = document.getElementById('togglePill');
+  pill.style.width = btn.offsetWidth + 'px';
+  pill.style.left = btn.offsetLeft + 'px';
+  document.querySelectorAll('.amount').forEach(el => {
+    if (el.dataset[mode]) el.textContent = el.dataset[mode];
+  });
+  document.querySelectorAll('.m-text').forEach(el => el.style.display = mode === 'm' ? '' : 'none');
+  document.querySelectorAll('.y-text').forEach(el => el.style.display = mode === 'y' ? '' : 'none');
+}
+window.addEventListener('load', () => {
+  const active = document.querySelector('.toggle-btn.active');
+  if (active) {
+    const pill = document.getElementById('togglePill');
+    pill.style.width = active.offsetWidth + 'px';
+    pill.style.left = active.offsetLeft + 'px';
+  }
+});
+</script>
+{% endblock %}
