@@ -107,10 +107,16 @@ if _DATABASE_URL and RENDER_EXTERNAL_HOSTNAME:
 if _DATABASE_URL:
     try:
         import dj_database_url
+        # Neon's pooler (-pooler in hostname) runs PgBouncer in
+        # transaction mode, which doesn't keep server-side prepared
+        # statements across transactions. Persistent connections +
+        # Django's auto-prepared statements break under this.
+        # Solution: short-lived connections when using pooler.
+        _is_pooler = '-pooler.' in _DATABASE_URL
         DATABASES['default'] = dj_database_url.parse(
             _DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
+            conn_max_age=0 if _is_pooler else 600,
+            conn_health_checks=not _is_pooler,
         )
         DATABASES['default'].setdefault('OPTIONS', {})
         DATABASES['default']['OPTIONS'].update({
