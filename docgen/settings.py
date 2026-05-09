@@ -94,6 +94,16 @@ DATABASES = {
 
 # Use DATABASE_URL if provided (e.g. Render Postgres)
 _DATABASE_URL = os.getenv('DATABASE_URL')
+# When running on Render, swap the external Postgres hostname
+# (dpg-xxx-a.<region>-postgres.render.com) for the internal one
+# (dpg-xxx-a). The external SSL handshake is intermittently flaky on
+# free tier; the internal hostname routes over Render's private
+# network and is far more reliable.
+if _DATABASE_URL and RENDER_EXTERNAL_HOSTNAME:
+    import re
+    _DATABASE_URL = re.sub(
+        r'\.[a-z]+-postgres\.render\.com(?::\d+)?', '', _DATABASE_URL
+    )
 if _DATABASE_URL:
     try:
         import dj_database_url
@@ -101,8 +111,15 @@ if _DATABASE_URL:
             _DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
-            ssl_require=True,
         )
+        DATABASES['default'].setdefault('OPTIONS', {})
+        DATABASES['default']['OPTIONS'].update({
+            'connect_timeout': 10,
+            'keepalives': 1,
+            'keepalives_idle': 30,
+            'keepalives_interval': 10,
+            'keepalives_count': 5,
+        })
     except ImportError:
         pass
 
