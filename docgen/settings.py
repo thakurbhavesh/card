@@ -98,7 +98,10 @@ if _DATABASE_URL:
     try:
         import dj_database_url
         DATABASES['default'] = dj_database_url.parse(
-            _DATABASE_URL, conn_max_age=600, ssl_require=True
+            _DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require=True,
         )
     except ImportError:
         pass
