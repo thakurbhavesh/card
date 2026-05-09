@@ -401,6 +401,21 @@ def robots_txt(request):
     return HttpResponse(text, content_type='text/plain')
 
 
+def health(request):
+    """Liveness + DB check. Render uses /health for uptime monitoring."""
+    from django.db import connection
+    try:
+        with connection.cursor() as cur:
+            cur.execute('SELECT 1')
+            cur.fetchone()
+        return JsonResponse({'status': 'ok', 'db': 'ok'})
+    except Exception as exc:
+        return JsonResponse(
+            {'status': 'degraded', 'db': 'down', 'error': str(exc)[:200]},
+            status=503,
+        )
+
+
 def sitemap_xml(request):
     """Full sitemap with all 496+ templates, priority + lastmod.
     Cached for 1 hour to avoid hitting DB on every Googlebot fetch."""
