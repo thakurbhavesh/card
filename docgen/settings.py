@@ -94,16 +94,12 @@ DATABASES = {
 
 # Use DATABASE_URL if provided (e.g. Render Postgres)
 _DATABASE_URL = os.getenv('DATABASE_URL')
-# When running on Render at *runtime*, swap the external Postgres
-# hostname (dpg-xxx-a.<region>-postgres.render.com) for the internal
-# one (dpg-xxx-a). External SSL is flaky; internal goes over
-# Render's private network. Skip during build phase — internal DNS
-# only resolves from a running service, not the build container.
-if (
-    _DATABASE_URL
-    and RENDER_EXTERNAL_HOSTNAME
-    and not os.getenv('RENDER_BUILD_PHASE')
-):
+# On Render, swap the external Postgres hostname
+# (dpg-xxx-a.<region>-postgres.render.com) for the internal one
+# (dpg-xxx-a). External SSL endpoint is flaky and refuses connections
+# from the build container; internal goes over Render's private
+# network and is reliable. We never touch the DB during build.
+if _DATABASE_URL and RENDER_EXTERNAL_HOSTNAME:
     import re
     _DATABASE_URL = re.sub(
         r'\.[a-z]+-postgres\.render\.com(?::\d+)?', '', _DATABASE_URL
