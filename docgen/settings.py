@@ -103,6 +103,18 @@ if _DATABASE_URL:
             conn_health_checks=True,
             ssl_require=True,
         )
+        # Render free Postgres SSL handshake is flaky.
+        # Keepalives + gssencmode=disable + longer timeout stabilize it.
+        DATABASES['default'].setdefault('OPTIONS', {})
+        DATABASES['default']['OPTIONS'].update({
+            'sslmode': 'require',
+            'gssencmode': 'disable',
+            'connect_timeout': 10,
+            'keepalives': 1,
+            'keepalives_idle': 30,
+            'keepalives_interval': 10,
+            'keepalives_count': 5,
+        })
     except ImportError:
         pass
 
