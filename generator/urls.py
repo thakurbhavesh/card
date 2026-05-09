@@ -11,6 +11,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('robots.txt', views.robots_txt, name='robots_txt'),
     path('sitemap.xml', views.sitemap_xml, name='sitemap_xml'),
+    path('health/', views.health, name='health'),
     path('templates/', views.all_templates_view, name='all_templates'),
     path('template/<int:template_id>/clone/', views.template_clone_view, name='template_clone'),
     path('category/<str:category>/', views.category_view, name='category'),

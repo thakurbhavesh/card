@@ -204,3 +204,21 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Pagecraft <no-reply@pagecr
 SUPPORT_EMAIL = os.getenv('SUPPORT_EMAIL', 'support@pagecraft.app')
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000')
+
+# ============== ERROR TRACKING (opt-in) ==============
+# Set SENTRY_DSN in env to enable. Skipped silently if dsn empty
+# or sentry_sdk not installed.
+_SENTRY_DSN = os.getenv('SENTRY_DSN', '').strip()
+if _SENTRY_DSN:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.django import DjangoIntegration
+        sentry_sdk.init(
+            dsn=_SENTRY_DSN,
+            integrations=[DjangoIntegration()],
+            traces_sample_rate=float(os.getenv('SENTRY_TRACES_SAMPLE_RATE', '0.0')),
+            send_default_pii=False,
+            environment=os.getenv('SENTRY_ENV', 'production' if not DEBUG else 'dev'),
+        )
+    except ImportError:
+        pass
